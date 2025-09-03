@@ -1,0 +1,17 @@
+{
+    "name": "UKAZ",
+    "short_name": "UKAZ",
+    "start_url": "/index.php",
+    "background_color": "black",
+    "description": "UKAZ Stock Managment System",
+    "display": "fullscreen",
+    "theme_color": "black",
+    "icons": [
+        {
+            "src": "ukaz512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ]
+}
