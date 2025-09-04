@@ -83,9 +83,7 @@ class UserController extends Controller
                 'email'   => $user->email,
             ])
             ->log('Deleted User');
-
         $user->delete();
-
         return back()->with('success', 'Delete User Succeed !!');
     }
 }
