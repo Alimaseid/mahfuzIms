@@ -17,30 +17,50 @@ class CategoryController extends Controller
     public function index()
     {
 
-     $categorys =  Category::all();
+        $categorys =  Category::all();
 
-       return view('pages.items.category',compact('categorys'));
+        return view('pages.items.category', compact('categorys'));
     }
 
-    public function addCategory(Request $request){
+    public function addCategory(Request $request)
+    {
 
-       Category::create([
-            'name'=>$request->category_name,
-            'description'=>$request->description,
+        $category = Category::create([
+            'name' => $request->category_name,
+            'description' => $request->description,
         ]);
-        return back()->with('success','Category Added Successfully.');
+        // Log activity
+        activity()
+            ->causedBy(auth()->user())
+            ->performedOn($category)
+            ->withProperties(['data' => $category])
+            ->log('Added new Category');
+        return back()->with('success', 'Category Added Successfully.');
     }
 
-    public function editCategory(Request $request,$id){
-        Category::where('id',$id)->update([
-            'name'=>$request->category_name,
+    public function editCategory(Request $request, $id)
+    {
+        $category = Category::find($id);
+        $category->update([
+            'name' => $request->category_name,
         ]);
-        return back()->with('success','Update Successfully.');
+        activity()
+            ->causedBy(auth()->user())
+            ->performedOn($category)
+            ->withProperties(['data' => $category])
+            ->log('Edited new Category');
+        return back()->with('success', 'Update Successfully.');
     }
 
-     public function deleteCategory($id){
-        Category::where('id',$id)->delete();
-        return back()->with('success',' Category Deleted Successfully.');
-
+    public function deleteCategory($id)
+    {
+        $category = Category::find($id);
+        $category->delete();
+        activity()
+            ->causedBy(auth()->user())
+            ->performedOn($category)
+            ->withProperties(['data' => $category])
+            ->log('Deleted new Category');
+        return back()->with('success', ' Category Deleted Successfully.');
     }
 }

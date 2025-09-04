@@ -9,39 +9,83 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    public function index(){
-        $roles = Role::orderBy('created_at','desc')->get();
-        $users = User::orderBy('created_at','desc')->get();
+    public function index()
+    {
+        $roles = Role::orderBy('created_at', 'desc')->get();
+        $users = User::orderBy('created_at', 'desc')->get();
 
         return view('pages.user.users')
-        ->with('roles',$roles)
-        ->with('users',$users);
+            ->with('roles', $roles)
+            ->with('users', $users);
     }
 
-    public function addUser(Request $request){
-        User::create([
-            'name' => $request->full_name,
-            'email' => $request->email,
-            'phone' => $request->phone,
+    public function addUser(Request $request)
+    {
+        $user = User::create([
+            'name'     => $request->full_name,
+            'email'    => $request->email,
+            'phone'    => $request->phone,
             'password' => Hash::make(12345678),
         ]);
 
-        return back()->with('success','Register Succeed !!');
+        // Log activity
+        activity()
+            ->causedBy(auth()->user())
+            ->performedOn($user)
+            ->withProperties([
+                'name'  => $request->full_name,
+                'email' => $request->email,
+                'phone' => $request->phone,
+            ])
+            ->log('Added a new User');
+
+        return back()->with('success', 'Register Succeed !!');
     }
 
-    public function editUser(Request $request,$id){
-        User::where('id',$id)->update([
-            'name' => $request->full_name,
+    // ✅ Edit User
+    public function editUser(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+
+        $user->update([
+            'name'  => $request->full_name,
             'email' => $request->email,
             'phone' => $request->phone,
-            // 'password' => Hash::make(12345678),
         ]);
 
-        return back()->with('success','Edit User Succeed !!');
+        // Log activity
+        activity()
+            ->causedBy(auth()->user())
+            ->performedOn($user)
+            ->withProperties([
+                'user_id' => $user->id,
+                'new_name' => $request->full_name,
+                'new_email' => $request->email,
+                'new_phone' => $request->phone,
+            ])
+            ->log('Edited User');
+
+        return back()->with('success', 'Edit User Succeed !!');
     }
 
-    public function deleteUser($id){
-        User::where('id',$id)->delete();
-        return back()->with('success','delete User Succeed !!');
+    // ✅ Delete User
+    public function deleteUser($id)
+    {
+        $user = User::findOrFail($id);
+
+        // Log before delete
+        activity()
+            ->causedBy(auth()->user())
+            ->performedOn($user)
+            ->withProperties([
+                'user_id' => $user->id,
+                'name'    => $user->name,
+                'email'   => $user->email,
+            ])
+            ->log('Deleted User');
+
+        $user->delete();
+
+        return back()->with('success', 'Delete User Succeed !!');
     }
 }

@@ -27,105 +27,124 @@ class ItemController extends Controller
         $owners = Owner::all();
         $categories = Category::all();
         $shelfs = Shelf::all();
-        $item_units= ItemUnit::all();
+        $item_units = ItemUnit::all();
         $location = BusinessLocation::all();
         return view('pages.items.item')
-        ->with('location', $location)
-        ->with('owners', $owners)
-        ->with('item_owners', $item_owners)
-        ->with('categories', $categories)
-        ->with('shelfs', $shelfs)
-        ->with('items', $items)
-        ->with('item_units',$item_units);
+            ->with('location', $location)
+            ->with('owners', $owners)
+            ->with('item_owners', $item_owners)
+            ->with('categories', $categories)
+            ->with('shelfs', $shelfs)
+            ->with('items', $items)
+            ->with('item_units', $item_units);
     }
 
-    public function addItem(Request $request){
+    public function addItem(Request $request)
+    {
         $photo = $request->file('image');
         $doc_path = '';
-        if($photo){
+        if ($photo) {
             $doc_name = $photo->getClientOriginalName();
-            $doc_path = $photo->move('images/item-iamges',$doc_name);
-         }
+            $doc_path = $photo->move('images/item-iamges', $doc_name);
+        }
 
         $photos = $request->file('image2');
         $doc_paths = '';
-         if($photos){
+        if ($photos) {
             $doc_names = $photos->getClientOriginalName();
-            $doc_paths = $photos->move('images/item-iamges',$doc_names);
-         }
-       Item::create([
-        'item_name' =>$request->item_name,
-        'shelves_id' =>$request->shelves_id,
-        'category' =>$request->category,
-        'product_code' =>$request->product_code,
-        'part_number' =>$request->part_number,
-        'unit' =>$request->unit,
-        'cost_price' =>$request->cost_price,
-        'selling_price1' =>$request->selling_price1,
-        'selling_price2' =>$request->selling_price2,
-        'item_code' =>$request->item_code,
-        'image' =>$doc_path,
-        'image2' =>$doc_paths,
-        'bar_code' =>$request->bar_code,
-        'status' =>'Active',
-        'description' >$request->description,
-        'reorder' => $request->reorder,
-        'quantity' =>$request->quantity,
-        'brand' => $request->brand
+            $doc_paths = $photos->move('images/item-iamges', $doc_names);
+        }
+        $item = Item::create([
+            'item_name' => $request->item_name,
+            'shelves_id' => $request->shelves_id,
+            'category' => $request->category,
+            'product_code' => $request->product_code,
+            'part_number' => $request->part_number,
+            'unit' => $request->unit,
+            'cost_price' => $request->cost_price,
+            'selling_price1' => $request->selling_price1,
+            'selling_price2' => $request->selling_price2,
+            'item_code' => $request->item_code,
+            'image' => $doc_path,
+            'image2' => $doc_paths,
+            'bar_code' => $request->bar_code,
+            'status' => 'Active',
+            'description' > $request->description,
+            'reorder' => $request->reorder,
+            'quantity' => $request->quantity,
+            'brand' => $request->brand
         ]);
-        return back()->with('success','Item Added Successfully.');
+        activity()
+            ->causedBy(auth()->user())
+            ->performedOn($item)
+            ->withProperties(['data' => $item])
+            ->log('Added new item');
+        return back()->with('success', 'Item Added Successfully.');
     }
 
-    public function editItem(Request $request,$id){
+    public function editItem(Request $request, $id)
+    {
         $photo = $request->file('image');
-        $img = Item::where('id',$id)->first();
+        $img = Item::where('id', $id)->first();
         $doc_path = $img->image;
-        if($photo){
+        if ($photo) {
             $doc_name = $photo->getClientOriginalName();
-            $doc_path = $photo->move('images/item-images',$doc_name);
-         }
+            $doc_path = $photo->move('images/item-images', $doc_name);
+        }
 
         $photos = $request->file('image2');
         $doc_paths = $img->image2;
-         if($photos){
+        if ($photos) {
             $doc_names = $photos->getClientOriginalName();
-            $doc_paths = $photos->move('images/item-iamges',$doc_names);
-         }
-        Item::where('id',$id)->update([
-         'item_name' =>$request->item_name,
-         'shelves_id' =>$request->shelves_id,
-         'category' =>$request->category,
-         'product_code' =>$request->product_code,
-         'part_number' =>$request->part_number,
-         'unit' =>$request->unit,
-         'cost_price' =>$request->cost_price,
-         'selling_price1' =>$request->selling_price1,
-         'selling_price2' =>$request->selling_price2,
-         'item_code' =>$request->item_code,
-         'image' =>$doc_path,
-         'image2' =>$doc_paths,
-         'bar_code' =>$request->bar_code,
-         'quantity' =>$request->quantity,
-         'brand' =>$request->brand,
-         'reorder' => $request->reorder,
-         'description' => $request->description,
+            $doc_paths = $photos->move('images/item-iamges', $doc_names);
+        }
+        $item =  Item::find($id);
+        $item->update([
+            'item_name' => $request->item_name,
+            'shelves_id' => $request->shelves_id,
+            'category' => $request->category,
+            'product_code' => $request->product_code,
+            'part_number' => $request->part_number,
+            'unit' => $request->unit,
+            'cost_price' => $request->cost_price,
+            'selling_price1' => $request->selling_price1,
+            'selling_price2' => $request->selling_price2,
+            'item_code' => $request->item_code,
+            'image' => $doc_path,
+            'image2' => $doc_paths,
+            'bar_code' => $request->bar_code,
+            'quantity' => $request->quantity,
+            'brand' => $request->brand,
+            'reorder' => $request->reorder,
+            'description' => $request->description,
 
-         ]);
+        ]);
+        activity()
+            ->causedBy(auth()->user())
+            ->performedOn($item)
+            ->withProperties(['data' => $item])
+            ->log('Edited new item');
 
+        return back()->with('success', 'Item Updated Successfully.');
+    }
 
-         return back()->with('success','Item Updated Successfully.');
-     }
-
-     public function searchItem(Request $request){
-        $items = Item::Where('item_name','like','%'. $request->name.'%')
-        ->orWhere('product_code','like','%'. $request->name.'%')
-        ->get();
+    public function searchItem(Request $request)
+    {
+        $items = Item::Where('item_name', 'like', '%' . $request->name . '%')
+            ->orWhere('product_code', 'like', '%' . $request->name . '%')
+            ->get();
         return json_encode($items);
-     }
+    }
 
-     public function deleteItem($id){
-        Item::where('id',$id)->delete();
-        return back()->with('success',' Item Deleted Successfully.');
-
+    public function deleteItem($id)
+    {
+        $item = Item::where('id', $id)->first();
+        $item->delete();
+        activity()
+            ->causedBy(auth()->user())
+            ->performedOn($item)
+            ->withProperties(['data' => $item])
+            ->log('Deleted new item');
+        return back()->with('success', ' Item Deleted Successfully.');
     }
 }

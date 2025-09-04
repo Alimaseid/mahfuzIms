@@ -10,36 +10,62 @@ class ItemUnitController extends Controller
     public function index()
     {
 
-     $item_units =  ItemUnit::all();
+        $item_units =  ItemUnit::all();
 
-       return view('pages.item_unit.unit',compact('item_units'));
+        return view('pages.item_unit.unit', compact('item_units'));
     }
 
-    public function addItemUnit(Request $request){
-        $Data = $request->validate([
+    public function addItemUnit(Request $request)
+    {
+        $validated = $request->validate([
             'unit' => ['required'],
         ]);
-       ItemUnit::create([
-            'unit'=>$request->unit,
 
+        $unit = ItemUnit::create([
+            'unit' => $request->unit,
         ]);
-        return back()->with('success','Item Unit Added Successfully.');
 
+        // ✅ Log activity
+        activity()
+            ->causedBy(auth()->user())
+            ->performedOn($unit)
+            ->withProperties(['data' => $unit->toArray()])
+            ->log('Added new Item Unit');
+
+        return back()->with('success', 'Item Unit Added Successfully.');
     }
 
-    public function editItemUnit(Request $request,$id){
+    public function editItemUnit(Request $request, $id)
+    {
+        $unit = ItemUnit::findOrFail($id);
 
-        ItemUnit::where('id',$id)->update([
-            'unit'=>$request->unit
-
+        $unit->update([
+            'unit' => $request->unit,
         ]);
-        return back()->with('success',' Edit Item Unit Successfully.');
 
+        // ✅ Log activity
+        activity()
+            ->causedBy(auth()->user())
+            ->performedOn($unit)
+            ->withProperties(['data' => $unit->toArray()])
+            ->log('Edited Item Unit');
+
+        return back()->with('success', 'Edit Item Unit Successfully.');
     }
 
-    public function deleteItemUnit($id){
-        ItemUnit::where('id',$id)->delete();
-        return back()->with('success',' Item Unit Deleted Successfully.');
+    public function deleteItemUnit($id)
+    {
+        $unit = ItemUnit::findOrFail($id);
 
+        // ✅ Log activity *before* deleting
+        activity()
+            ->causedBy(auth()->user())
+            ->performedOn($unit)
+            ->withProperties(['data' => $unit->toArray()])
+            ->log('Deleted Item Unit');
+
+        $unit->delete();
+
+        return back()->with('success', 'Item Unit Deleted Successfully.');
     }
 }

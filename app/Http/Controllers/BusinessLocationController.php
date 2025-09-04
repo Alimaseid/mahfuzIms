@@ -19,52 +19,74 @@ class BusinessLocationController extends Controller
     public function index()
     {
 
-       $locations =  BusinessLocation::orderBy('id', 'desc')->get();
-       $location =  BusinessLocation::all();
-       $owners =  Owner::orderBy('id', 'desc')->get();
+        $locations =  BusinessLocation::orderBy('id', 'desc')->get();
+        $location =  BusinessLocation::all();
+        $owners =  Owner::orderBy('id', 'desc')->get();
 
-       return view('pages.business_location.location')
-       ->with('owners', $owners)
-       ->with('locations', $locations)
-       ->with('location', $location);
+        return view('pages.business_location.location')
+            ->with('owners', $owners)
+            ->with('locations', $locations)
+            ->with('location', $location);
     }
 
-    public function addLocation(Request $request){
+    public function addLocation(Request $request)
+    {
         $Data = $request->validate([
             'name' => ['required', 'unique:business_locations', 'max:255'],
             'type' => ['required'],
             // 'owner' => ['required'],
         ]);
-       BusinessLocation::create([
-            'name'=>$request->name,
-            'type'=>$request->type,
-            'site'=>$request->site,
-            'owner_id'=>'Null',
-            'address'=>$request->address
+        $location = BusinessLocation::create([
+            'name' => $request->name,
+            'type' => $request->type,
+            'site' => $request->site,
+            'owner_id' => 'Null',
+            'address' => $request->address
 
         ]);
-        return back()->with('success','Location Added Successfully.');
-
+        // Log activity
+        activity()
+            ->causedBy(auth()->user())
+            ->performedOn($location)
+            ->withProperties(['data' => $location])
+            ->log('Added new business location');
+        return back()->with('success', 'Location Added Successfully.');
     }
 
-    public function editLocation(Request $request,$id){
-
-        BusinessLocation::where('id',$id)->update([
-            'name'=>$request->name,
-            'type'=>$request->type,
-            'owner_id'=>'Null',
-            'site'=>$request->site,
-            'address'=>$request->address
+    public function editLocation(Request $request, $id)
+    {
+        $location = BusinessLocation::findOrFail($id);
+        $location->update([
+            'name' => $request->name,
+            'type' => $request->type,
+            'owner_id' => 'Null',
+            'site' => $request->site,
+            'address' => $request->address
 
         ]);
-        return back()->with('success',' Edit Location Successfully.');
-
+        // Log activity
+        activity()
+            ->causedBy(auth()->user())
+            ->performedOn($location)
+            ->withProperties(['data' => $location->toArray()])
+            ->log('Edited a business location');
+        return back()->with('success', ' Edit Location Successfully.');
     }
 
-    public function deleteLocation($id){
-        BusinessLocation::where('id',$id)->delete();
-        return back()->with('success',' Location Deleted Successfully.');
+    public function deleteLocation($id)
+    {
+        $location = BusinessLocation::findOrFail($id);
 
+        $location->delete();
+
+        //  Log activity
+        activity()
+            ->causedBy(auth()->user())
+            ->performedOn($location)
+            ->withProperties(['data' => $location])
+            ->log('Deleted a business location');
+
+        return back()->with('success', ' Location Deleted Successfully.');
     }
 
     /**
@@ -133,7 +155,8 @@ class BusinessLocationController extends Controller
         //
     }
 
-    public function itemsOnShop($id){
+    public function itemsOnShop($id)
+    {
         $items  = ItemOnShop::where('location_id', $id)->get();;
         return view('pages.store.items_on_shop')->with('items', $items);
     }
