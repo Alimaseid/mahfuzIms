@@ -19,7 +19,15 @@
                             </button>
                         </div>
                     </div>
-
+                    @if ($errors->any())
+                        <div class="alert alert-danger">
+                            <ul class="mb-0">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
                     <div class="card">
                         <div class="row">
                             <div class="col-8 lg">
@@ -47,17 +55,20 @@
                                                         <td>{{ $item_unit->unit }}</td>
 
                                                         <td>
-
-                                                            <button type="button" class="btn btn-primary btn-sm"
-                                                                data-toggle="modal"
-                                                                data-target="#modal-lg-{{ $item_unit->id }}">
-                                                                <i class="fas fa-edit "></i>
-                                                            </button>
-                                                            <a type="button" class="btn btn-danger btn-sm"
-                                                                href="delete-item_unit-{{ $item_unit->id }}"
-                                                                onclick="return confirm('Are you sure you ?');">
-                                                                <i class="fas fa-trash "></i>
-                                                            </a>
+                                                            @if ($permission->manage_edit_itemUnit == 'on')
+                                                                <button type="button" class="btn btn-primary btn-sm"
+                                                                    data-toggle="modal"
+                                                                    data-target="#modal-lg-{{ $item_unit->id }}">
+                                                                    <i class="fas fa-edit "></i>
+                                                                </button>
+                                                            @endif
+                                                            @if ($permission->manage_delete_itemUnit == 'on')
+                                                                <a type="button" class="btn btn-danger btn-sm"
+                                                                    href="delete-item_unit-{{ $item_unit->id }}"
+                                                                    onclick="return confirm('Are you sure you ?');">
+                                                                    <i class="fas fa-trash "></i>
+                                                                </a>
+                                                            @endif
                                                         </td>
                                                     </tr>
 

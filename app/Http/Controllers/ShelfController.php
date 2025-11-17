@@ -3,23 +3,29 @@
 namespace App\Http\Controllers;
 
 use App\Models\BusinessLocation;
+use App\Models\Role;
 use App\Models\Shelf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ShelfController extends Controller
 {
     public function index()
     {
         $locations = BusinessLocation::all();
-        $shelfs = Shelf::all();
-        return view('pages.shelfs.shelf', compact('locations', 'shelfs'));
+        $shelfs = Shelf::orderBy('id', 'desc')->paginate(200);
+        $permission = Role::where('id', Auth::user()->role)->first();
+        return view('pages.shelfs.shelf', compact('locations', 'shelfs', 'permission'));
     }
 
     public function addShelf(Request $request)
     {
         $data = $request->validate([
-            'business_locations_id' => ['required'],
-            'shelf_name'            => ['required'],
+            'business_locations_id' => 'required',
+            'shelf_name' => 'required|unique:shelves,shelf_name',
+        ], [
+            'shelf_name.unique' => 'This shelf name already exists. Please choose another name.',
+            'shelf_name.required' => 'Shelf name is required.',
         ]);
 
         $shelf = Shelf::create([
@@ -44,6 +50,8 @@ class ShelfController extends Controller
     // ✅ Edit Shelf
     public function editShelf(Request $request, $id)
     {
+
+
         $shelf = Shelf::findOrFail($id);
 
         $shelf->update([

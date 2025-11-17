@@ -18,13 +18,13 @@ class ReportMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        if(Auth::check()){
-            $permission = Role::where('id',Auth::user()->role)->first();
-                if($permission->reports  == 'on'){
-                    return $next($request);
-                }else{
-                    return back()->with('error','Access Denied.!!! Please Contact Supper ADMIN.');
-                }
+        if (Auth::check()) {
+            $permission = Role::where('id', Auth::user()->role)->first();
+            if ($permission->manage_stock_reports  == 'on') {
+                return $next($request);
+            } else {
+                return back()->with('error', 'Access Denied.!!! Please Contact Supper ADMIN.');
             }
+        }
     }
 }

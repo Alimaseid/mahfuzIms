@@ -17,13 +17,17 @@ return new class extends Migration
             $table->id();
             $table->foreignId('item_id');
             $table->foreignId('location_id');
-            $table->foreignId('owner_id');
+            $table->foreignId('batch_id');
+            $table->foreignId('sales_order_id');
             $table->string('item_name');
             $table->integer('quantity');
+            $table->integer('remaining')->nullable();
             $table->string('tax')->nullable();
+            $table->string('with_holding')->nullable();
             $table->string('amount');
             $table->string('total');
-            $table->string('sales_order_id');
+            $table->string('status')->default('Pending');
+            $table->string('discount')->nullable();
             $table->timestamps();
         });
     }

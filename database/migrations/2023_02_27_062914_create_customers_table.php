@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('phone');
             $table->string('tin')->nullable();
             $table->string('address')->nullable();
+            $table->decimal('total_balance')->nullable();
             $table->timestamps();
         });
     }

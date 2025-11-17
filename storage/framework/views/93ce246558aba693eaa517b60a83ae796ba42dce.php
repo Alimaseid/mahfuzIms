@@ -3,33 +3,44 @@
         <div class="container-fluid">
             <div class="row pt-1">
                 <div class="col-md-6">
-                    <form action="daily-sales-report" method="POST">
+                    <form action="<?php echo e(route('reports.dailySales')); ?>" method="POST">
                         <?php echo csrf_field(); ?>
                         <div class="row">
-                            <div class="col-sm-6">
-                                <label for="">Sales Porson</label>
-                                <select name="sales_person" id="" class="form-control">
-                                    <?php if($salesPerson == ''): ?>
-                                        <option value="">All</option>
-                                    <?php endif; ?>
-                                    <?php $__empty_1 = true; $__currentLoopData = $salers; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $saler): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
-                                        <option value="<?php echo e($saler); ?>"><?php echo e($saler); ?></option>
-                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
-                                    <?php endif; ?>
+                            <div class="col-sm-4">
+                                <label>Sales Person</label>
+                                <select name="sales_person" class="form-control">
+                                    <option value="">All</option>
+                                    <?php $__currentLoopData = $salers; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $saler): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <option value="<?php echo e($saler); ?>" <?php echo e($salesPerson == $saler ? 'selected' : ''); ?>>
+                                            <?php echo e($saler); ?>
+
+                                        </option>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                 </select>
                             </div>
-                            <div class="col-sm-4">
-                                <label for="">Date</label>
-                                <input type="date" name='report_date'class="form-control"
-                                    value="<?php echo e(Carbon\Carbon::now()->toDateString()); ?>"
-                                    max="<?php echo e(Carbon\Carbon::now()->toDateString()); ?>" required>
+
+                            <div class="col-sm-3">
+                                <label>From</label>
+                                <input type="date" name="from_date" value="<?php echo e($fromDate->format('Y-m-d')); ?>"
+                                    class="form-control">
                             </div>
-                            <div class="col-sm-2">
-                                <hr>
-                                <button type="submit" class="btn btn-sm btn-warning ">Go</button>
+
+                            <div class="col-sm-3">
+                                <label>To</label>
+
+                                <input type="date" name="to_date" value="<?php echo e($toDate->format('Y-m-d')); ?>"
+                                    class="form-control">
+
+                            </div>
+
+                            <div class="col-sm-2 d-flex align-items-end">
+                                <button type="submit" class="btn btn-warning btn-sm">Go</button>
                             </div>
                         </div>
                     </form>
+
+
+
                 </div>
                 <div class="col-2">
                 </div>
@@ -39,13 +50,15 @@
                         </thead>
                         <tbody>
                             
-                            <tr>
-                                <th>Sales Tax</th>
-                                <td>ETB <?php echo e(number_format($g_tax, 2)); ?></td>
-                            </tr>
+                            
                         </tbody>
                         <tfoot>
                             <tr class="text-warning">
+                                <th>Total Tax</th>
+                                <td>ETB <?php echo e(number_format($g_vat, 2)); ?></td>
+                            </tr>
+                            <tr class="text-warning">
+
                                 <th>Total Sales</th>
                                 <td>ETB <?php echo e(number_format($g_total, 2)); ?></td>
                             </tr>
@@ -63,10 +76,10 @@
                                 <th>PartNumber</th>
                                 <th>ItemName</th>
                                 <th>ItemImage</th>
-                                <th>UnitPrice<small>(avg)</small></th>
                                 <th>Qyt</th>
                                 <th>Amount</th>
-                                <th>TaxRate<small>(avg)</small></th>
+                                <th>Discount</th>
+                                <th>Withholding</th>
                                 <th>Tax</th>
                                 <th>Total</th>
                             </tr>
@@ -84,12 +97,14 @@
                                             style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
 
                                     </td>
-                                    <td><?php echo e(number_format($inventory['avg_unit_price'], 2)); ?></td>
                                     <td><?php echo e($inventory['quantity']); ?></td>
-                                    <td><?php echo e(number_format($inventory['amount'], 2)); ?></td>
-                                    <td><?php echo e(number_format($inventory['avg_tax_rate'], 2)); ?></td>
-                                    <td><?php echo e(number_format($inventory['tax'], 2)); ?></td>
+                                    <td><?php echo e($inventory['quantity'] * $inventory['amount']); ?></td>
+                                    <td><?php echo e(number_format($inventory['discount'], 2)); ?></td>
+                                    <td><?php echo e(number_format($inventory['withholding'], 2)); ?></td>
+                                    <td><?php echo e(number_format($inventory['vat'], 2)); ?></td>
+                                    
                                     <td><?php echo e(number_format($inventory['tatal'], 2)); ?></td>
+
                                 </tr>
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                             <?php endif; ?>

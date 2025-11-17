@@ -16,9 +16,8 @@ return new class extends Migration
         Schema::create('requisition_details', function (Blueprint $table) {
             $table->id();
             $table->foreignId('requisition_id');
-            $table->foreignId('owner_id')->nullable();
             $table->foreignId('item_id');
-            $table->string('item_name');
+            $table->foreignId('batch_id')->nullable();
             $table->string('quantity');
             $table->timestamps();
         });

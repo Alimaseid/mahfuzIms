@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
@@ -13,9 +14,11 @@ class UserController extends Controller
     {
         $roles = Role::orderBy('created_at', 'desc')->get();
         $users = User::orderBy('created_at', 'desc')->get();
+        $permission = Role::where('id', Auth::user()->role)->first();
 
         return view('pages.user.users')
             ->with('roles', $roles)
+            ->with('permission', $permission)
             ->with('users', $users);
     }
 

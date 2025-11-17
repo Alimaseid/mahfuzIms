@@ -8,6 +8,8 @@ use App\Models\BusinessLocation;
 use App\Http\Requests\StoreBusinessLocationRequest;
 use App\Http\Requests\UpdateBusinessLocationRequest;
 use App\Models\ItemOnShop;
+use App\Models\Role;
+use Illuminate\Support\Facades\Auth;
 
 class BusinessLocationController extends Controller
 {
@@ -19,28 +21,30 @@ class BusinessLocationController extends Controller
     public function index()
     {
 
-        $locations =  BusinessLocation::orderBy('id', 'desc')->get();
+        $locations =  BusinessLocation::orderBy('id', 'desc')->paginate(200);
         $location =  BusinessLocation::all();
-        $owners =  Owner::orderBy('id', 'desc')->get();
-
+        $permission = Role::where('id', Auth::user()->role)->first();
         return view('pages.business_location.location')
-            ->with('owners', $owners)
             ->with('locations', $locations)
+            ->with('permission', $permission)
             ->with('location', $location);
     }
 
     public function addLocation(Request $request)
     {
+
         $Data = $request->validate([
             'name' => ['required', 'unique:business_locations', 'max:255'],
             'type' => ['required'],
             // 'owner' => ['required'],
+        ], [
+            'name.unique' => 'This name already exists. Please choose another name.',
+            'name.required' => 'name is required.',
         ]);
         $location = BusinessLocation::create([
             'name' => $request->name,
             'type' => $request->type,
             'site' => $request->site,
-            'owner_id' => 'Null',
             'address' => $request->address
 
         ]);
@@ -55,11 +59,11 @@ class BusinessLocationController extends Controller
 
     public function editLocation(Request $request, $id)
     {
+
         $location = BusinessLocation::findOrFail($id);
         $location->update([
             'name' => $request->name,
             'type' => $request->type,
-            'owner_id' => 'Null',
             'site' => $request->site,
             'address' => $request->address
 

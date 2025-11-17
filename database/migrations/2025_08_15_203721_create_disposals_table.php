@@ -16,8 +16,10 @@ return new class extends Migration
         Schema::create('disposals', function (Blueprint $table) {
             $table->id();
             $table->foreignId('item_id');
+            $table->foreignId('batch_id');
             $table->integer('quantity');
             $table->string('reason')->nullable();
+            $table->foreignId('location_id')->nullable();
             $table->timestamps();
         });
     }

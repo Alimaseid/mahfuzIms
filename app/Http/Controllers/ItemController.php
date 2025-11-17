@@ -11,7 +11,11 @@ use App\Http\Requests\StoreItemRequest;
 use App\Http\Requests\UpdateItemRequest;
 use App\Models\BusinessLocation;
 use App\Models\ItemUnit;
+use App\Models\Role;
 use App\Models\Shelf;
+use App\Models\SalesOrderDetail;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class ItemController extends Controller
 {
@@ -22,25 +26,31 @@ class ItemController extends Controller
      */
     public function index()
     {
-        $items = Item::orderBy('id', 'desc')->get();
-        $item_owners = ItemOwner::all();
-        $owners = Owner::all();
+        $items = Item::orderBy('id', 'desc')->paginate(500);
         $categories = Category::all();
         $shelfs = Shelf::all();
         $item_units = ItemUnit::all();
         $location = BusinessLocation::all();
+        $user = User::where('id', Auth::user()->id)->first();
+        $permission = Role::where('id', $user->role)->first();
+
         return view('pages.items.item')
             ->with('location', $location)
-            ->with('owners', $owners)
-            ->with('item_owners', $item_owners)
             ->with('categories', $categories)
             ->with('shelfs', $shelfs)
             ->with('items', $items)
+            ->with('permission', $permission)
             ->with('item_units', $item_units);
     }
 
     public function addItem(Request $request)
     {
+
+        $request->validate([
+            'item_code'    => 'required|string|max:255|unique:items,item_code',
+            'part_number'  => 'nullable|string|max:255|unique:items,part_number',
+            'product_code' => 'nullable|string|max:255|unique:items,product_code',
+        ]);
         $photo = $request->file('image');
         $doc_path = '';
         if ($photo) {
@@ -56,11 +66,12 @@ class ItemController extends Controller
         }
         $item = Item::create([
             'item_name' => $request->item_name,
-            'shelves_id' => $request->shelves_id,
+            'shelf' => $request->shelf,
             'category' => $request->category,
             'product_code' => $request->product_code,
             'part_number' => $request->part_number,
             'unit' => $request->unit,
+            'other_unit' => $request->other_unit,
             'cost_price' => $request->cost_price,
             'selling_price1' => $request->selling_price1,
             'selling_price2' => $request->selling_price2,
@@ -71,6 +82,7 @@ class ItemController extends Controller
             'status' => 'Active',
             'description' > $request->description,
             'reorder' => $request->reorder,
+            'reorder_for_shop' => $request->reorder_for_shop,
             'quantity' => $request->quantity,
             'brand' => $request->brand
         ]);
@@ -84,6 +96,11 @@ class ItemController extends Controller
 
     public function editItem(Request $request, $id)
     {
+        // $request->validate([
+        //     'item_code'    => 'required|string|max:255|unique:items,item_code',
+        //     'part_number'  => 'nullable|string|max:255|unique:items,part_number',
+        //     'product_code' => 'nullable|string|max:255|unique:items,product_code',
+        // ]);
         $photo = $request->file('image');
         $img = Item::where('id', $id)->first();
         $doc_path = $img->image;
@@ -101,11 +118,12 @@ class ItemController extends Controller
         $item =  Item::find($id);
         $item->update([
             'item_name' => $request->item_name,
-            'shelves_id' => $request->shelves_id,
+            'shelf' => $request->shelf,
             'category' => $request->category,
             'product_code' => $request->product_code,
             'part_number' => $request->part_number,
             'unit' => $request->unit,
+            'other_unit' => $request->other_unit,
             'cost_price' => $request->cost_price,
             'selling_price1' => $request->selling_price1,
             'selling_price2' => $request->selling_price2,
@@ -116,6 +134,7 @@ class ItemController extends Controller
             'quantity' => $request->quantity,
             'brand' => $request->brand,
             'reorder' => $request->reorder,
+            'reorder_for_shop' => $request->reorder_for_shop,
             'description' => $request->description,
 
         ]);
@@ -139,6 +158,9 @@ class ItemController extends Controller
     public function deleteItem($id)
     {
         $item = Item::where('id', $id)->first();
+        if ($item->SalesOrderDetail()->exists() || $item->inventory()->exists()) {
+            return back()->with('error', 'Cannot delete item: It is used in others table.');
+        }
         $item->delete();
         activity()
             ->causedBy(auth()->user())

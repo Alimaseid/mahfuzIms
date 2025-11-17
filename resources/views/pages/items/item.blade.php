@@ -2,7 +2,6 @@
 
 
 @section('content')
-
     <section class="content">
         <div class="container-fluid">
             <div class="row">
@@ -23,7 +22,15 @@
                         </div>
                     </div>
                 </div>
-
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <ul class="mb-0">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
                 <div class="card">
                     <div class="card-body">
                         {{-- <div class="p-2" style="float: right"> {{ $items->links() }}</div> --}}
@@ -34,14 +41,18 @@
                                     <th>No</th>
                                     {{-- <th>Image</th> --}}
                                     <th>ItemName </th>
+                                    <th>Image1</th>
+                                    <th>Image2</th>
+                                    <th style="background-color: rgb(2, 2, 39)">Part Number1</th>
+                                    <th style="background-color: rgb(2, 2, 39)">Part Number2</th>
                                     <th>Category</th>
-                                    <th>Shelf Location</th>
-                                    <th style="background-color: rgb(2, 2, 39)">Part Number</th>
-                                    <th style="background-color: rgb(2, 2, 39)">Quantity</th>
-                                    <th>CostPrice</th>
+                                    <th>Reorder</th>
                                     <th>Price1</th>
                                     <th>Price2</th>
-                                    <th>Status</th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
                                     <th>SetAction</th>
                                 </tr>
                             </thead>
@@ -60,20 +71,26 @@
                                                 $imagePath1 = str_replace('\\', '/', $item->image);
                                                 $imagePath2 = str_replace('\\', '/', $item->image2);
                                             @endphp
-
+                                            <td>{{ $item->item_name }}</td>
                                             <td style="display: flex; align-items: center; gap: 10px;">
-                                                <span>{{ $item->item_name }}</span>
                                                 <img src="{{ asset($imagePath1) }}" alt=""
-                                                    style="width: 25px; height: 25px; object-fit: cover; border-radius: 5px; cursor: pointer;"
+                                                    style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px; cursor: pointer;"
                                                     data-toggle="modal" data-target="#imageModal"
                                                     onclick="setModalImage('{{ asset($imagePath1) }}')">
-
+                                            </td>
+                                            <td>
                                                 <img src="{{ asset($imagePath2) }}" alt=""
-                                                    style="width: 25px; height: 25px; object-fit: cover; border-radius: 5px; cursor: pointer;"
+                                                    style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px; cursor: pointer;"
                                                     data-toggle="modal" data-target="#imageModal"
                                                     onclick="setModalImage('{{ asset($imagePath2) }}')">
-
-
+                                            </td>
+                                            <td style="background-color: rgb(2, 2, 39)"><a type="button"
+                                                    style="color: gold" href="#"data-toggle="modal"
+                                                    data-target="#modal-lg-O-{{ $item->id }}">{{ $item->product_code }}</a>
+                                            </td>
+                                            <td style="background-color: rgb(2, 2, 39)"><a type="button"
+                                                    style="color: gold" href="#"data-toggle="modal"
+                                                    data-target="#modal-lg-O-{{ $item->id }}">{{ $item->part_number }}</a>
                                             </td>
 
                                             <!-- Image Modal (works with Bootstrap 4) -->
@@ -87,107 +104,133 @@
                                                 </div>
                                             </div>
                                             <td>{{ $item->category }}</td>
-                                            <td>{{ $item->shelf->shelf_name ?? '-' }}</td>
-                                            <td style="background-color: rgb(2, 2, 39)"><a type="button"
-                                                    style="color: gold" href="#"data-toggle="modal"
-                                                    data-target="#modal-lg-O-{{ $item->id }}">{{ $item->product_code }}</a>
-                                            </td>
-                                            <td style="background-color: rgb(2, 2, 39)"> <a type="button"
-                                                    style="color: rgb(6, 248, 6)" href="#"data-toggle="modal"
-                                                    data-target="#modal-lg-O-{{ $item->id }}">{{ $item->quantity }}</a>
-                                            </td>
-                                            <td>{{ $item->cost_price }}</td>
+                                            @if ($item->quantity < $item->reorder)
+                                                <td style="background-color: rgb(2, 2, 39)"> <a type="button"
+                                                        style="color: rgb(248, 75, 6)" href="#"data-toggle="modal"
+                                                        data-target="#modal-lg-O-{{ $item->id }}">{{ $item->reorder }}</a>
+                                                </td>
+                                            @else
+                                                <td style="background-color: rgb(2, 2, 39)"> <a type="button"
+                                                        style="color: rgb(207, 199, 196)" href="#"data-toggle="modal"
+                                                        data-target="#modal-lg-O-{{ $item->id }}">{{ $item->reorder }}</a>
+                                                </td>
+                                            @endif
                                             <td>{{ $item->selling_price1 }}</td>
                                             <td>{{ $item->selling_price2 }}</td>
-
-                                            {{-- <td>{{$item->supplier_name}}</td> --}}
                                             <td>
-                                                <a type="button" class="btn btn-warning btn-xs"
-                                                    href="activate-item-{{ $item->id }}"
-                                                    onclick="return confirm('Are you sure you ?');">
-                                                    {{ $item->status }}
+                                                <a type="button" class="btn btn-secondary btn-sm"
+                                                    href="batchs-{{ $item->id }}">
+                                                    <i class="fas fa-plus"></i> Set Batch
                                                 </a>
                                             </td>
                                             <td>
-                                                <button type="button" class="btn btn-primary btn-sm" data-toggle="modal"
-                                                    data-target="#modal-lg-{{ $item->id }}">
-                                                    <i class="fas fa-edit"></i>
+                                                <a type="button" class="btn bg-primary btn-sm"
+                                                    href="itemShelf-{{ $item->id }}">
+                                                    <i class="fas fa-plus"></i> Set Shelf
+                                                </a>
+                                            </td>
+                                            <td>
+                                                <a type="button" class="btn btn-warning btn-xs"
+                                                    href="set_opening_balance-{{ $item->id }}">
+                                                    <i class="fas fa-view"> SetCurrentStock</i>
+                                                </a>
+                                            </td>
+                                            <td>
+                                                <button type="button" class="btn bg-info btn-sm" data-toggle="modal"
+                                                    data-target="#modal-lgplan-{{ $item->id }}">
+                                                    <i class="fas ">move</i>
                                                 </button>
+
+                                            </td>
+
+                                            <td>
+                                                @if ($permission->manage_edit_item == 'on')
+                                                    <button type="button" class="btn btn-primary btn-sm"
+                                                        data-toggle="modal" data-target="#modal-lg-{{ $item->id }}">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                @endif
                                                 {{-- <a type="button" class="btn btn-danger btn-sm" href="delete-item-{{$item->id}}" onclick="return confirm('Are you sure you ?');">
                                 <i class="fas fa-trash"></i>
                               </a> --}}
-                                                <a type="button" class="btn btn-danger btn-sm" href="#"
-                                                    onclick="return confirm('Are you sure you ?');">
-                                                    <i class="fas fa-trash"></i>
-                                                </a>
+                                                @if ($permission->manage_delete_item == 'on')
+                                                    <a type="button" class="btn btn-danger btn-sm"
+                                                        href="delete-item-{{ $item->id }}"
+                                                        onclick="return confirm('Are you sure you ?');">
+                                                        <i class="fas fa-trash"></i>
+                                                    </a>
+                                                @endif
                                             </td>
                                         </tr>
 
 
-                                        <div class="modal fade" id="modal-lg-O-{{ $item->id }}">
-                                            <div class="modal-dialog modal-lg">
+
+                                        <div class="modal fade" id="modal-lgplan-{{ $item->id }}">
+                                            <div class="modal-dialog modal-lgplan-{{ $item->id }}">
                                                 <div class="modal-content">
                                                     <div class="modal-header">
-                                                        <h4 class="modal-title">Part Number - {{ $item->product_code }}
-                                                        </h4>
+                                                        <h4 class="modal-title">Move To Plan</h4>
                                                         <button type="button" class="close" data-dismiss="modal"
                                                             aria-label="Close">
                                                             <span aria-hidden="true">&times;</span>
                                                         </button>
                                                     </div>
                                                     <div class="modal-body">
-                                                        <div class="row">
+                                                        <div class="container-fluid">
+                                                            <div class="row">
+                                                                <!-- left column -->
+                                                                <div class="col-md-12">
+                                                                    <!-- jquery validation -->
+                                                                    <div class="card card-primary">
+                                                                        <div class="card-header">
+                                                                        </div>
+                                                                        <div>
+                                                                            <form
+                                                                                action="{{ route('purchase-plan.move', $item->id) }}"
+                                                                                method="POST">
+                                                                                @csrf
+                                                                                <div class="row">
+                                                                                    <div class="col-6">
+                                                                                        <div class="form-group">
+                                                                                            <label>Quantity</label>
+                                                                                            <input type="number"
+                                                                                                name="quantity"
+                                                                                                class="form-control">
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="row">
+                                                                                    <div class="col-6">
+                                                                                        <div class="form-group">
+                                                                                            <label>Message</label>
+                                                                                            <input type="text"
+                                                                                                name="message"
+                                                                                                class="form-control">
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <button type="submit"
+                                                                                    class="btn btn-sm bg-info">
+                                                                                    submit
+                                                                                </button>
+                                                                            </form>
+                                                                        </div>
+                                                                        <!-- /.card -->
+                                                                    </div>
 
-                                                            <div class="col-3">
-                                                                Owner
-                                                            </div>
-                                                            <div class="col-3">
-                                                                Item
-                                                            </div>
-                                                            <div class="col-3">
-                                                                Location
-                                                            </div>
-                                                            <div class="col-3">
-                                                                Quantity
-                                                            </div>
+                                                                    <!--/.col (right) -->
+                                                                </div>
+                                                                <!-- /.row -->
+                                                            </div><!-- /.container-fluid -->
+
                                                         </div>
-                                                        <hr>
-                                                        @forelse ($item_owners as $owner)
-                                                            @if ($owner->item_id == $item->id)
-                                                                @forelse ($owners as $own)
-                                                                    @forelse ($location as $loc)
-                                                                        @if ($own->id == $owner->owner_id && $loc->id == $owner->location_id)
-                                                                            <div class="row">
-                                                                                <div class="col-3">
-                                                                                    <a href=""> {{ $own->name }}
-                                                                                    </a>
-                                                                                </div>
-                                                                                <div class="col-3">
-                                                                                    {{ $item->product_code }}
-                                                                                </div>
-                                                                                <div class="col-3">
-                                                                                    {{ $loc->name }}
-                                                                                </div>
-                                                                                <div class="col-3">
-                                                                                    <p><b class="text-warning">
-                                                                                            {{ number_format($owner->quantity) }}</b>
-                                                                                    </p>
-                                                                                </div>
-                                                                            </div>
-                                                                        @endif
-                                                                    @empty
-                                                                    @endforelse
-                                                                @empty
-                                                                @endforelse
-                                                            @endif
-                                                        @empty
-                                                        @endforelse
                                                     </div>
+                                                    <!-- /.modal-content -->
                                                 </div>
-                                                <!-- /.modal-content -->
+                                                <!-- /.modal-dialog -->
                                             </div>
-                                            <!-- /.modal-dialog -->
                                         </div>
+
                                         <!-- /.card -->
 
                                         <div class="modal fade" id="modal-lg-{{ $item->id }}">
@@ -205,7 +248,8 @@
 
                                                             <div class="card card-primary">
                                                                 <div class="card-header">
-                                                                    <h3 class="card-title">item <small>Information</small>
+                                                                    <h3 class="card-title">item
+                                                                        <small>Information</small>
                                                                     </h3>
                                                                 </div>
                                                                 <!-- /.card-header -->
@@ -227,7 +271,7 @@
                                                                             </div>
                                                                             <div class="col-4">
                                                                                 <div class="form-group">
-                                                                                    <label>part Number 1</label>
+                                                                                    <label>p-No 1</label>
                                                                                     <input type="text"
                                                                                         name="product_code"
                                                                                         class="form-control"
@@ -237,7 +281,7 @@
                                                                             </div>
                                                                             <div class="col-4">
                                                                                 <div class="form-group">
-                                                                                    <label>part Number 2</label>
+                                                                                    <label>p-No 2</label>
                                                                                     <input type="text"
                                                                                         name="part_number"
                                                                                         class="form-control"
@@ -265,7 +309,8 @@
                                                                                         id="" required>
                                                                                         <option
                                                                                             value="{{ $item->category }}">
-                                                                                            {{ $item->category }}</option>
+                                                                                            {{ $item->category }}
+                                                                                        </option>
                                                                                         @forelse ($categories as $category)
                                                                                             <option
                                                                                                 value="{{ $category->name }}">
@@ -276,31 +321,24 @@
                                                                                     </select>
                                                                                 </div>
                                                                             </div>
-                                                                            <div class="col-4">
+                                                                            {{-- <div class="col-4">
                                                                                 <div class="form-group">
                                                                                     <label>Shelf</label>
-                                                                                    <select name="shelves_id"
+                                                                                    <select name="shelf"
                                                                                         class="form-control"
-                                                                                        id="" required>
+                                                                                        id="">
                                                                                         @forelse ($shelfs as $shelf)
-                                                                                            @if ($item->shelves_id == $shelf->id)
+                                                                                            @if ($item->shelf == $shelf->shelf_name)
                                                                                                 <option
-                                                                                                    value="{{ $item->shelves_id }}">
+                                                                                                    value="{{ $item->shelf_name }}">
                                                                                                     {{ $shelf->shelf_name }}
                                                                                                 </option>
                                                                                             @endif
                                                                                         @empty
                                                                                         @endforelse
-                                                                                        @forelse ($shelfs as $shelf)
-                                                                                            <option
-                                                                                                value="{{ $shelf->id }}">
-                                                                                                {{ $shelf->shelf_name }}
-                                                                                            </option>
-                                                                                        @empty
-                                                                                        @endforelse
                                                                                     </select>
                                                                                 </div>
-                                                                            </div>
+                                                                            </div> --}}
 
                                                                         </div>
                                                                         <div class="row">
@@ -322,10 +360,12 @@
                                                                             </div>
                                                                             <div class="col-4">
                                                                                 <div class="form-group">
-                                                                                    <label>Batch Number</label>
-                                                                                    <input type="text" name="bar_code"
+                                                                                    <label>Other Unit</label>
+                                                                                    <input type="text"
+                                                                                        name="other_unit"
                                                                                         class="form-control"
-                                                                                        value="{{ $item->bar_code }}">
+                                                                                        placeholder=""
+                                                                                        value="{{ $item->other_unit }}">
                                                                                 </div>
                                                                             </div>
                                                                             <div class="col-4">
@@ -336,17 +376,9 @@
                                                                                         value="{{ $item->brand }}">
                                                                                 </div>
                                                                             </div>
+
                                                                         </div>
                                                                         <div class="row">
-                                                                            <div class="col-4">
-                                                                                <div class="form-group">
-                                                                                    <label>Cost Price</label>
-                                                                                    <input type="number" step="any"
-                                                                                        name="cost_price"
-                                                                                        class="form-control"
-                                                                                        value="{{ $item->cost_price }}">
-                                                                                </div>
-                                                                            </div>
                                                                             <div class="col-4">
                                                                                 <div class="form-group">
                                                                                     <label>Price 1</label>
@@ -365,18 +397,6 @@
                                                                                         value="{{ $item->selling_price2 }}">
                                                                                 </div>
                                                                             </div>
-                                                                        </div>
-                                                                        <div class="row">
-                                                                            <div class="col-4">
-                                                                                <div class="form-group">
-                                                                                    <label>CurruntStock</label>
-                                                                                    <input type="number" step="any"
-                                                                                        name="quantity"
-                                                                                        class="form-control"
-                                                                                        placeholder="Quantity"
-                                                                                        value="{{ $item->quantity }}">
-                                                                                </div>
-                                                                            </div>
                                                                             <div class="col-4">
                                                                                 <div class="form-group">
                                                                                     <label>Re-Order Level</label>
@@ -384,6 +404,19 @@
                                                                                         class="form-control"
                                                                                         placeholder="Re Order Level"
                                                                                         value="{{ $item->reorder }}">
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <div class="row">
+                                                                            <div class="col-4">
+                                                                                <div class="form-group">
+                                                                                    <label>ReOrder ForShop </label>
+                                                                                    <input type="number"
+                                                                                        name="reorder_for_shop"
+                                                                                        class="form-control"
+                                                                                        placeholder="Re Order forShop"
+                                                                                        value="{{ $item->reorder_for_shop }}">
                                                                                 </div>
                                                                             </div>
                                                                             <div class="col-4">
@@ -396,9 +429,6 @@
                                                                                         placeholder="Description">
                                                                                 </div>
                                                                             </div>
-                                                                        </div>
-
-                                                                        <div class="row">
                                                                             <div class="col-4">
                                                                                 <div class="form-group">
                                                                                     <label>image 1</label>
@@ -406,6 +436,10 @@
                                                                                         class="form-control">
                                                                                 </div>
                                                                             </div>
+
+
+                                                                        </div>
+                                                                        <div class="row">
                                                                             <div class="col-4">
                                                                                 <div class="form-group">
                                                                                     <label>image 2</label>
@@ -413,7 +447,6 @@
                                                                                         class="form-control">
                                                                                 </div>
                                                                             </div>
-
                                                                         </div>
                                                                         <div class="modal-footer justify-content-between">
                                                                             <button type="button" class="btn btn-default"
@@ -485,7 +518,7 @@
 
                                                     <div class="col-4">
                                                         <div class="form-group">
-                                                            <label>Part Number 1</label>
+                                                            <label>p-No 1</label>
                                                             <input type="text" name="product_code"
                                                                 class="form-control" value=""
                                                                 placeholder="Part number 1">
@@ -493,7 +526,7 @@
                                                     </div>
                                                     <div class="col-4">
                                                         <div class="form-group">
-                                                            <label>Part Number 2</label>
+                                                            <label>p-No 2</label>
                                                             <input type="text" name="part_number" class="form-control"
                                                                 value="" placeholder="Part number 2">
                                                         </div>
@@ -522,23 +555,22 @@
                                                             </select>
                                                         </div>
                                                     </div>
-                                                    <div class="col-4">
+                                                    {{-- <div class="col-4">
                                                         <div class="form-group">
                                                             <label>Shelf</label>
-                                                            <select name="shelves_id" class="form-control" id=""
+                                                            <select name="shelf" class="form-control" id=""
                                                                 required>
                                                                 <option value="">Select</option>
                                                                 @forelse ($shelfs as $shelf)
-                                                                    <option value="{{ $shelf->id }}">
+                                                                    <option value="{{ $shelf->shelf_name }}">
                                                                         {{ $shelf->shelf_name }}</option>
                                                                 @empty
                                                                 @endforelse
                                                             </select>
                                                         </div>
-                                                    </div>
+                                                    </div> --}}
                                                 </div>
                                                 <div class="row">
-
                                                     <div class="col-4">
                                                         <div class="form-group">
                                                             <label>Unit</label>
@@ -551,14 +583,13 @@
                                                                 @empty
                                                                 @endforelse
                                                             </select>
-
                                                         </div>
                                                     </div>
                                                     <div class="col-4">
                                                         <div class="form-group">
-                                                            <label>Batch Number</label>
-                                                            <input type="text" name="bar_code" class="form-control"
-                                                                placeholder="Batch Number">
+                                                            <label>Other Unit</label>
+                                                            <input type="text" name="other_unit" class="form-control"
+                                                                placeholder="">
                                                         </div>
                                                     </div>
                                                     <div class="col-4">
@@ -568,16 +599,10 @@
                                                                 placeholder="Brand">
                                                         </div>
                                                     </div>
+
                                                 </div>
                                                 <div class="row">
 
-                                                    <div class="col-4">
-                                                        <div class="form-group">
-                                                            <label>Cost Price</label>
-                                                            <input type="number" step="any" name="cost_price"
-                                                                class="form-control" placeholder="Cost Price">
-                                                        </div>
-                                                    </div>
                                                     <div class="col-4">
                                                         <div class="form-group">
                                                             <label>Price 1</label>
@@ -592,21 +617,21 @@
                                                                 class="form-control" placeholder="Selling Price 2">
                                                         </div>
                                                     </div>
-                                                </div>
-                                                <div class="row">
-
-                                                    <div class="col-4">
-                                                        <div class="form-group">
-                                                            <label>CurruntStock</label>
-                                                            <input type="number" step="any" name="quantity"
-                                                                class="form-control" placeholder="Quantity">
-                                                        </div>
-                                                    </div>
                                                     <div class="col-4">
                                                         <div class="form-group">
                                                             <label>Re-Order Level</label>
                                                             <input type="number" name="reorder" class="form-control"
                                                                 placeholder="Re Order Level">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-4">
+                                                        <div class="form-group">
+                                                            <label>ReOrder ForShop </label>
+                                                            <input type="number" name="reorder_for_shop"
+                                                                class="form-control" placeholder="Re Order forShop"
+                                                                value="">
                                                         </div>
                                                     </div>
                                                     <div class="col-4">
@@ -616,14 +641,15 @@
                                                                 placeholder="Description">
                                                         </div>
                                                     </div>
-                                                </div>
-                                                <div class="row">
                                                     <div class="col-4">
                                                         <div class="form-group">
                                                             <label>image 1</label>
                                                             <input type="file" name="image" class="form-control">
                                                         </div>
                                                     </div>
+                                                </div>
+                                                <div class="row">
+
                                                     <div class="col-4">
                                                         <div class="form-group">
                                                             <label>image 2</label>

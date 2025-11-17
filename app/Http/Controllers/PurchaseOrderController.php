@@ -13,6 +13,7 @@ use App\Models\PurchaseOrderDetail;
 use App\Http\Requests\StorePurchaseOrderRequest;
 use App\Http\Requests\UpdatePurchaseOrderRequest;
 use App\Models\BankList;
+use App\Models\Batch;
 use App\Models\GoodReceiving;
 use App\Models\ItemOwner;
 use App\Models\ItemUnit;
@@ -36,6 +37,7 @@ class PurchaseOrderController extends Controller
         $shelfs = Shelf::all();
         $item_units = ItemUnit::all();
         $items = Item::all();
+        $batchs = Batch::all();
         $businessLocations = BusinessLocation::where('type', 'Warehouse')->get();
 
         return view('pages.goodreceiving.good_receiving')
@@ -44,6 +46,7 @@ class PurchaseOrderController extends Controller
             ->with('good_receivings', $good_receivings)
             ->with('shelfs', $shelfs)
             ->with('items', $items)
+            ->with('batchs', $batchs)
             ->with('item_units', $item_units);
     }
 

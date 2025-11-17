@@ -16,20 +16,36 @@ class SalesOrder extends Model
         'sales_person',
         'sales_type',
         'SM_status',
+        'r_status',
         'location_id',
         'payment_status',
         'grand_total',
+        'vat',
+        'with_holding',
+        'discount',
         'rejectReasone',
         'SM_status'
     ];
 
-    public function salesDetails():HasMany
+    public function salesDetails(): HasMany
     {
-        return $this->hasMany(SalesOrderDetail::class,'sales_order_id');
+        return $this->hasMany(SalesOrderDetail::class, 'sales_order_id');
     }
 
-    public function customer():BelongsTo
+    // public function customer(): BelongsTo
+    // {
+    //     return $this->belongsTo(Customer::class);
+    // }
+    public function location(): BelongsTo
     {
-        return $this->belongsTo(Customer::class);
+        return $this->belongsTo(BusinessLocation::class);
+    }
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class, 'customer_id');
+    }
+    public function details()
+    {
+        return $this->hasMany(SalesOrderDetail::class, 'sales_order_id');
     }
 }

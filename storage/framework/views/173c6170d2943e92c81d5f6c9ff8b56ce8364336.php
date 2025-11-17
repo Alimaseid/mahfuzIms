@@ -34,8 +34,6 @@
 
 <body class="hold-transition dark-mode sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed">
     <div class="wrapper">
-
-
         <!-- Navbar -->
         <nav class="main-header navbar navbar-expand navbar-dark">
             <!-- Left navbar links -->
@@ -86,14 +84,70 @@
                     </div>
                 </li>
                 <!-- Notifications Dropdown Menu -->
-                
+                <li class="nav-item dropdown">
+                    <a class="nav-link" data-toggle="dropdown" href="#">
+                        <i class="far fa-bell">shop</i>
+                        <?php if($lowShopItems->count() > 0): ?>
+                            <span class="badge badge-warning navbar-badge"><?php echo e($lowShopItems->count()); ?></span>
+                        <?php endif; ?>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                        <span class="dropdown-item dropdown-header">
+                            <?php echo e($lowShopItems->count()); ?> Low ShopStock Notifications
+                        </span>
+
+                        <div class="dropdown-divider"></div>
+                        <?php $__empty_1 = true; $__currentLoopData = $lowShopItems; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $items): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-box mr-2"></i>
+                                <?php echo e($items->item->item_name); ?> is low
+                                (<?php echo e($items->quantity); ?>)
+                                <span class="float-right text-muted text-sm">Reorder Needed</span>
+                            </a>
+                            <div class="dropdown-divider"></div>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                            <a href="#" class="dropdown-item text-muted">No low stock items 🎉</a>
+                        <?php endif; ?>
+
+                        <a href="<?php echo e(url('/shopStock_reports')); ?>" class="dropdown-item dropdown-footer">See All
+                            Items</a>
+                    </div>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link" data-toggle="dropdown" href="#">
+                        <i class="far fa-bell">store</i>
+                        <?php if($lowStockItems->count() > 0): ?>
+                            <span class="badge badge-warning navbar-badge"><?php echo e($lowStockItems->count()); ?></span>
+                        <?php endif; ?>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                        <span class="dropdown-item dropdown-header">
+                            <?php echo e($lowStockItems->count()); ?> Low Stock Notifications
+                        </span>
+
+                        <div class="dropdown-divider"></div>
+                        <?php $__empty_1 = true; $__currentLoopData = $lowStockItems; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $items): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-box mr-2"></i>
+                                <?php echo e($items->item->item_name); ?> is low (<?php echo e($items->quantity); ?>)
+                                <span class="float-right text-muted text-sm">Reorder Needed</span>
+                            </a>
+                            <div class="dropdown-divider"></div>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                            <a href="#" class="dropdown-item text-muted">No low stock items 🎉</a>
+                        <?php endif; ?>
+
+                        <a href="<?php echo e(url('/stock_reports')); ?>" class="dropdown-item dropdown-footer">See All Items</a>
+                    </div>
+                </li>
                 <li class="nav-item">
                     <a class="nav-link" data-widget="fullscreen" href="#" role="button">
                         <i class="fas fa-expand-arrows-alt"></i>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-widget="control-sidebar" data-slide="true" href="#" role="button">
+                    <a class="nav-link" data-widget="control-sidebar" data-slide="true" href="#"
+                        role="button">
                         <i class="fas fa-th-large"></i>
                     </a>
                 </li>
@@ -114,7 +168,9 @@
                 <?php
                     $payments = 0;
                     $sales = 0;
+                    $requisition = 0;
                     $sales = App\Models\SalesOrder::where('SM_status', 'Pending')->orderBy('id', 'desc')->get();
+                    $requisition = App\Models\Requisition::where('status', 'Pending')->orderBy('id', 'desc')->get();
                     $payment = App\Models\PaymentLedger::where('status', 'Pending')
                         ->where('debit', '=', 0)
                         ->orderBy('created_at', 'desc')
@@ -125,6 +181,9 @@
                     if (!empty($sales)) {
                         $sales = count($sales);
                         $permission = App\Models\Role::where('id', Auth::user()->role)->first();
+                    }
+                    if (!empty($requisition)) {
+                        $requisition = count($requisition);
                     }
                 ?>
                 <!-- Sidebar Menu -->
@@ -143,27 +202,7 @@
                         </li>
                         <?php if($permission != null): ?>
 
-                            <?php if($permission->reports == 'on'): ?>
-                                <li class="nav-item">
-                                    <a href="#" class="nav-link">
-                                        <i class="nav-icon fas fa-th"></i>
-                                        <p class="text-sm">
-                                            Reports
-                                            <i class="fas fa-angle-left right"></i>
-                                            <span class="right badge badge-danger">New</span>
-                                        </p>
-                                    </a>
-                                    <ul class="nav nav-treeview">
-                                        <li class="nav-item">
-                                            <a href="daily-sales-report" class="nav-link">
-                                                <i class="far fa-circle nav-icon"></i>
-                                                <p class="text-sm">Daily Sales Report</p>
-                                            </a>
-                                        </li>
-                                        
-                                    </ul>
-                                </li>
-                            <?php endif; ?>
+                         
                             <li class="nav-item">
                                 <a href="#" class="nav-link">
                                     <i class="nav-icon fas fa-copy"></i>
@@ -174,7 +213,7 @@
                                     </p>
                                 </a>
                                 <ul class="nav nav-treeview">
-                                    <?php if($permission->manage_purchase == 'on'): ?>
+                                    <?php if($permission->manage_location == 'on'): ?>
                                         <li class="nav-item">
                                             <a href="location" class="nav-link">
                                                 <i class="far fa-circle nav-icon"></i>
@@ -182,24 +221,30 @@
                                             </a>
                                         </li>
                                     <?php endif; ?>
-                                    <li class="nav-item">
-                                        <a href="shelfs" class="nav-link">
-                                            <i class="far fa-circle nav-icon"></i>
-                                            <p class="text-sm">Shelfs</p>
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="item_unit" class="nav-link">
-                                            <i class="far fa-circle nav-icon"></i>
-                                            <p class="text-sm">Item Unit</p>
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="category" class="nav-link">
-                                            <i class="far fa-circle nav-icon"></i>
-                                            <p class="text-sm">Category</p>
-                                        </a>
-                                    </li>
+                                    <?php if($permission->manage_shelf == 'on'): ?>
+                                        <li class="nav-item">
+                                            <a href="shelfs" class="nav-link">
+                                                <i class="far fa-circle nav-icon"></i>
+                                                <p class="text-sm">Shelfs</p>
+                                            </a>
+                                        </li>
+                                    <?php endif; ?>
+                                    <?php if($permission->manage_item_unit == 'on'): ?>
+                                        <li class="nav-item">
+                                            <a href="item_unit" class="nav-link">
+                                                <i class="far fa-circle nav-icon"></i>
+                                                <p class="text-sm">Item Unit</p>
+                                            </a>
+                                        </li>
+                                    <?php endif; ?>
+                                    <?php if($permission->manage_category == 'on'): ?>
+                                        <li class="nav-item">
+                                            <a href="category" class="nav-link">
+                                                <i class="far fa-circle nav-icon"></i>
+                                                <p class="text-sm">Category</p>
+                                            </a>
+                                        </li>
+                                    <?php endif; ?>
                                     <?php if($permission->manage_item == 'on'): ?>
                                         <li class="nav-item">
                                             <a href="items" class="nav-link">
@@ -220,13 +265,43 @@
 
                                 </ul>
                             </li>
-
-                            <?php if($permission->manage_purchase == 'on'): ?>
+                            <?php if($permission->manage_good_receiving == 'on'): ?>
                                 <li class="nav-item">
-                                    <a href="purchase-orders" class="nav-link">
-                                        <i class="nav-icon far fa-plus-square" aria-hidden="true"></i>
-                                        <p class="text-sm"> Good Receiving</p>
+                                    <a href="#" class="nav-link">
+                                        <i class="nav-icon fas fa-file"></i>
+                                        <p class="text-sm">
+                                            Good Receiving
+                                            <i class="fas fa-angle-left right"></i>
+                                        </p>
                                     </a>
+                                    <ul class="nav nav-treeview">
+                                      <?php if($permission->manage_good_receiving == 'on'): ?>
+                                        <li class="nav-item">
+                                            <a href="good-receiving" class="nav-link">
+                                                <i class="far fa-circle nav-icon"></i>
+                                                <p class="text-sm">
+                                                    Good Receiving
+                                                </p>
+                                            </a>
+                                        </li>
+                                        <?php endif; ?>
+                                          <?php if($permission->manage_purchase_plan == 'on'): ?>
+                                        <li class="nav-item">
+                                            <a href="purchase_plan" class="nav-link">
+                                                <i class="far fa-circle nav-icon"></i>
+                                                <p class="text-sm">Purchase Plan</p>
+                                            </a>
+                                        </li>
+                                        <?php endif; ?>
+                                          <?php if($permission->manage_purchase_plan == 'on'): ?>
+                                        <li class="nav-item">
+                                            <a href="planned_item" class="nav-link">
+                                                <i class="far fa-circle nav-icon"></i>
+                                                <p class="text-sm"> Planned Item</p>
+                                            </a>
+                                        </li>
+                                        <?php endif; ?>
+                                    </ul>
                                 </li>
                             <?php endif; ?>
                             <?php if($permission->manage_customer == 'on'): ?>
@@ -239,6 +314,7 @@
                                         </p>
                                     </a>
                                     <ul class="nav nav-treeview">
+                                      <?php if($permission->manage_customer == 'on'): ?>
                                         <li class="nav-item">
                                             <a href="customers" class="nav-link">
                                                 <i class="far fa-circle nav-icon"></i>
@@ -247,29 +323,46 @@
                                                 </p>
                                             </a>
                                         </li>
+                                        <?php endif; ?>
+                                          <?php if($permission->manage_customer_history == 'on'): ?>
                                         <li class="nav-item">
                                             <a href="customerPerformance" class="nav-link">
                                                 <i class="far fa-circle nav-icon"></i>
                                                 <p class="text-sm">Customer Performance</p>
                                             </a>
                                         </li>
+                                        <?php endif; ?>
+                                          <?php if($permission->manage_dailycustomerReport == 'on'): ?>
                                         <li class="nav-item">
                                             <a href="daily-customer-report" class="nav-link">
                                                 <i class="far fa-circle nav-icon"></i>
-                                                <p class="text-sm">Daily Customer Report</p>
+                                                <p class="text-sm"> Customer Report</p>
                                             </a>
                                         </li>
+                                        <?php endif; ?>
+                                          <?php if($permission->manage_customer == 'on'): ?>
+                                        <li class="nav-item">
+                                            <a href="creditCustomers" class="nav-link">
+                                                <i class="far fa-circle nav-icon"></i>
+                                                <p class="text-sm">
+                                                    creditSales
+                                                </p>
+                                            </a>
+                                        </li>
+                                        <?php endif; ?>
                                     </ul>
                                 </li>
                             <?php endif; ?>
-                            <li class="nav-item">
-                                <a href="transfer-requisition" class="nav-link">
-                                    <i class="nav-icon fas fa-recycle"></i>
-                                    <p class="text-sm">Transfer Requisition
-                                        <span class="badge badge-warning right"></span>
-                                    </p>
-                                </a>
-                            </li>
+                            <?php if($permission->manage_item_transfer == 'on'): ?>
+                                <li class="nav-item">
+                                    <a href="transfer-requisition" class="nav-link">
+                                        <i class="nav-icon fas fa-recycle"></i>
+                                        <p class="text-sm">Transfer Requisition
+                                            <span class="badge badge-warning right"></span>
+                                        </p>
+                                    </a>
+                                </li>
+                            <?php endif; ?>
                             <?php if($permission->manage_sales == 'on'): ?>
                                 <li class="nav-item">
                                     <a href="#" class="nav-link">
@@ -280,6 +373,7 @@
                                         </p>
                                     </a>
                                     <ul class="nav nav-treeview">
+                                      <?php if($permission->manage_sales == 'on'): ?>
                                         <li class="nav-item">
                                             <a href="sales-order" class="nav-link">
                                                 <i class="far fa-circle nav-icon"></i>
@@ -288,16 +382,35 @@
                                                 </p>
                                             </a>
                                         </li>
+                                        <?php endif; ?>
+                                          <?php if($permission->manage_shopStock_reports == 'on'): ?>
                                         <li class="nav-item">
-                                            <a href="customerPerformance" class="nav-link">
+                                            <a href="shopStock_reports" class="nav-link">
                                                 <i class="far fa-circle nav-icon"></i>
-                                                <p class="text-sm">Sales Stock Report</p>
+                                                <p class="text-sm">Shop Stock Report</p>
                                             </a>
                                         </li>
+                                        <?php endif; ?>
+                                          <?php if($permission->manage_dailysalesReport == 'on'): ?>
+                                        <li class="nav-item">
+                                            <a href="daily-sales-report" class="nav-link">
+                                                <i class="far fa-circle nav-icon"></i>
+                                                <p class="text-sm"> Sales Report</p>
+                                            </a>
+                                        </li>
+                                        <?php endif; ?>
+                                          <?php if($permission->manage_shopTRansferReports == 'on'): ?>
+                                        <li class="nav-item">
+                                            <a href="transfer_shop_reports" class="nav-link">
+                                                <i class="far fa-circle nav-icon"></i>
+                                                <p class="text-sm"> Transfer Item Report</p>
+                                            </a>
+                                        </li>
+                                        <?php endif; ?>
                                     </ul>
                                 </li>
                             <?php endif; ?>
-                            <?php if($permission->manage_order == 'on'): ?>
+                            <?php if($permission->approval == 'on' || $permission->manage_stock_reports == 'on' || $permission->manage_storeTRansferReports == 'on'): ?>
                                 <li class="nav-item">
                                     <a href="#" class="nav-link">
                                         <i class="nav-icon fas fa-home"></i>
@@ -307,42 +420,56 @@
                                         </p>
                                     </a>
                                     <ul class="nav nav-treeview">
-                                        <li class="nav-item">
-                                            <a href="orders-to-approve" class="nav-link">
-                                                <i class="far fa-circle nav-icon"></i>
-                                                <p class="text-sm">Approve SalesOrder
-                                                    <span class="badge badge-warning right"><?php echo e($sales); ?></span>
-                                                </p>
-                                            </a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a href="approve-requisition" class="nav-link">
-                                                <i class="far fa-circle nav-icon"></i>
-                                                <p class="text-sm">ApproveRequisition
-                                                </p>
-                                            </a>
-                                        </li>
+                                        <?php if($permission->approval == 'on'): ?>
+                                            <li class="nav-item">
+                                                <a href="orders-to-approve" class="nav-link">
+                                                    <i class="far fa-circle nav-icon"></i>
+                                                    <p class="text-sm">Approve SalesOrder
+                                                        <span
+                                                            class="badge badge-warning right"><?php echo e($sales); ?></span>
+                                                    </p>
+                                                </a>
+                                            </li>
+                                            <?php endif; ?>
+                                             <?php if($permission->approval == 'on'): ?>
+                                            <li class="nav-item">
+                                                <a href="approve-requisition" class="nav-link">
+                                                    <i class="far fa-circle nav-icon"></i>
+                                                    <p class="text-sm">ApproveRequisition
+                                                        <span
+                                                            class="badge badge-warning right"><?php echo e($requisition); ?></span>
+                                                    </p>
+                                                </a>
+                                            </li>
+                                        <?php endif; ?>
+                                         <?php if($permission->manage_stock_reports == 'on'): ?>
                                         <li class="nav-item">
                                             <a href="stock_reports" class="nav-link">
                                                 <i class="far fa-circle nav-icon"></i>
                                                 <p class="text-sm"> Stock Report</p>
                                             </a>
                                         </li>
+                                        <?php endif; ?>
+                                         <?php if($permission->manage_storeTRansferReports == 'on'): ?>
+                                        <li class="nav-item">
+                                            <a href="transfer_warehouse_reports" class="nav-link">
+                                                <i class="far fa-circle nav-icon"></i>
+                                                <p class="text-sm"> Transfer Item Report</p>
+                                            </a>
+                                        </li>
+                                        <?php endif; ?>
                                     </ul>
                                 </li>
                             <?php endif; ?>
-                            <li class="nav-item">
-                                <a href="disposals" class="nav-link">
-                                    <i class="nav-icon  fas fa-file" aria-hidden="true"></i>
-                                    <p class="text-sm">Disposal</p>
-                                </a>
-                            </li>
+                            <?php if($permission->manage_disposal == 'on'): ?>
+                                <li class="nav-item">
+                                    <a href="disposals" class="nav-link">
+                                        <i class="nav-icon  fas fa-file" aria-hidden="true"></i>
+                                        <p class="text-sm">Disposal</p>
+                                    </a>
+                                </li>
+                            <?php endif; ?>
 
-
-
-
-                            
-                            
                             <li class="nav-header">User Management</li>
                             <?php if($permission->manage_user == 'on'): ?>
                                 <li class="nav-item">
@@ -395,6 +522,14 @@
 
                             </ul>
                         </li>
+                        <?php if($permission->manage_activity_log == 'on'): ?>
+                            <li class="nav-item">
+                                <a href="/activity-logs" class="nav-link">
+                                    <i class="nav-icon  fas fa-file" aria-hidden="true"></i>
+                                    <p class="text-sm">Activity Logs</p>
+                                </a>
+                            </li>
+                        <?php endif; ?>
                     </ul>
                 </nav>
                 <!-- /.sidebar-menu -->

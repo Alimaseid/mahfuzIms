@@ -2,75 +2,160 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Batch;
+use App\Models\BusinessLocation;
 use App\Models\Disposal;
+use App\Models\Inventory;
 use App\Models\Item;
+use App\Models\Role;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class DisposalController extends Controller
 {
     public function index()
     {
-        $items = Item::all();
-        $disposals = Disposal::all();
-        return view('pages.disposal.disposal', compact('items', 'disposals'));
+        $items = Inventory::all();
+        $disposals = Disposal::orderBy('id', 'desc')->paginate(200);
+        $businessLocations = BusinessLocation::all();
+        $permission = Role::where('id', Auth::user()->role)->first();
+        return view('pages.disposal.disposal', compact('items', 'disposals', 'businessLocations', 'permission'));
     }
 
     public function addDisposal(Request $request)
     {
-        $Data = $request->validate([
-            'item_id' => ['required'],
-            'quantity' => ['required'],
 
+        $request->validate([
+            'item_id'    => 'required',
+            'batch_id'    => 'required',
+            'location_id' => 'required',
+            'quantity'   => 'required|integer|min:1',
+            'reason'     => 'nullable|string',
         ]);
+
         $disposal = Disposal::create([
-            'item_id' => $request->item_id,
-            'quantity' => $request->quantity,
-            'reason' => $request->reason,
-
+            'item_id'    => $request->item_id,
+            'batch_id'    => $request->batch_id,
+            'location_id' => $request->location_id,
+            'quantity'   => $request->quantity,
+            'reason'     => $request->reason,
         ]);
 
-        $item = Item::where('id', $disposal->item_id)->first();
-        $item->quantity = $item->quantity - $request->quantity;
-        $item->update();
+        // ✅ Update inventory for that location
+        $inventory = Inventory::where('item_id', $request->item_id)
+            ->where('location_id', $request->location_id)
+            ->where('batch_id', $request->batch_id)
+            ->first();
+
+        if ($inventory) {
+            $inventory->quantity -= $request->quantity;
+            $inventory->save();
+        }
+
         activity()
             ->causedBy(auth()->user())
             ->performedOn($disposal)
             ->withProperties(['data' => $disposal])
             ->log('Added new disposal');
+
         return back()->with('success', 'Disposal Added Successfully.');
     }
 
+
     public function editDisposal(Request $request, $id)
     {
-
-        $disposal = Disposal::find($id);
-        $disposal->update([
-            'item_id' => $request->item_id,
-            'quantity' => $request->quantity,
-            'reason' => $request->reason,
-
+        $request->validate([
+            'item_id'    => 'required',
+            'batch_id'    => 'required',
+            'location_id' => 'required',
+            'quantity'   => 'required|integer|min:1',
+            'reason'     => 'nullable|string',
         ]);
+
+        $disposal = Disposal::findOrFail($id);
+
+        // Restore old inventory
+        $oldInventory = Inventory::where('item_id', $disposal->item_id)
+            ->where('location_id', $disposal->location_id)
+            ->where('batch_id', $request->batch_id)
+            ->first();
+        if ($oldInventory) {
+            $oldInventory->quantity += $disposal->quantity;
+            $oldInventory->save();
+        }
+
+        // Update disposal
+        $disposal->update([
+            'item_id'    => $request->item_id,
+            'batch_id'    => $request->batch_id,
+            'location_id' => $request->location_id,
+            'quantity'   => $request->quantity,
+            'reason'     => $request->reason,
+        ]);
+
+        // Apply new inventory deduction
+        $newInventory = Inventory::where('item_id', $request->item_id)
+            ->where('location_id', $request->location_id)
+            ->where('batch_id', $request->batch_id)
+            ->first();
+        if ($newInventory) {
+            $newInventory->quantity -= $request->quantity;
+            $newInventory->save();
+        }
+
         activity()
             ->causedBy(auth()->user())
             ->performedOn($disposal)
             ->withProperties(['data' => $disposal])
-            ->log('Edited new disposal');
-        return back()->with('success', ' Edit Disposal Successfully.');
+            ->log('Edited disposal');
+
+        return back()->with('success', 'Disposal Edited Successfully.');
     }
+
 
     public function deleteDisposal($id)
     {
+        $disposal = Disposal::findOrFail($id);
 
-        $disposal = Disposal::where('id', $id)->first();
-        $item = Item::where('id', $disposal->item_id)->first();
-        $item->quantity = $item->quantity + $disposal->quantity;
-        $item->update();
+        $inventory = Inventory::where('item_id', $disposal->item_id)
+            ->where('location_id', $disposal->location_id)
+            ->where('batch_id', $disposal->batch_id)
+            ->first();
+
+        if ($inventory) {
+            $inventory->quantity += $disposal->quantity;
+            $inventory->save();
+        }
+
         $disposal->delete();
+
         activity()
             ->causedBy(auth()->user())
             ->performedOn($disposal)
             ->withProperties(['data' => $disposal])
-            ->log('Deleted new disposal');
-        return back()->with('success', ' Disposal Deleted Successfully.');
+            ->log('Deleted disposal');
+
+        return back()->with('success', 'Disposal Deleted Successfully.');
+    }
+    public function getItems(Request $request)
+    {
+        $search = $request->input('search');
+
+        $items = Inventory::with(['item', 'batch'])
+            ->whereHas('item', function ($q) use ($search) {
+                $q->where('item_name', 'like', "%$search%")
+                    ->orWhere('product_code', 'like', "%$search%");
+            })
+            ->take(20) // limit for performance
+            ->get();
+
+        return response()->json($items->map(function ($row) {
+            return [
+                'item_id' => $row->id,
+                'item_name' => $row->item->item_name,
+                'product_code' => $row->item->product_code,
+                'batch_number' => $row->batch->batch_number
+            ];
+        }));
     }
 }

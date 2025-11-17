@@ -3,22 +3,28 @@
 namespace App\Http\Controllers;
 
 use App\Models\ItemUnit;
+use App\Models\Role;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ItemUnitController extends Controller
 {
     public function index()
     {
 
-        $item_units =  ItemUnit::all();
+        $item_units =  ItemUnit::orderBy('id', 'desc')->paginate(200);
+        $permission = Role::where('id', Auth::user()->role)->first();
 
-        return view('pages.item_unit.unit', compact('item_units'));
+        return view('pages.item_unit.unit', compact('item_units', 'permission'));
     }
 
     public function addItemUnit(Request $request)
     {
-        $validated = $request->validate([
-            'unit' => ['required'],
+        $data = $request->validate([
+            'unit' => 'required|unique:item_units,unit',
+        ], [
+            'unit.unique' => 'This Unit already exists. Please choose another name.',
+            'unit.required' => 'Unit is required.',
         ]);
 
         $unit = ItemUnit::create([
@@ -37,6 +43,8 @@ class ItemUnitController extends Controller
 
     public function editItemUnit(Request $request, $id)
     {
+
+
         $unit = ItemUnit::findOrFail($id);
 
         $unit->update([

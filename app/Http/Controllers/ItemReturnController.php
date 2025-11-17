@@ -16,6 +16,7 @@ use App\Models\SalesOrderDetail;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\StoreItemReturnRequest;
 use App\Http\Requests\UpdateItemReturnRequest;
+use App\Models\Inventory;
 
 class ItemReturnController extends Controller
 {
@@ -27,8 +28,8 @@ class ItemReturnController extends Controller
     public function index($id)
     {
         $customer = Customer::where('id', $id)->first();
-        $location = BusinessLocation::where('type', 'warehouse')->get();
-        $orders = SalesOrder::where('customer_id', $id)->where('SM_status', 'Done')->orderBy('created_at', 'desc')->get();
+        $location = BusinessLocation::all();
+        $orders = SalesOrder::where('customer_id', $id)->where('SM_status', 'Accepted')->orderBy('created_at', 'desc')->get();
         $returns = ItemReturn::orderBy('created_at', 'desc')->where('customer_id', $id)->get();
         $returnsDetail = ItemReturnDetail::orderBy('created_at', 'desc')->get();
         $items = [];
@@ -41,6 +42,7 @@ class ItemReturnController extends Controller
                     'item_id' => $detail->item_id,
                     'item_code' => $detail->item_name,
                     'quantity' => $detail->quantity,
+                    'remaining' => $detail->remaining,
                     'tax' => $detail->tax,
                     //without tax
                     'price' => $detail->total,
@@ -59,10 +61,10 @@ class ItemReturnController extends Controller
 
     public function customReturn(Request $request, $id)
     {
-        //get order detail
-
         $order = SalesOrder::find($id);
-        $data = ItemReturn::create([
+
+        // ✅ Create Item Return
+        $return = ItemReturn::create([
             'return_date' => $request->return_date,
             'sales_order_id' => $id,
             'customer_id' => $order->customer_id,
@@ -71,75 +73,98 @@ class ItemReturnController extends Controller
             'refunded_type' => $request->refunded_type,
             'refunded_amount' => 0,
         ]);
-        $data->reason = $request->reason;
-        $data->save();
 
+        $return->reason = $request->reason;
+        $return->save();
 
-        $return = ItemReturn::latest()->first();
         $total_return = 0;
+
         foreach ($request->addmore as $item) {
-            $sale = SalesOrderDetail::where('sales_order_id', $id)->where('item_id', $item["item_id"])->first();
-            // return $sale;
+            $sale = SalesOrderDetail::where('sales_order_id', $id)
+                ->where('item_id', $item["item_id"])
+                ->first();
 
-            $unitPrice =  $sale->total / $sale->quantity;
-            $returnCash = $item["quantity"] * $unitPrice;
-            if ($sale->quantity >= $item["quantity"]) {
-                $total_return = $total_return + $returnCash;
+            if (!$sale) continue;
 
-                ItemReturnDetail::create([
-                    'return_id' => $return->id,
-                    'item_id' => $item["item_id"],
-                    'quantity' => $item["quantity"],
-                    'price' => $returnCash,
-                    'return_to' => $request->return_location,
+            $batchId = $sale->batch_id;
+            $unitPrice = $sale->total / $sale->quantity;
+            $returnQty = (float) $item["quantity"];
+            $remainingQty = max(0, $item["remaining"] - $returnQty);
+            $returnCash = $returnQty * $unitPrice;
+
+            // ✅ Prevent over-returning
+            if ($returnQty > $sale->quantity) {
+                continue;
+            }
+
+            $total_return += $returnCash;
+
+            // ✅ Create ItemReturnDetail
+            ItemReturnDetail::create([
+                'return_id' => $return->id,
+                'item_id' => $item["item_id"],
+                'quantity' => $returnQty,
+                'price' => $returnCash,
+                'return_to' => $request->return_location,
+            ]);
+
+            // ✅ Update SalesOrderDetail (remaining quantity)
+            $sale->update([
+                'remaining' => $remainingQty,
+            ]);
+
+            // ✅ Update Item stock
+            $originalItem = Item::find($item["item_id"]);
+            $originalItem->increment('quantity', $returnQty);
+
+            // ✅ Update Inventory stock
+            $inventory = Inventory::where('item_id', $item["item_id"])
+                ->where('location_id', $request->return_location)
+                ->where('batch_id', $batchId)
+                ->first();
+
+            if ($inventory) {
+                $inventory->increment('quantity', $returnQty);
+            }
+
+            // ✅ Ledger update if Debit
+            if ($request->refunded_type == 'Debit') {
+                $customer = Customer::find($order->customer_id);
+                PaymentLedger::create([
+                    'date' => Carbon::now(),
+                    'customer_id' => $order->customer_id,
+                    'voucher_type' => 'Sales Return (' . $request->refunded_type . ')',
+                    'refrence_no' => 'Order No: ' . $order->reference_number,
+                    'debit' => 0,
+                    'credit' => $returnCash,
+                    'running_balance' => $customer->total_balance - $returnCash,
                 ]);
 
-                // SalesOrderDetail::where('sales_order_id',$id)->where('item_id',$item["item_id"])
-                // ->update([
-                //     'quantity' => $sale->quantity - $item["quantity"],
-                //     'total' => $sale->total - $returnCash
-                //     ]);
-
-                $originalItem =  Item::find($item["item_id"]);
-                Item::where('id', $item["item_id"])->update([
-                    'quantity' => $originalItem->quantity + $item["quantity"]
-                ]);
-
-                $owner_item =  ItemOwner::where('item_id', $sale->item_id)
-                    ->where('owner_id', $sale->owner_id)
-                    // ->where('location_id',$sale->location_id)
-                    ->first();
-                ItemOwner::where('item_id', $item["item_id"])
-                    ->where('owner_id', $sale->owner_id)
-                    ->where('location_id', $request->return_location)
-                    ->update(['quantity' => $owner_item->quantity + $item["quantity"]]);
-
-                if ($request->refunded_type == 'Debit') {
-                    // $latest_ladger = PaymentLedger::where('customer_id', $order->customer_id)->latest()->first();
-                    $customer = Customer::find($order->customer_id);
-                    PaymentLedger::create([
-                        'date' => Carbon::now(),
-                        'customer_id' => $order->customer_id,
-                        'voucher_no' => null,
-                        'voucher_type' => 'Sales Return, Type: ' . $request->refunded_type,
-                        'refrence_no' => 'On Order No: ' . $order->reference_number,
-                        'debit' => 0,
-                        'credit' => $returnCash,
-                        'running_balance' => $customer->total_balance - $returnCash,
-                    ]);
-
-
-                    $customer->total_balance = $customer->total_balance - $returnCash;
-                    $customer->save();
-                }
+                $customer->decrement('total_balance', $returnCash);
             }
         }
-        ItemReturn::where('id', $return->id)->update(['refunded_amount' => $total_return]);
+
+        // ✅ Update refunded total
+        $return->update(['refunded_amount' => $total_return]);
+
+        // ✅ Check all SalesOrderDetail remaining values
+        $remaining = SalesOrderDetail::where('sales_order_id', $id)
+            ->sum('remaining');
+
+        // If no remaining quantities, mark order as Done
+        if ($remaining <= 0) {
+            $order->update(['r_status' => 'Done']);
+        } else {
+            $order->update(['r_status' => 'Partial']);
+        }
+
+        // ✅ Log activity
         activity()
             ->causedBy(auth()->user())
-            ->performedOn($data)
-            ->withProperties(['data' => $data])
-            ->log('Create new item return');
-        return back()->with('success', 'Saved.');
+            ->performedOn($return)
+            ->withProperties(['data' => $return])
+            ->log('Item return processed');
+
+        return back()->with('success', 'Return processed successfully.');
     }
 }

@@ -30,6 +30,7 @@
                                                 <th>No</th>
                                                 <th>Item</th>
                                                 <th>Quantity</th>
+                                                <th>Location</th>
                                                 <th>Reason</th>
                                                 <th>_________</th>
                                             </tr>
@@ -47,6 +48,7 @@
                                                         <td><?php echo e($no); ?></td>
                                                         <td><?php echo e($disposal->item->item_name); ?></td>
                                                         <td><?php echo e($disposal->quantity); ?></td>
+                                                        <td><?php echo e($disposal->location->name ?? '-'); ?></td>
                                                         <td><?php echo e($disposal->reason); ?></td>
                                                         <td>
 
@@ -94,25 +96,53 @@
                                                                                         <div class="card-body">
                                                                                             <div class="form-group">
                                                                                                 <label>Item</label>
-                                                                                                <select name="item_id"
-                                                                                                    id=""
-                                                                                                    class="form-control"
-                                                                                                    required>
-                                                                                                    <option
-                                                                                                        value="<?php echo e($disposal->item_id); ?>"
-                                                                                                        selected>
-                                                                                                        <?php echo e($disposal->item->item_name); ?>
+                                                                                                <div class="item-search w-100"
+                                                                                                    style="position:relative">
+                                                                                                    <input type="text"
+                                                                                                        id="myInput_edit"
+                                                                                                        class="form-control"
+                                                                                                        placeholder="Search Item..."
+                                                                                                        autocomplete="off"
+                                                                                                        onclick="myFunction_edit()"
+                                                                                                        onkeyup="filterFunction_edit()"
+                                                                                                        required
+                                                                                                        value="<?php echo e($disposal->item->item_name); ?> | <?php echo e($disposal->item->product_code); ?>">
+                                                                                                    <div id="myDropdown_edit"
+                                                                                                        class="dropdown-content"
+                                                                                                        style="display:none; position:absolute; max-height:250px; background:#353333; border:1px solid #ccc; overflow:auto; z-index:1000;">
+                                                                                                        <div
+                                                                                                            id="item_list_edit">
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                                <input type="hidden"
+                                                                                                    id="item_id_edit"
+                                                                                                    name="item_id"
+                                                                                                    value="<?php echo e($disposal->item_id); ?>">
+                                                                                                <input type="hidden"
+                                                                                                    id="batch_id_edit"
+                                                                                                    name="batch_id"
+                                                                                                    value="<?php echo e($disposal->batch_id); ?>">
+                                                                                            </div>
+                                                                                            <div
+                                                                                                class="col-sm-12 invoice-col">
+                                                                                                <address>
+                                                                                                    Business Location
+                                                                                                    <select
+                                                                                                        name="location_id"
+                                                                                                        class="form-control"
+                                                                                                        required>
+                                                                                                        <?php $__currentLoopData = $businessLocations; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $businessLocation): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                                                                            <option
+                                                                                                                value="<?php echo e($businessLocation->id); ?>"
+                                                                                                                <?php echo e($disposal->location_id == $businessLocation->id ? 'selected' : ''); ?>>
+                                                                                                                <?php echo e($businessLocation->name); ?>
 
-                                                                                                    </option>
-                                                                                                    <?php $__empty_1 = true; $__currentLoopData = $items; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
-                                                                                                        <option
-                                                                                                            value="<?php echo e($item->id); ?>">
-                                                                                                            <?php echo e($item->item_name); ?>
+                                                                                                            </option>
+                                                                                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                                                                                    </select>
 
-                                                                                                        </option>
-                                                                                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
-                                                                                                    <?php endif; ?>
-                                                                                                </select>
+                                                                                                </address>
                                                                                             </div>
                                                                                             <div class="form-group">
                                                                                                 <label>Quantity</label>
@@ -201,19 +231,42 @@
                                                         <div class="card-body">
                                                             <div class="form-group">
                                                                 <label>Item</label>
-                                                                <select name="item_id" id="" class="form-control"
-                                                                    required>
-                                                                    <option value="" selected>
-                                                                        Select
-                                                                    </option>
-                                                                    <?php $__empty_1 = true; $__currentLoopData = $items; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
-                                                                        <option value="<?php echo e($item->id); ?>">
-                                                                            <?php echo e($item->item_name); ?>
+                                                                <!-- Item Search -->
 
-                                                                        </option>
-                                                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
-                                                                    <?php endif; ?>
-                                                                </select>
+                                                                <div class="item-search w-100 mb-2"
+                                                                    style="position:relative">
+                                                                    <input type="text" placeholder="Search Item..."
+                                                                        id="myInput_0" onclick="myFunction(0)"
+                                                                        onkeyup="filterFunction(0)" class="form-control"
+                                                                        autocomplete="off" required>
+
+                                                                    <div id="myDropdown_0" class="dropdown-content"
+                                                                        style="display:none; position:absolute; z-index:1000; background:#353333; border:1px solid #ccc; max-height:250px; overflow-y:auto; width:100%;">
+                                                                        <div id="item_list_0"></div>
+                                                                    </div>
+                                                                </div>
+
+                                                                <!-- Hidden fields -->
+                                                                <input type="hidden" id="item_id_0" name="item_id"
+                                                                    value="">
+                                                                <input type="hidden" id="batch_id_0" name="batch_id"
+                                                                    value="">
+
+                                                            </div>
+
+                                                            <div class="col-sm-12 location-col">
+                                                                <address>
+                                                                    Business Location
+                                                                    <select name="location_id" class="form-control"
+                                                                        required>
+                                                                        <?php $__currentLoopData = $businessLocations; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $businessLocation): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                                            <option value="<?php echo e($businessLocation->id); ?>">
+                                                                                <?php echo e($businessLocation->name); ?>
+
+                                                                            </option>
+                                                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                                                    </select>
+                                                                </address>
                                                             </div>
                                                             <div class="form-group">
                                                                 <label>Quantity</label>
@@ -261,7 +314,173 @@
             </div>
         </div>
     </section>
+    <script>
+        // ------------------- FETCH ITEMS (no filters) -------------------
+        function fetchItems(no) {
+            $.ajax({
+                type: "POST",
+                url: "<?php echo e(url('getItemForSale')); ?>",
+                dataType: 'json',
+                data: {
+                    _token: '<?php echo e(csrf_token()); ?>'
+                },
+                success: function(result) {
+                    let container = $('#item_list_' + no);
+                    container.html('');
 
+                    $.each(result, function(idx, item) {
+                        let imageUrl = item.image ? item.image : "<?php echo e(asset('images/no-image.png')); ?>";
+                        let displayText = `${item.item_name} | ${item.product_code}` +
+                            (item.batch_number ? ` | Batch: ${item.batch_number}` : '');
+
+                        let option = $(`
+                    <div style="padding:8px; cursor:pointer; border-bottom:1px solid #eee; display:flex; align-items:center; justify-content:space-between;">
+                        <div style="flex:1;">${displayText}</div>
+                        <img src="${imageUrl}" width="40" height="40" style="object-fit:cover; margin-left:10px; border:1px solid #ccc; border-radius:4px;">
+                    </div>
+                `);
+
+                        option.on('click', function(e) {
+                            e.stopPropagation(); // prevent closing before select
+                            selectedItem(item, no);
+                        });
+
+                        container.append(option);
+                    });
+
+                    $('#myDropdown_' + no).show();
+                },
+                error: function(err) {
+                    console.error('❌ Could not fetch items', err);
+                }
+            });
+        }
+
+        // ------------------- SHOW DROPDOWN -------------------
+        function myFunction(no) {
+            fetchItems(no);
+        }
+
+        // ------------------- FILTER -------------------
+        function filterFunction(no) {
+            let input = $("#myInput_" + no).val().toUpperCase();
+            let found = false;
+
+            $("#item_list_" + no + " > div").each(function() {
+                let text = $(this).text().toUpperCase();
+                let match = text.indexOf(input) > -1;
+                $(this).toggle(match);
+                if (match) found = true;
+            });
+
+            if (found) {
+                $('#myDropdown_' + no).show();
+            } else {
+                $('#myDropdown_' + no).hide();
+            }
+        }
+
+        // ------------------- SELECT ITEM -------------------
+        function selectedItem(item, no) {
+            $("#myInput_" + no).val(item.item_name + " | " + item.product_code + (item.batch_number ? " | Batch: " + item
+                .batch_number : ""));
+            $("#item_id_" + no).val(item.id);
+            $("#batch_id_" + no).val(item.batch_id);
+
+            $('#myDropdown_' + no).hide();
+        }
+
+        // ------------------- CLOSE DROPDOWN ON OUTSIDE CLICK -------------------
+        $(document).on('click', function(e) {
+            if (!$(e.target).closest('.item-search').length) {
+                $('.dropdown-content').hide(); // hide all dropdowns
+            }
+        });
+    </script>
+
+
+    <script>
+        // ------------------- FETCH ITEMS (no filters) -------------------
+        function fetchItems_edit() {
+            $.ajax({
+                type: "POST",
+                url: "<?php echo e(url('getItemForSale')); ?>",
+                dataType: 'json',
+                data: {
+                    _token: '<?php echo e(csrf_token()); ?>'
+                },
+                success: function(result) {
+                    let container = $('#item_list_edit');
+                    container.html('');
+
+                    $.each(result, function(idx, item) {
+                        let imageUrl = item.image ? item.image : "<?php echo e(asset('images/no-image.png')); ?>";
+                        let displayText = `${item.item_name} | ${item.product_code}` +
+                            (item.batch_number ? ` | Batch: ${item.batch_number}` : '');
+                        let option = $(`
+                        <div style="padding:8px; cursor:pointer; border-bottom:1px solid #eee; display:flex; align-items:center; justify-content:space-between;">
+                            <div style="flex:1;">${displayText}</div>
+                            <img src="${imageUrl}" width="40" height="40" style="object-fit:cover; margin-left:10px; border:1px solid #ccc; border-radius:4px;">
+                        </div>
+                    `);
+
+                        option.on('click', function(e) {
+                            e.stopPropagation(); // prevent closing before select
+                            selectedItem_edit(item);
+                        });
+
+                        container.append(option);
+                    });
+
+                    $('#myDropdown_edit').show();
+                },
+                error: function(err) {
+                    console.error('❌ Could not fetch items', err);
+                }
+            });
+        }
+
+        // ------------------- SHOW DROPDOWN -------------------
+        function myFunction_edit() {
+            fetchItems_edit();
+        }
+
+        // ------------------- FILTER -------------------
+        function filterFunction_edit() {
+            let input = $("#myInput_edit").val().toUpperCase();
+            let found = false;
+
+            $("#item_list_edit > div").each(function() {
+                let text = $(this).text().toUpperCase();
+                let match = text.indexOf(input) > -1;
+                $(this).toggle(match);
+                if (match) found = true;
+            });
+
+            if (found) {
+                $('#myDropdown_edit').show();
+            } else {
+                $('#myDropdown_edit').hide();
+            }
+        }
+
+        // ------------------- SELECT ITEM -------------------
+        function selectedItem_edit(item) {
+            $("#myInput_edit").val(item.item_name + " | " + item.product_code +
+                (item.batch_number ? " | Batch: " + item.batch_number : ""));
+            $("#item_id_edit").val(item.id);
+            $("#batch_id_edit").val(item.batch_id);
+
+            $('#myDropdown_edit').hide();
+        }
+
+        // ------------------- CLOSE DROPDOWN ON OUTSIDE CLICK -------------------
+        $(document).on('click', function(e) {
+            if (!$(e.target).closest('.item-search').length) {
+                $('#myDropdown_edit').hide();
+            }
+        });
+    </script>
 <?php $__env->stopSection(); ?>
 
 <?php echo $__env->make('inc.frame', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\Users\Halima\Documents\ims\resources\views/pages/disposal/disposal.blade.php ENDPATH**/ ?>

@@ -16,6 +16,9 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\PaymentLedger;
 use App\Models\BusinessLocation;
+use App\Models\Category;
+use App\Models\Inventory;
+use App\Models\Role;
 use App\Models\SalesOrderDetail;
 use Illuminate\Support\Facades\Auth;
 use Psy\CodeCleaner\ReturnTypePass;
@@ -31,185 +34,343 @@ class SalesOrderController extends Controller
      */
     public function index()
     {
-        // $date = Carbon::now()->startOfWeek();
-        // $salesOrders = SalesOrder::orderBy('id', 'desc')->latest()->take(12)->get();
-        $salesOrders = SalesOrder::orderBy('id', 'desc')->latest()->take(100)->get();
-        $vendors = Vendor::all();
-        $businessLocations = BusinessLocation::all();
-        $owners = Owner::all();
+        $salesOrders = SalesOrder::orderBy('id', 'desc')->take(100)->get();
+        $salesOrders = SalesOrder::with(['details.item'])->orderBy('id', 'desc')->take(100)->get();
 
-        $items = Item::where('quantity', '>', 0)->get();
+        $businessLocations = BusinessLocation::all();
         $salesOrderDetails = SalesOrderDetail::all();
         $customers = Customer::all();
+        $categories = Category::select('id', 'name')->get();
+        $permission = Role::where('id', Auth::user()->role)->first();
 
         return view('pages.sales.sales')
-            ->with('owners', $owners)
             ->with('customers', $customers)
             ->with('businessLocations', $businessLocations)
-            ->with('items', $items)
-            ->with('vendors', $vendors)
             ->with('salesOrderDetails', $salesOrderDetails)
+            ->with('categories', $categories)
+            ->with('permission', $permission)
             ->with('salesOrders', $salesOrders);
     }
 
-
-
     public function addSalesOrder(Request $request)
     {
-        $salesOrder = SalesOrder::create([
-            'customer_id'       => $request->customer,
-            'reference_number'  => $request->refrence_no,
-            'sales_person'      => Auth::user()->name,
-            'sales_type'        => $request->sales_type,
-            'location_id'       => $request->business_location,
-            'payment_status'    => Carbon::now('+3')->toDateTimeString(),
+        // basic validation
+        $request->validate([
+            'customer' => 'required|exists:customers,id',
+            'business_location' => 'required|exists:business_locations,id',
+            'refrence_no' => 'required|string',
+            'sales_type' => 'required|string',
+            'addmore' => 'required|array|min:1',
+            'addmore.*.item_id' => 'required|integer|exists:items,id',
+            'addmore.*.quantity' => 'required|numeric|min:1',
+            'addmore.*.u_price' => 'required|numeric|min:0',
         ]);
 
-        $grand_total = 0;
+        // Convert discount percent to fraction
+        $discountPercent = floatval($request->discount ?? 0); // e.g., 10 -> 10%
+        $discountRate = ($discountPercent) / 100.0;
+
+        // VAT and withholding rates: checkboxes carry fractional values (e.g. 0.15 or 0.03) when checked.
+        $vatRate = floatval($request->vat_include ?? 0); // already fractional if checkbox used (0.15)
+        $withHoldingRate = floatval($request->with_holding ?? 0);
+
+        // Create the sales order first (basic fields)
+        $salesOrder = SalesOrder::create([
+            'customer_id'      => $request->customer,
+            'reference_number' => $request->refrence_no,
+            'sales_person'     => Auth::user()->name ?? null,
+            'sales_type'       => $request->sales_type,
+            'payment_type'     => $request->payment_type ?? 'Cash',
+            'location_id'      => $request->business_location,
+            'payment_status'   => 'Unpaid',
+        ]);
+
+        // Accumulators for totals
+        $grandTotal = 0.0;
+        $totalVat = 0.0;
+        $totalDiscount = 0.0;
+        $totalWithHolding = 0.0;
 
         foreach ($request->addmore as $line) {
             $item = Item::find($line['item_id']);
-            $total = $line['u_price'] * $line['quantity'];
-            $subtotal = ($total * $request->vat_include / 100) + $total;
-            $grand_total += $subtotal;
+            if (!$item) {
+                // skip missing item
+                continue;
+            }
 
+            $qty = floatval($line['quantity']);
+            $unitPrice = floatval($line['u_price']);
+            $lineAmount = $unitPrice * $qty; // raw line amount before discount/tax
+
+            // Per-line discount/vat/withholding
+            $lineDiscount = $lineAmount * $discountRate;
+            $afterDiscount = $lineAmount - $lineDiscount;
+            $lineVat = $afterDiscount * $vatRate;
+            $lineWithHolding = $afterDiscount * $withHoldingRate;
+            $lineNet = $afterDiscount + $lineVat - $lineWithHolding; // what the customer pays for this line
+
+            // Persist detail
             SalesOrderDetail::create([
                 'item_id'        => $item->id,
+                'batch_id'       => $line['batch_id'] ?? null,
                 'location_id'    => $request->business_location,
-                'item_name'      => $item->product_code,
-                'quantity'       => $line['quantity'],
-                'amount'         => $total,
-                'tax'            => $request->vat_include,
-                'total'          => $subtotal,
+                'item_name'      => $item->item_name ?? $item->name ?? 'Item',
+                'quantity'       => $qty,
+                'remaining'       => $qty,
+                'amount'         => $line['u_price'],           // raw line amount (before discount/tax)
+                'tax'            => $lineVat,
+                'with_holding'   => $lineWithHolding,
+                'discount'       => $lineDiscount,
+                'total'          => $lineNet,              // net amount for the line
                 'sales_order_id' => $salesOrder->id,
             ]);
 
-            $item->update(['quantity' => $item->quantity - $line['quantity']]);
+            // Update inventory (if you track inventory as per inventory table)
+            $inventory = Inventory::where('item_id', $item->id)
+                ->where('location_id', $request->business_location)
+                ->where('batch_id', $line['batch_id'])
+                ->first();
+
+            if ($inventory) {
+                $inventory->quantity = max(0, $inventory->quantity - $qty);
+                $inventory->save();
+            } else {
+                // Optionally log missing inventory record
+                return with("Inventory record missing for item {$item->id} at location {$request->business_location}");
+            }
+
+            // accumulate totals
+            $grandTotal += $lineNet;
+            $totalVat += $lineVat;
+            $totalDiscount += $lineDiscount;
+            $totalWithHolding += $lineWithHolding;
         }
 
-        $salesOrder->update(['grand_total' => $grand_total]);
+        // Update sales order totals
+        $salesOrder->update([
+            'grand_total'   => $grandTotal,
+            'vat'           => $totalVat,
+            'discount'      => $totalDiscount,
+            'with_holding'  => $totalWithHolding,
+        ]);
 
-        $latest_ladger = PaymentLedger::where('customer_id', $request->customer)->latest()->first();
+        // Set SM_status if location type is 'Shop'
+        if ($salesOrder->location && (isset($salesOrder->location->type) && $salesOrder->location->type === 'Shop')) {
+            $salesOrder->SM_status = 'Accepted';
+            $salesOrder->save();
+        }
+
+        // Ledger entry
+        $latest_ledger = PaymentLedger::where('customer_id', $request->customer)->latest()->first();
         PaymentLedger::create([
-            'date'            => Carbon::now(),
+            'date'            => \Carbon\Carbon::now(),
             'customer_id'     => $request->customer,
             'narration'       => $salesOrder->id,
             'voucher_no'      => $request->refrence_no,
             'voucher_type'    => 'sales',
             'refrence_no'     => $request->refrence_no,
-            'debit'           => $grand_total,
+            'debit'           => $grandTotal,
             'credit'          => 0,
-            'running_balance' => $latest_ladger->running_balance + $grand_total,
+            'running_balance' => ($latest_ledger->running_balance ?? 0) + $grandTotal,
         ]);
 
+        // Update customer balance
         $customer = Customer::find($request->customer);
-        $customer->update(['total_balance' => $customer->total_balance + $grand_total]);
+        if ($customer) {
+            $customer->total_balance = ($customer->total_balance ?? 0) + $grandTotal;
+            $customer->save();
+        }
 
-        // ✅ Log activity
+        // Log activity
         activity()
             ->causedBy(auth()->user())
             ->performedOn($salesOrder)
-            ->withProperties(['grand_total' => $grand_total])
+            ->withProperties(['grand_total' => $grandTotal])
             ->log('Created Sales Order');
 
-        return back()->with('success', 'Register Order Successfully.');
+        return back()->with('success', 'Registered Order Successfully.');
     }
 
+
     // ✅ Edit Sales Order
+
+
     public function editSalesOrder(Request $request, $id)
     {
+        // ✅ Validation (same as addSalesOrder, just reference_no fixed)
+        $request->validate([
+            'customer' => 'required|exists:customers,id',
+            'business_location' => 'required|exists:business_locations,id',
+            'reference_no' => 'required|string',
+            'sales_type' => 'required|string',
+            'addmore' => 'required|array|min:1',
+            'addmore.*.item_id' => 'required|integer|exists:items,id',
+            'addmore.*.quantity' => 'required|numeric|min:1',
+            'addmore.*.u_price' => 'required|numeric|min:0',
+        ]);
+
         $salesOrder = SalesOrder::findOrFail($id);
 
+        // ✅ Convert discount % to fraction
+        $discountPercent = floatval($request->discount ?? 0);
+        $discountRate = $discountPercent / 100.0;
+
+        // ✅ VAT & withholding (checkboxes → fraction)
+        $vatRate = floatval($request->vat_include ?? 0);      // e.g., 0.15
+        $withHoldingRate = floatval($request->with_holding ?? 0); // e.g., 0.03
+
+        // ✅ Update sales order basic info
         $salesOrder->update([
             'customer_id'      => $request->customer,
-            'reference_number' => $request->refrence_no,
-            'sales_person'     => Auth::user()->name,
+            'reference_number' => $request->reference_no,
+            'sales_person'     => Auth::user()->name ?? null,
             'sales_type'       => $request->sales_type,
             'location_id'      => $request->business_location,
             'SM_status'        => 'Pending',
         ]);
 
-        $grand_total = 0;
+        // ✅ Reset totals (we will recalc)
+        $grandTotal = 0.0;
+        $totalVat = 0.0;
+        $totalDiscount = 0.0;
+        $totalWithHolding = 0.0;
 
+        // ✅ Loop items
         foreach ($request->addmore as $line) {
             $item = Item::find($line['item_id']);
-            $total = $line['u_price'] * $line['quantity'];
-            $subtotal = ($total * $request->vat_include / 100) + $total;
-            $grand_total += $subtotal;
+            if (!$item) continue;
 
-            $oldDetail = SalesOrderDetail::where('sales_order_id', $id)
+            $qty = floatval($line['quantity']);
+            $unitPrice = floatval($line['u_price']);
+            $lineAmount = $unitPrice * $qty;
+
+            // line calculations
+            $lineDiscount = $lineAmount * $discountRate;
+            $afterDiscount = $lineAmount - $lineDiscount;
+            $lineVat = $afterDiscount * $vatRate;
+            $lineWithHolding = $afterDiscount * $withHoldingRate;
+            $lineNet = $afterDiscount + $lineVat - $lineWithHolding;
+
+            // check if detail already exists
+            $detail = SalesOrderDetail::where('sales_order_id', $salesOrder->id)
                 ->where('item_id', $item->id)
                 ->first();
 
-            $diff = $oldDetail->quantity - $line['quantity'];
+            if ($detail) {
+                // adjust inventory based on difference
+                $oldQty = $detail->quantity;
+                $diff = $qty - $oldQty;
 
-            $oldDetail->update([
-                'item_id'        => $item->id,
-                'location_id'    => $request->business_location,
-                'item_name'      => $item->product_code,
-                'quantity'       => $line['quantity'],
-                'amount'         => $total,
-                'tax'            => $request->vat_include,
-                'total'          => $subtotal,
-            ]);
+                $inventory = Inventory::where('item_id', $item->id)
+                    ->where('location_id', $request->business_location)
+                    ->where('batch_id', $line['batch_id'])
+                    ->first();
 
-            if ($diff != 0 && $oldDetail->owner_id != 666) {
-                $item->update(['quantity' => $item->quantity - (-$diff)]);
+                if ($inventory) {
+                    $inventory->quantity = max(0, $inventory->quantity - $diff);
+                    $inventory->save();
+                }
+
+                $detail->update([
+                    'batch_id'       => $line['batch_id'] ?? null,
+                    'location_id'    => $request->business_location,
+                    'item_name'      => $item->item_name ?? $item->name ?? 'Item',
+                    'quantity'       => $qty,
+                    'amount'         => $unitPrice,
+                    'tax'            => $lineVat,
+                    'with_holding'   => $lineWithHolding,
+                    'discount'       => $lineDiscount,
+                    'total'          => $lineNet,
+                ]);
+            } else {
+                // create new detail
+                SalesOrderDetail::create([
+                    'item_id'        => $item->id,
+                    'batch_id'       => $line['batch_id'] ?? null,
+                    'location_id'    => $request->business_location,
+                    'item_name'      => $item->item_name ?? $item->name ?? 'Item',
+                    'quantity'       => $qty,
+                    'amount'         => $unitPrice,
+                    'tax'            => $lineVat,
+                    'with_holding'   => $lineWithHolding,
+                    'discount'       => $lineDiscount,
+                    'total'          => $lineNet,
+                    'sales_order_id' => $salesOrder->id,
+                ]);
+
+                // reduce inventory
+                $inventory = Inventory::where('item_id', $item->id)
+                    ->where('location_id', $request->business_location)
+                    ->first();
+
+                if ($inventory) {
+                    $inventory->quantity = max(0, $inventory->quantity - $qty);
+                    $inventory->save();
+                }
             }
 
-            if ($oldDetail->owner_id == 666 && $diff != 0) {
-                $itemOnShop = ItemOnShop::where('item_id', $item->id)->first();
-                $itemOnShop->update(['qauntity' => $itemOnShop->qauntity - (-$diff)]);
-            }
+            // accumulate totals
+            $grandTotal += $lineNet;
+            $totalVat += $lineVat;
+            $totalDiscount += $lineDiscount;
+            $totalWithHolding += $lineWithHolding;
         }
 
-        $salesOrder->update(['grand_total' => $grand_total]);
+        // ✅ Update order totals
+        $salesOrder->update([
+            'grand_total'   => $grandTotal,
+            'vat'           => $totalVat,
+            'discount'      => $totalDiscount,
+            'with_holding'  => $totalWithHolding,
+        ]);
 
+        // ✅ Auto-accept if shop
+        if ($salesOrder->location && ($salesOrder->location->type === 'Shop')) {
+            $salesOrder->update(['SM_status' => 'Accepted']);
+        }
+
+        // ✅ Update ledger
         $ledger = PaymentLedger::where('customer_id', $salesOrder->customer_id)
             ->where('narration', $salesOrder->id)
             ->first();
 
-        $change = $grand_total - $ledger->debit;
+        if ($ledger) {
+            $change = $grandTotal - $ledger->debit;
+            $ledger->update([
+                'debit'           => $grandTotal,
+                'running_balance' => $ledger->running_balance + $change,
+            ]);
 
-        $ledger->update([
-            'debit'           => $grand_total,
-            'running_balance' => $ledger->running_balance - (-$change),
-        ]);
+            // update subsequent ledgers
+            $affectedLedgers = PaymentLedger::where('id', '>', $ledger->id)->get();
+            foreach ($affectedLedgers as $lg) {
+                $lg->update(['running_balance' => $lg->running_balance + $change]);
+            }
 
-        $affected_ledgers = PaymentLedger::where('id', '>', $ledger->id)->get();
-        foreach ($affected_ledgers as $lg) {
-            $lg->update(['running_balance' => $lg->running_balance - (-$change)]);
+            // update customer balance
+            $customer = Customer::find($salesOrder->customer_id);
+            if ($customer) {
+                $customer->update(['total_balance' => $customer->total_balance + $change]);
+            }
         }
-
-        $customer = Customer::find($salesOrder->customer_id);
-        $customer->update(['total_balance' => $customer->total_balance - (-$change)]);
 
         // ✅ Log activity
         activity()
             ->causedBy(auth()->user())
             ->performedOn($salesOrder)
-            ->withProperties(['grand_total' => $grand_total, 'change' => $change])
+            ->withProperties(['grand_total' => $grandTotal])
             ->log('Edited Sales Order');
 
         return back()->with('success', 'Edit Order Successfully.');
     }
+
+
 
     // ✅ Delete Sales Order
     public function deleteSalesOrders($id)
     {
         $salesOrder = SalesOrder::findOrFail($id);
         $orderDetails = SalesOrderDetail::where('sales_order_id', $id)->get();
-
-        foreach ($orderDetails as $detail) {
-            $itemOwner = ItemOwner::where('owner_id', $salesOrder->owner_id)
-                ->where('item_id', $detail->item_id)
-                ->first();
-
-            if ($itemOwner) {
-                $itemOwner->update(['quantity' => $itemOwner->quantity + $detail->quantity]);
-            }
-        }
-
         PaymentLedger::where('customer_id', $salesOrder->customer_id)
             ->where('narration', $salesOrder->id)
             ->delete();
@@ -220,7 +381,18 @@ class SalesOrderController extends Controller
             ->performedOn($salesOrder)
             ->withProperties(['order_id' => $salesOrder->id])
             ->log('Deleted Sales Order');
+        $location = $salesOrder->location_id;
+        foreach ($orderDetails as $order) {
+            $inventory = Inventory::where('item_id', $order->item_id)
+                ->where('location_id', $location)
+                ->where('batch_id', $order->batch_id)
+                ->first();
 
+            if ($inventory) {
+                $inventory->quantity = max(0, $inventory->quantity + $order->quantity);
+                $inventory->save();
+            }
+        }
         $salesOrder->delete();
         SalesOrderDetail::where('sales_order_id', $id)->delete();
 
@@ -334,6 +506,7 @@ class SalesOrderController extends Controller
     public function customerSalesHitory($id)
     {
         $salesOrder = SalesOrder::where('customer_id', $id)->orderBy('created_at', 'desc')->get();
+        $salesorderDetails = SalesOrderDetail::all();
         $customer = Customer::find($id);
         $data = [];
         foreach ($salesOrder as $so) {
@@ -346,7 +519,12 @@ class SalesOrderController extends Controller
                         // 'owner' => $owner->name,
                         'order_id' => $sod->sales_order_id,
                         'item_id' => $item->id,
+                        'item_name' => $item->item_name,
                         'item_code' => $item->product_code,
+                        'part_number' => $item->part_number,
+                        'unit' => $item->unit,
+                        'category' => $item->category,
+                        'shelf' => $item->shelf,
                         'quantity' => $sod->quantity,
                         'total' => $sod->amount,
                         'tax' => $sod->tax,
@@ -361,7 +539,7 @@ class SalesOrderController extends Controller
                         'id' => $so->id,
                         'date' => $so->created_at,
                         'RF' => $so->reference_number,
-                        'location' => $location->name,
+                        'location' => $location->name ?? '',
                         'sales_type' => $so->sales_type,
                         'sales_person' => $so->sales_person,
                         'total_payment' => $so->grand_total,
@@ -374,23 +552,52 @@ class SalesOrderController extends Controller
         return view('pages.customers.customerSalesHistory')
 
             ->with('vendor', $customer->name)
+            ->with('salesorderDetails', $salesorderDetails)
+            ->with('salesOrder', $salesOrder)
             ->with('data', $data);
     }
 
     public function getItemForSale(Request $request)
     {
-        $items = Item::where('status', 'Active')
-            ->where('quantity', '>', 0)
-            ->get();
+        $locationId = $request->input('location_id');
+        $category   = $request->input('category');
 
-        // Keep images as relative paths, do NOT wrap with asset() here
-        $items->transform(function ($item) {
-            $item->image = $item->image ? str_replace('\\', '/', $item->image) : null;
-            $item->image2 = $item->image2 ? str_replace('\\', '/', $item->image2) : null;
-            return $item;
-        });
+        $query = Inventory::with('item')->where('quantity', '>', 0);
 
-        return response()->json($items);
+        if ($locationId) {
+            $query->where('location_id', $locationId);
+        }
+
+        $inventories = $query->get();
+
+        $items = $inventories->map(function ($inventory) use ($category) {
+            $item = $inventory->item;
+
+
+            if (!$item) return null;
+
+            // ✅ filter by category
+            if ($category && $item->category !== $category) {
+                return null;
+            }
+
+            return [
+                'id'             => $item->id,
+                'batch_id'       => $inventory->batch_id,
+                'batch_number'   => $inventory->batch->batch_number, // ✅ expose batch id
+                'item_name'      => $item->item_name,
+                'product_code'   => $item->product_code,
+                'selling_price1' => $item->selling_price1 ?? 0,
+                'selling_price2' => $item->selling_price2 ?? 0,
+                'selling_price3' => $item->selling_price3 ?? 0,
+                'image'          => $item->image ? asset(str_replace('\\', '/', $item->image)) : null,
+                'image2'         => $item->image2 ? asset(str_replace('\\', '/', $item->image2)) : null,
+                'quantity'       => $inventory->quantity,
+                'category'       => $item->category,
+            ];
+        })->filter();
+
+        return response()->json($items->values());
     }
 
 
@@ -419,6 +626,7 @@ class SalesOrderController extends Controller
         ];
         // return $invoice_data;
         return view('pages.sales.invoice')
-            ->with('invoice_data', $invoice_data);
+            ->with('salesOrder', $salesOrder)
+            ->with('salesOrderDetails', $salesOrderDetails);
     }
 }

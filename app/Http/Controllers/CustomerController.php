@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use App\Http\Requests\StoreCustomerRequest;
 use App\Http\Requests\UpdateCustomerRequest;
 use App\Models\PaymentLedger;
+use App\Models\Role;
+use Illuminate\Support\Facades\Auth;
 
 class CustomerController extends Controller
 {
@@ -19,13 +21,30 @@ class CustomerController extends Controller
      */
     public function index()
     {
-        $customers = Customer::orderBy('id', 'desc')->get();
+        $customers = Customer::orderBy('id', 'desc')->paginate(200);
+        $permission = Role::where('id', Auth::user()->role)->first();
         return view('pages.customers.customer')
+            ->with('permission', $permission)
             ->with('customers', $customers);
+    }
+
+
+    public function creditSales()
+    {
+        $creditcustomers = SalesOrder::orderBy('id', 'desc')->get();
+        return view('pages.customers.creditSales')
+            ->with('creditcustomers', $creditcustomers);
     }
 
     public function addCustomer(Request $request)
     {
+        $validated = $request->validate([
+            'phone' => 'required|unique:customers,phone',
+            'tin' => 'nullable|unique',
+        ], [
+            'phone.unique' => 'This phone already exists. Please choose another Phone.',
+            'phone.required' => 'phone is required.',
+        ]);
         $customer =  Customer::create([
             'name' => $request->name,
             'type' => $request->type,
@@ -55,6 +74,8 @@ class CustomerController extends Controller
 
     public function editCustomer(Request $request, $id)
     {
+
+
         $customer = Customer::find($id);
         $customer->update([
             'name' => $request->name,
@@ -85,6 +106,10 @@ class CustomerController extends Controller
     public function deleteCustomer($id)
     {
         $customer = Customer::find($id);
+        $salesorder = SalesOrder::where('customer_id', $id)->first();
+        if ($salesorder) {
+            return back()->with('error', 'Cannot delete customer: It is used in others table.');
+        }
         $customer->delete();
         activity()
             ->causedBy(auth()->user())

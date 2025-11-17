@@ -14,6 +14,7 @@ class Item extends Model
         'quantity',
         'product_code',
         'unit',
+        'other_unit',
         'cost_price',
         'selling_price1',
         'selling_price2',
@@ -25,12 +26,23 @@ class Item extends Model
         'status',
         'description',
         'reorder',
-        'shelves_id',
+        'reorder_for_shop',
+        'shelf',
         'image2',
 
     ];
-      public function shelf()
+    public function shelf()
     {
         return $this->belongsTo(Shelf::class, 'shelves_id');
+    }
+    public function SalesOrderDetail()
+    {
+        return $this->hasMany(SalesOrderDetail::class, 'item_id');
+    }
+
+    // relationship with Inventory
+    public function inventory()
+    {
+        return $this->hasMany(Inventory::class, 'item_id');
     }
 }

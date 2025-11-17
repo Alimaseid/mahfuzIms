@@ -8,28 +8,25 @@ use Illuminate\Database\Eloquent\Model;
 class GoodReceiving extends Model
 {
     use HasFactory;
-      protected $fillable = [
-        'item_name',
-        'category',
-        'quantity',
-        'product_code',
-        'unit',
-        'cost_price',
-        'selling_price1',
-        'selling_price2',
-        'item_code',
-        'part_number',
-        'image',
-        'brand',
-        'bar_code',
-        'status',
-        'description',
-        'reorder',
-        'shelves_id',
-        'image2',
-        'invoice_no',
-        'location_name',
+    protected $fillable = [
+        'item_id',
+        'batch_id',
         'receiving_date',
-
+        'quantity',
+        'location_id',
+        'invoice_no',
+        'cost_price',
     ];
+    public function item()
+    {
+        return $this->belongsTo(Item::class, 'item_id');
+    }
+    public function batch()
+    {
+        return $this->belongsTo(Batch::class, 'batch_id');
+    }
+    public function location()
+    {
+        return $this->belongsTo(BusinessLocation::class, 'location_id');
+    }
 }

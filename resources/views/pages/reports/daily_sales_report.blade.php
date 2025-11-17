@@ -5,33 +5,43 @@
         <div class="container-fluid">
             <div class="row pt-1">
                 <div class="col-md-6">
-                    <form action="daily-sales-report" method="POST">
+                    <form action="{{ route('reports.dailySales') }}" method="POST">
                         @csrf
                         <div class="row">
-                            <div class="col-sm-6">
-                                <label for="">Sales Porson</label>
-                                <select name="sales_person" id="" class="form-control">
-                                    @if ($salesPerson == '')
-                                        <option value="">All</option>
-                                    @endif
-                                    @forelse ($salers as $saler)
-                                        <option value="{{ $saler }}">{{ $saler }}</option>
-                                    @empty
-                                    @endforelse
+                            <div class="col-sm-4">
+                                <label>Sales Person</label>
+                                <select name="sales_person" class="form-control">
+                                    <option value="">All</option>
+                                    @foreach ($salers as $saler)
+                                        <option value="{{ $saler }}" {{ $salesPerson == $saler ? 'selected' : '' }}>
+                                            {{ $saler }}
+                                        </option>
+                                    @endforeach
                                 </select>
                             </div>
-                            <div class="col-sm-4">
-                                <label for="">Date</label>
-                                <input type="date" name='report_date'class="form-control"
-                                    value="{{ Carbon\Carbon::now()->toDateString() }}"
-                                    max="{{ Carbon\Carbon::now()->toDateString() }}" required>
+
+                            <div class="col-sm-3">
+                                <label>From</label>
+                                <input type="date" name="from_date" value="{{ $fromDate->format('Y-m-d') }}"
+                                    class="form-control">
                             </div>
-                            <div class="col-sm-2">
-                                <hr>
-                                <button type="submit" class="btn btn-sm btn-warning ">Go</button>
+
+                            <div class="col-sm-3">
+                                <label>To</label>
+
+                                <input type="date" name="to_date" value="{{ $toDate->format('Y-m-d') }}"
+                                    class="form-control">
+
+                            </div>
+
+                            <div class="col-sm-2 d-flex align-items-end">
+                                <button type="submit" class="btn btn-warning btn-sm">Go</button>
                             </div>
                         </div>
                     </form>
+
+
+
                 </div>
                 <div class="col-2">
                 </div>
@@ -44,13 +54,18 @@
                     <th >Sales Amount</th>
                     <td >ETB {{number_format($g_amount,2)}}</td>
                  </tr> --}}
-                            <tr>
+                            {{-- <tr>
                                 <th>Sales Tax</th>
                                 <td>ETB {{ number_format($g_tax, 2) }}</td>
-                            </tr>
+                            </tr> --}}
                         </tbody>
                         <tfoot>
                             <tr class="text-warning">
+                                <th>Total Tax</th>
+                                <td>ETB {{ number_format($g_vat, 2) }}</td>
+                            </tr>
+                            <tr class="text-warning">
+
                                 <th>Total Sales</th>
                                 <td>ETB {{ number_format($g_total, 2) }}</td>
                             </tr>
@@ -68,10 +83,10 @@
                                 <th>PartNumber</th>
                                 <th>ItemName</th>
                                 <th>ItemImage</th>
-                                <th>UnitPrice<small>(avg)</small></th>
                                 <th>Qyt</th>
                                 <th>Amount</th>
-                                <th>TaxRate<small>(avg)</small></th>
+                                <th>Discount</th>
+                                <th>Withholding</th>
                                 <th>Tax</th>
                                 <th>Total</th>
                             </tr>
@@ -89,12 +104,14 @@
                                             style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
 
                                     </td>
-                                    <td>{{ number_format($inventory['avg_unit_price'], 2) }}</td>
                                     <td>{{ $inventory['quantity'] }}</td>
-                                    <td>{{ number_format($inventory['amount'], 2) }}</td>
-                                    <td>{{ number_format($inventory['avg_tax_rate'], 2) }}</td>
-                                    <td>{{ number_format($inventory['tax'], 2) }}</td>
+                                    <td>{{ $inventory['quantity'] * $inventory['amount'] }}</td>
+                                    <td>{{ number_format($inventory['discount'], 2) }}</td>
+                                    <td>{{ number_format($inventory['withholding'], 2) }}</td>
+                                    <td>{{ number_format($inventory['vat'], 2) }}</td>
+                                    {{-- <td>{{ number_format($inventory['tax'], 2) }}</td> --}}
                                     <td>{{ number_format($inventory['tatal'], 2) }}</td>
+
                                 </tr>
                             @empty
                             @endforelse

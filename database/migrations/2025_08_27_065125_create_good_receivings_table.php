@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\BusinessLocation;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -15,27 +16,13 @@ return new class extends Migration
     {
         Schema::create('good_receivings', function (Blueprint $table) {
             $table->id();
-            $table->string('item_name');
-            $table->string('category');
-            $table->date('receiving_date')->nullable();
-            $table->string('invoice_no')->nullable();
-            $table->string('location_name')->nullable();
-            $table->foreignId('shelves_id')->nullable();
-            $table->string('unit')->nullable();
-            $table->string('quantity')->nullable();
-            $table->string('product_code')->nullable();
-            $table->string('part_number')->nullable();
-            $table->string('item_code')->nullable();
-             $table->string('bar_code')->nullable();
-            $table->string('brand')->nullable();
-            $table->string('cost_price')->nullable();
-            $table->string('selling_price1')->nullable();
-            $table->string('selling_price2')->nullable();
-            $table->string('image')->nullable();
-            $table->text('image2')->nullable();
-            $table->string('status')->nullable();
-            $table->text('description')->nullable();
-            $table->integer('reorder')->nullable();
+            $table->foreignId('item_id')->constrained('items');
+            $table->foreignId('batch_id');
+            $table->date('receiving_date');
+            $table->foreignId('location_id')->constrained('business_locations');
+            $table->string('invoice_no')->unique();
+            $table->decimal('cost_price');
+            $table->integer('quantity');
             $table->timestamps();
         });
     }

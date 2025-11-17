@@ -16,7 +16,6 @@ return new class extends Migration
         Schema::create('sales_payments', function (Blueprint $table) {
             $table->id();
             $table->foreignId('order_id');
-            $table->foreignId('owner_id');
             $table->foreignId('location_id');
             $table->foreignId('customer_id');
             $table->string('amount');

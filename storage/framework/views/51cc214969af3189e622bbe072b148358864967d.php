@@ -18,7 +18,15 @@
 
                         </div>
                     </div>
-
+                    <?php if($errors->any()): ?>
+                        <div class="alert alert-danger">
+                            <ul class="mb-0">
+                                <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <li><?php echo e($error); ?></li>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                            </ul>
+                        </div>
+                    <?php endif; ?>
                     <div class="card">
                         <div class="row">
                             <div class="col-8 lg">
@@ -54,22 +62,20 @@
                                                         <td><?php echo e($location->address); ?></td>
 
                                                         <td>
-                                                            <?php if($location->type == 'Shop'): ?>
-                                                                <a class="btn btn-warning btn-sm"
-                                                                    href="ItemsOn-<?php echo e($location->id); ?>">
-                                                                    <i class="fas fa-eye "></i>
+                                                            <?php if($permission->manage_edit_location == 'on'): ?>
+                                                                <button type="button" class="btn btn-primary btn-sm"
+                                                                    data-toggle="modal"
+                                                                    data-target="#modal-lg-<?php echo e($location->id); ?>">
+                                                                    <i class="fas fa-edit "></i>
+                                                                </button>
+                                                            <?php endif; ?>
+                                                            <?php if($permission->manage_delete_location == 'on'): ?>
+                                                                <a type="button" class="btn btn-danger btn-sm"
+                                                                    href="delete-location-<?php echo e($location->id); ?>"
+                                                                    onclick="return confirm('Are you sure you ?');">
+                                                                    <i class="fas fa-trash "></i>
                                                                 </a>
                                                             <?php endif; ?>
-                                                            <button type="button" class="btn btn-primary btn-sm"
-                                                                data-toggle="modal"
-                                                                data-target="#modal-lg-<?php echo e($location->id); ?>">
-                                                                <i class="fas fa-edit "></i>
-                                                            </button>
-                                                            <a type="button" class="btn btn-danger btn-sm"
-                                                                href="delete-location-<?php echo e($location->id); ?>"
-                                                                onclick="return confirm('Are you sure you ?');">
-                                                                <i class="fas fa-trash "></i>
-                                                            </a>
                                                         </td>
                                                     </tr>
 

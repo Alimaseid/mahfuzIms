@@ -12,19 +12,63 @@ class RoleController extends Controller
 {
     public function addRole(Request $request)
     {
+
         $role = Role::create([
-            'role_name' => $request->role,
+            'role_name' => $request->role_name,
             'manage_user' => $request->manage_user,
+            'manage_edit_user' => $request->manage_edit_user,
+            'manage_delete_user' => $request->manage_delete_user,
+
+            'manage_location' => $request->manage_location,
+            'manage_edit_location' => $request->manage_edit_location,
+            'manage_delete_location' => $request->manage_delete_location,
+
+            'manage_item_unit' => $request->manage_item_unit,
+            'manage_edit_itemUnit' => $request->manage_edit_itemUnit,
+            'manage_delete_itemUnit' => $request->manage_delete_itemUnit,
+
             'manage_item' => $request->manage_item,
-            'manage_vendor' => $request->manage_vendor,
-            'manage_purchase' => $request->manage_purchase,
+            'manage_edit_item' => $request->manage_edit_item,
+            'manage_delete_item' => $request->manage_delete_item,
+            'set_item_price' => $request->set_item_price,
+
+            'manage_category' => $request->manage_category,
+            'manage_edit_category' => $request->manage_edit_category,
+            'manage_delete_category' => $request->manage_delete_category,
+
+            'manage_shelf' => $request->manage_shelf,
+            'manage_edit_shelf' => $request->manage_edit_shelf,
+            'manage_delete_shelf' => $request->manage_delete_shelf,
+
             'manage_customer' => $request->manage_customer,
+            'manage_edit_customer' => $request->manage_edit_customer,
+            'manage_delete_customer' => $request->manage_delete_customer,
+            'manage_dailycustomerReport' => $request->manage_dailycustomerReport,
             'manage_customer_history' => $request->manage_customer_history,
+
+            'manage_good_receiving' => $request->manage_good_receiving,
+            'manage_edit_goodreceiving' => $request->manage_edit_goodreceiving,
+            'manage_delete_goodreceiving' => $request->manage_delete_goodreceiving,
+
             'manage_sales' => $request->manage_sales,
-            'manage_order' => $request->manage_order,
-            'manage_store_issue' => $request->manage_store_issue,
+            'manage_edit_sales' => $request->manage_edit_sales,
+            'manage_delete_sales' => $request->manage_delete_sales,
+            'manage_dailysalesReport' => $request->manage_dailysalesReport,
+            'manage_shopStock_reports' => $request->manage_shopStock_reports,
+            'manage_shopTRansferReports' => $request->manage_shopTRansferReports,
+
+            'manage_item_transfer' => $request->manage_item_transfer,
+            'manage_itemTransfer_delete' => $request->manage_itemTransfer_delete,
+
+            'manage_disposal' => $request->manage_disposal,
+            'manage_edit_disposal' => $request->manage_edit_disposal,
+            'manage_delete_disposal' => $request->manage_delete_disposal,
+
+            'manage_activity_log' => $request->manage_activity_log,
             'approval' => $request->approval,
-            'reports' => $request->reports
+
+            'manage_stock_reports' => $request->manage_stock_reports,
+            'manage_storeTRansferReports' => $request->manage_storeTRansferReports
         ]);
 
         // ✅ Log activity
@@ -41,19 +85,7 @@ class RoleController extends Controller
     {
         $role = Role::findOrFail($id);
 
-        $role->update([
-            'manage_user' => $request->manage_user,
-            'manage_item' => $request->manage_item,
-            'manage_vendor' => $request->manage_vendor,
-            'manage_purchase' => $request->manage_purchase,
-            'manage_customer' => $request->manage_customer,
-            'manage_customer_history' => $request->manage_customer_history,
-            'manage_sales' => $request->manage_sales,
-            'manage_order' => $request->manage_order,
-            'manage_store_issue' => $request->manage_store_issue,
-            'approval' => $request->approval,
-            'reports' => $request->reports
-        ]);
+        $role->update($request->except('_token'));
 
         // ✅ Log activity
         activity()
@@ -83,11 +115,12 @@ class RoleController extends Controller
 
     public function setRole(Request $request, $id)
     {
+
         $user = User::findOrFail($id);
-
+        $user->role;
         $oldRole = $user->role;
-
-        $user->update(['role' => $request->role]);
+        $user->role = $request->role;
+        $user->update();
 
         // ✅ Log activity
         activity()

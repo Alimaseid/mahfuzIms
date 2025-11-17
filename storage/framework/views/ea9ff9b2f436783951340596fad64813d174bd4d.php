@@ -44,17 +44,20 @@
                                                         <td><?php echo e($item_unit->unit); ?></td>
 
                                                         <td>
-
-                                                            <button type="button" class="btn btn-primary btn-sm"
-                                                                data-toggle="modal"
-                                                                data-target="#modal-lg-<?php echo e($item_unit->id); ?>">
-                                                                <i class="fas fa-edit "></i>
-                                                            </button>
-                                                            <a type="button" class="btn btn-danger btn-sm"
-                                                                href="delete-item_unit-<?php echo e($item_unit->id); ?>"
-                                                                onclick="return confirm('Are you sure you ?');">
-                                                                <i class="fas fa-trash "></i>
-                                                            </a>
+                                                            <?php if($permission->manage_edit_itemUnit == 'on'): ?>
+                                                                <button type="button" class="btn btn-primary btn-sm"
+                                                                    data-toggle="modal"
+                                                                    data-target="#modal-lg-<?php echo e($item_unit->id); ?>">
+                                                                    <i class="fas fa-edit "></i>
+                                                                </button>
+                                                            <?php endif; ?>
+                                                            <?php if($permission->manage_delete_itemUnit == 'on'): ?>
+                                                                <a type="button" class="btn btn-danger btn-sm"
+                                                                    href="delete-item_unit-<?php echo e($item_unit->id); ?>"
+                                                                    onclick="return confirm('Are you sure you ?');">
+                                                                    <i class="fas fa-trash "></i>
+                                                                </a>
+                                                            <?php endif; ?>
                                                         </td>
                                                     </tr>
 

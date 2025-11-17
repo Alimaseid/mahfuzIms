@@ -32,7 +32,6 @@
                                 {{-- <th>Date</th> --}}
                                 <th>SalesDate</th>
                                 <th>CustomerName</th>
-                                {{-- <th>SalesType</th> --}}
                                 <th>Payment</th>
                                 <th>InvoiceNumber</th>
                                 <th>Location</th>
@@ -63,7 +62,6 @@
                                             @endforelse
                                         </td>
 
-                                        {{-- <td>{{$salesOrder->sales_type}}</td> --}}
 
                                         <div class="modal fade" id="modal-lg-view-{{ $salesOrder->id }}">
                                             <div class="modal-dialog modal-lg">
@@ -77,17 +75,35 @@
                                                     </div>
                                                     <div class="modal-body">
                                                         <div class="row">
-                                                            <div class="col-3">
+                                                            <div class="col">
                                                                 Item
                                                             </div>
-                                                            <div class="col-3">
+                                                            <div class="col">
+                                                                p-No1
+                                                            </div>
+                                                            <div class="col">
+                                                                P-No2
+                                                            </div>
+                                                            <div class="col">
+                                                                Image1
+                                                            </div>
+                                                            <div class="col">
                                                                 Quantity
                                                             </div>
-                                                            <div class="col-3">
-                                                                Price <small>Vat</small>
+                                                            <div class="col">
+                                                                Price
                                                             </div>
-                                                            <div class="col-3">
-                                                                Total
+                                                            <div class="col">
+                                                                Vat
+                                                            </div>
+                                                            <div class="col">
+                                                                With Holding
+                                                            </div>
+                                                            <div class="col">
+                                                                Discount
+                                                            </div>
+                                                            <div class="col">
+                                                                SubTotal
                                                             </div>
                                                         </div>
                                                         <hr>
@@ -99,29 +115,62 @@
                                                                 @php
                                                                     $total = $total + $salesOrderDetail->total;
                                                                 @endphp
-                                                                {{-- @php
-                                                                    $imagePath = str_replace('\\', '/', $item->image); // Fix backslashes
-                                                                @endphp --}}
+                                                                @php
+                                                                    $imagePath1 = str_replace(
+                                                                        '\\',
+                                                                        '/',
+                                                                        $salesOrderDetail->item->image,
+                                                                    );
+                                                                    $imagePath2 = str_replace(
+                                                                        '\\',
+                                                                        '/',
+                                                                        $salesOrderDetail->item->image2,
+                                                                    );
+                                                                @endphp
                                                                 <div class="row">
-                                                                    <div class="col-3">
-                                                                        <a
-                                                                            href=""><b>{{ $salesOrderDetail->item_name }}</b></a>
+                                                                    <div class="col">
+                                                                        <b>{{ $salesOrderDetail->item->item_name }}</b>
                                                                     </div>
-                                                                    <div class="col-3">
-                                                                        {{ number_format($salesOrderDetail->quantity) }}
+                                                                    <div class="col">
+                                                                        <b>{{ $salesOrderDetail->item->product_code }}</b>
                                                                     </div>
-                                                                    <div class="col-3">
-                                                                        {{ number_format($salesOrderDetail->amount, 2) }}
-                                                                        ,<small>{{ $salesOrderDetail->tax }}%</small>
+                                                                    <div class="col">
+                                                                        <b>{{ $salesOrderDetail->item->part_number }}</b>
                                                                     </div>
-                                                                    <div class="col-3">
-                                                                        <b>{{ number_format($salesOrderDetail->total, 2) }}</b>
+                                                                    <div class="col">
+                                                                        <img src="{{ asset($imagePath1) }}" alt=""
+                                                                            style="width: 40px; height: 40px; object-fit: cover; border-radius: 5px; cursor: pointer;">
+
                                                                     </div>
+
+                                                                    <div class="col">
+                                                                        {{ $salesOrderDetail->quantity }}
+                                                                    </div>
+                                                                    <div class="col">
+                                                                        {{ $salesOrderDetail->amount }}
+                                                                    </div>
+                                                                    <div class="col">
+                                                                        <b>{{ $salesOrderDetail->tax }}</b>
+                                                                    </div>
+                                                                    <div class="col">
+                                                                        <b>{{ $salesOrderDetail->with_holding }}</b>
+                                                                    </div>
+                                                                    <div class="col">
+                                                                        <b>{{ $salesOrderDetail->discount }}</b>
+                                                                    </div>
+                                                                    <div class="col">
+                                                                        <b>{{ $salesOrderDetail->total }}</b>
+                                                                    </div>
+
+
                                                                 </div>
                                                                 <br>
                                                             @endif
                                                         @empty
                                                         @endforelse
+                                                        <div class="col">
+                                                            Total:{{ $salesOrder->grand_total }}
+                                                        </div>
                                                     </div>
 
                                                 </div>
@@ -132,7 +181,8 @@
                                         <!-- /.modal -->
                                         <td><a class="btn" data-toggle="modal"
                                                 data-target="#modal-lg-view-{{ $salesOrder->id }}"> <i
-                                                    style="color: greenyellow">{{ number_format($total, 2) }}</i></a></td>
+                                                    style="color: greenyellow">{{ number_format($salesOrder->grand_total, 2) }}</i></a>
+                                        </td>
                                         <td>{{ $salesOrder->reference_number }}</td>
                                         <td>
                                             @forelse ($businessLocations as $businessLocation)
@@ -143,6 +193,7 @@
                                             @endforelse
                                         </td>
                                         <td>
+
                                             @if ($salesOrder->SM_status == 'Pending')
                                                 <p class="text-warning">{{ $salesOrder->SM_status }}</p>
                                             @elseif ($salesOrder->SM_status == 'Rejected')
@@ -154,6 +205,8 @@
                                             @else
                                                 <p class="text-success">{{ $salesOrder->SM_status }}</p>
                                             @endif
+
+
                                         </td>
 
                                         <td>{{ $salesOrder->sales_person }}</td>
@@ -162,30 +215,31 @@
                                                 data-target="#modal-lg-view-{{ $salesOrder->id }}">
                                                 Details
                                             </button>
-                                            @if ($salesOrder->SM_status != 'Accepted' && $salesOrder->SM_status != 'Shipping' && $salesOrder->SM_status != 'Done')
+                                            @if ($permission->manage_edit_sales == 'on')
                                                 <a type="button" class="btn btn-info btn-sm" data-toggle="modal"
                                                     data-target="#modal-lg-{{ $salesOrder->id }}">
                                                     <i class="fas fa-edit "></i>
                                                 </a>
-                                                {{-- <a type="button" class="btn btn-danger btn-sm" href="delete-sales-order-{{$salesOrder->id}}" onclick="return confirm('Are you sure you ?');">
-                                <i class="fas fa-trash"></i>
-                              </a> --}}
-                                                <a type="button" class="btn btn-danger btn-sm" href="#"
-                                                    onclick="return confirm('Forbidden To Remove Sales Order !!');">
+                                            @endif
+                                            @if ($permission->manage_delete_sales == 'on')
+                                                <a type="button" class="btn btn-danger btn-sm"
+                                                    href="delete-sales-order-{{ $salesOrder->id }}"
+                                                    onclick="return confirm('Are you sure you ?');">
                                                     <i class="fas fa-trash"></i>
                                                 </a>
-                                            @else
-                                                <a href="/sales-invoice-{{ $salesOrder->id }}" rel="noopener"
-                                                    target="_blank" class="btn btn-warning btn-sm"><i
-                                                        class="fas fa-print"></i> Print</a>
                                             @endif
-                                            @if ($salesOrder->SM_status == 'Shipping')
+
+
+                                            <a href="/sales-invoice-{{ $salesOrder->id }}" rel="noopener" target="_blank"
+                                                class="btn btn-warning btn-sm"><i class="fas fa-print"></i> Print</a>
+
+                                            {{-- @if ($salesOrder->SM_status == 'Shipping')
                                                 <a href="/acceptIssue-{{ $salesOrder->id }}" rel="noopener"
                                                     class="btn btn-primary btn-sm"
                                                     onclick="return confirm('Are you sure you ? Please ReCheck Before Approve !');">
                                                     <i class="fas fa-car"></i> isDeliverd ?
                                                 </a>
-                                            @endif
+                                            @endif --}}
                                         </td>
                                     </tr>
                                     <!-- /.card -->
@@ -249,498 +303,11 @@
                             <div class="modal-body">
                                 <section class="content">
                                     <div class="container-fluid">
-                                        <div class="row">
-                                            <div class="col-12">
-                                                <form method="POST" action="add-sales-order">
-                                                    @csrf
-                                                    <!-- Main content -->
-                                                    <div class="invoice p-3 mb-3">
-                                                        <!-- title row -->
-                                                        <div class="row">
-                                                            <div class="col-12">
-                                                                <h4>
-                                                                    <i class="fas fa-globe"></i> Inventory, Inc.
-                                                                    <small class="float-right">Date :
-                                                                        {{ \Carbon\Carbon::now()->toFormattedDateString() }}</small>
-                                                                </h4>
-                                                            </div>
-                                                            <!-- /.col -->
-                                                        </div>
-                                                        <!-- info row -->
-                                                        <div class="row invoice-info">
-                                                            <div class="col-sm-4 invoice-col">
-                                                                <address>
-                                                                    {{-- <strong>Company Name, Inc.</strong><br> --}}
-                                                                    Business Location
-                                                                    <select name="business_location" class="form-control"
-                                                                        id="location" required>
-
-                                                                        @forelse ($businessLocations as $businessLocation)
-                                                                            <option value="{{ $businessLocation->id }}">
-                                                                                {{ $businessLocation->name }}</option>
-                                                                        @empty
-                                                                        @endforelse
-                                                                    </select>
-                                                                    {{-- <br> --}}
-                                                                    Invoice No
-                                                                    <input type="text" name="refrence_no"
-                                                                        class="form-control"
-                                                                        value=" {{ 'IMS-RF-' . random_int(100000, 9999999) }}">
-                                                                </address>
-                                                            </div>
-                                                            <!-- /.col -->
-                                                            <div class="col-sm-1 invoice-col">
-
-                                                            </div>
-                                                            <!-- /.col -->
-                                                            <div class="col-sm-7 invoice-col">
-                                                                <div class="row">
-                                                                    <div class="col-12">
-                                                                        Sales Type
-                                                                        <select name="sales_type" id=""
-                                                                            class="form-control" required>
-                                                                            {{-- <option value="">Select</option> --}}
-                                                                            <option value="Cash Sales">Cash Sales</option>
-                                                                            <option value="Credit Sales">Credit Sales
-                                                                            </option>
-                                                                        </select>
-                                                                    </div>
-                                                                </div>
-
-                                                                To &nbsp; &nbsp;
-
-                                                                <a href="/customers" style='color:rgb(98, 255, 0)'>
-                                                                    <i class="fa fa-plus-circle" aria-hidden="true"></i>
-                                                                </a>
-                                                                <address>
-                                                                    <select name="customer"
-                                                                        class="form-control select2bs4" required>
-                                                                        <option value="">Select</option>
-                                                                        @forelse ($customers as $customer)
-                                                                            <option value="{{ $customer->id }}">
-                                                                                {{ $customer->name }}</option>
-                                                                        @empty
-                                                                        @endforelse
-                                                                    </select>
-                                                                </address>
-                                                            </div>
-                                                            <!-- /.col -->
-                                                        </div>
-                                                        <!-- /.row -->
-                                                        <!-- Table row -->
-                                                        <div class="row">
-                                                            <div class="col-12 table-responsive">
-                                                                <a href="/items" style="color:rgb(98, 255, 0)">
-                                                                    <i class="fa fa-plus-circle" aria-hidden="true"></i>
-                                                                    ADD New Item
-                                                                </a>
-
-                                                                <table class="table table-striped">
-                                                                    <thead>
-                                                                        <tr>
-                                                                            <th>Product / Item</th>
-                                                                            <th>Quantity</th>
-                                                                            <th>U-Price</th>
-                                                                            <th>SubTotal</th>
-                                                                            <th></th>
-                                                                        </tr>
-                                                                    </thead>
-                                                                    <tbody id="add_items">
-                                                                        <tr id="row_0">
-                                                                            <td style="width: 300px;">
-                                                                                <div class="dropdown w-100">
-                                                                                    <input type="text"
-                                                                                        placeholder="Search Item..."
-                                                                                        id="myInput_0"
-                                                                                        onclick="myFunction(0)"
-                                                                                        onkeyup="filterFunction(0)"
-                                                                                        class="form-control"
-                                                                                        autocomplete="off" required>
-                                                                                    <div id="myDropdown_0"
-                                                                                        class="dropdown-content w-100"
-                                                                                        style="display:none; position:absolute; z-index:1000; max-height:250px; overflow:auto;">
-                                                                                        <div id="item_list_0"></div>
-                                                                                    </div>
-                                                                                </div>
-                                                                                <input type="hidden" id="item_id_0"
-                                                                                    name="addmore[0][item_id]"
-                                                                                    value="">
-                                                                            </td>
-                                                                            <td>
-                                                                                <input type="number" min="1"
-                                                                                    id="qty_0"
-                                                                                    name="addmore[0][quantity]"
-                                                                                    onchange="subTotalCal(0)"
-                                                                                    class="form-control"
-                                                                                    placeholder="Quantity" required>
-                                                                            </td>
-                                                                            <td>
-                                                                                <input type="number" id="u_price_0"
-                                                                                    name="addmore[0][u_price]"
-                                                                                    onchange="subTotalCal(0)"
-                                                                                    class="form-control"
-                                                                                    style="width:120px;" required>
-                                                                                {{-- <select id="u_price_0"
-                                                                                    name="addmore[0][u_price]"
-                                                                                    onchange="subTotalCal(0)"
-                                                                                    class="form-control"
-                                                                                    style="width:120px;" required>
-                                                                                    <option value="">Price</option>
-                                                                                </select> --}}
-                                                                            </td>
-                                                                            <td>
-                                                                                <input type="text" id="sub_0"
-                                                                                    class="form-control sub"
-                                                                                    placeholder="Sub Total" disabled>
-                                                                            </td>
-                                                                            <td>
-                                                                                <button type="button"
-                                                                                    class="remove-tr"><b
-                                                                                        style="color:red">X</b></button>
-                                                                            </td>
-                                                                        </tr>
-                                                                    </tbody>
-
-                                                                    <!-- Image Modal -->
-                                                                    <div id="imageModal" class="modal">
-                                                                        <span id="closeModal">&times;</span>
-                                                                        <div class="modal-content">
-                                                                            <img id="modalImage" src="">
-                                                                        </div>
-                                                                    </div>
-                                                                </table>
-
-                                                                <a href="#" id="add_new_items"
-                                                                    class="btn btn-success float-right"
-                                                                    style="padding:5px; text-decoration:none">
-                                                                    <i class="fa fa-plus-circle" aria-hidden="true"></i>
-                                                                </a>
-                                                            </div>
-                                                        </div>
-                                                        <!-- /.row -->
-
-                                                        <div class="row" id='calculate'>
-                                                            <!-- accepted payments column -->
-                                                            <div class="col-7">
-                                                                <div class="row">
-                                                                    <div class="col-sm-6 invoice-col">
-                                                                        <address>
-                                                                            {{-- <strong>Company Name, Inc.</strong><br> --}}
-                                                                            Expected Delivery Date
-                                                                            <input type="date"
-                                                                                name="expected_delivery_date"
-                                                                                class="form-control"
-                                                                                value="{{ \Carbon\Carbon::now()->toDateString() }}">
-                                                                    </div>
-                                                                    <div class="col-sm-3 invoice-col">
-                                                                        Vat %
-                                                                        <input type="number" min="0"
-                                                                            max="15" value="0"
-                                                                            id="vat_include" name="vat_include"
-                                                                            class="form-control" onchange="valCal()"
-                                                                            required>
-                                                                        {{-- <br> --}}
-                                                                        {{-- Shipment Reference
-                                                      <input type="text" name="shipment_reference" class="form-control" > --}}
-                                                                    </div>
-                                                                    </address>
-                                                                </div>
-                                                                {{-- <p class="lead">Payment Methods:</p> --}}
-                                                                {{-- <img src="../../dist/img/credit/abby.jpg" alt="Abyssina">
-                                                                <img src="../../dist/img/credit/cbe.jpg" alt="CBE">
-                                                                <img src="../../dist/img/credit/hij.jpg" alt="Hijra">
-                                                                <img src="../../dist/img/credit/hbr.jpg" alt="Hibret"> --}}
-                                                                <div class="row">
-                                                                    <div class="col-8">
-
-                                                                    </div>
-                                                                    <div class="col-4">
-
-                                                                    </div>
-                                                                </div>
-
-                                                            </div>
-                                                            <!-- /.col -->
-                                                            <div class="col-5">
-                                                                <p class="lead" style="float:right;">Total Due Amount
-                                                                </p>
-
-                                                                <div class="table-responsive" style="float:right;">
-                                                                    <table class="table">
-                                                                        <tr>
-                                                                            <th style="width:50%">Subtotal : </th>
-                                                                            <td><i id="sub"></i> </td>
-                                                                        </tr>
-                                                                        <tr>
-                                                                            <th id="vatRate">Tax(0%)</th>
-                                                                            <td> <i id="vat"></i> </td>
-                                                                        </tr>
-                                                                        {{-- <tr>
-                                                  <th>Shipping:</th>
-                                                  <td>$5.80</td>
-                                                </tr> --}}
-                                                                        <tr>
-                                                                            <th>Total:</th>
-                                                                            <td> <i id="tot" name='Gtotal'></i>
-                                                                            </td>
-                                                                        </tr>
-                                                                    </table>
-                                                                </div>
-                                                            </div>
-                                                            <!-- /.col -->
-                                                        </div>
-                                                        <!-- /.row -->
-
-                                                        <!-- this row will not appear when printing -->
-                                                        <div class="row no-print">
-                                                            <div class="col-12">
-                                                                <a href="#" rel="noopener" target="_blank"
-                                                                    class="btn btn-default"><i class="fas fa-print"></i>
-                                                                    Print</a>
-                                                                <button type="submit"
-                                                                    class="btn btn-success float-right"> Submit
-                                                                    Order
-                                                                </button>
-                                                                {{-- <button type="button" class="btn btn-primary float-right" style="margin-right: 5px;">
-                                              <i class="fas fa-download"></i> Generate PDF
-                                            </button> --}}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <!-- /.invoice -->
-                                                </form>
-                                            </div><!-- /.col -->
-                                        </div><!-- /.row -->
-                                    </div><!-- /.container-fluid -->
-                                </section>
-
-                            </div>
-                        </div>
-                        <!-- /.modal-content -->
-                    </div>
-                    <!-- /.modal-dialog -->
-                </div>
-
-
-                <div class="modal fade" id="modal-lg-ADD">
-                    <div class="modal-dialog modal-lg">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h4 class="modal-title">Additional Item From Shop Sales Order</h4>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <section class="content">
-                                    <div class="container-fluid">
-                                        <div class="row">
-                                            <div class="col-12">
-                                                <form method="POST" action="add-sales-order-from-shop">
-                                                    @csrf
-                                                    <!-- Main content -->
-                                                    <div class="invoice p-3 mb-3">
-                                                        <!-- title row -->
-                                                        <div class="row">
-                                                            <div class="col-12">
-                                                                <h4>
-                                                                    <i class="fas fa-globe"></i> UKAZ, Inc.
-                                                                    <small class="float-right">Date :
-                                                                        {{ \Carbon\Carbon::now()->toFormattedDateString() }}</small>
-                                                                </h4>
-                                                            </div>
-                                                            <!-- /.col -->
-                                                        </div>
-                                                        <!-- info row -->
-                                                        <div class="row invoice-info">
-                                                            <div class="col-sm-5 invoice-col">
-                                                                <address>
-                                                                    {{-- <strong>Company Name, Inc.</strong><br> --}}
-                                                                    Business Location
-                                                                    <select name="business_location" class="form-control"
-                                                                        id="x_location" required>
-                                                                        {{-- <option value="">Select</option> --}}
-                                                                        @forelse ($businessLocations as $businessLocation)
-                                                                            <option value="{{ $businessLocation->id }}">
-                                                                                {{ $businessLocation->name }}</option>
-                                                                        @empty
-                                                                        @endforelse
-                                                                    </select>
-                                                                    {{-- <br> --}}
-
-                                                            </div>
-                                                            <div class="col-sm-5 invoice-col">
-                                                                <address>
-                                                                    Invoice No
-                                                                    <input type="text" name="refrence_no"
-                                                                        class="form-control" required>
-                                                                </address>
-                                                            </div>
-                                                            <div class="col-sm-2 invoice-col">
-                                                                Vat %
-                                                                <input type="number" min="0" max="15"
-                                                                    value="0" id="x_vat_include"
-                                                                    name="x_vat_include" class="form-control"
-                                                                    onchange="valCal()" required>
-                                                            </div>
-                                                            <!-- /.col -->
-                                                            <div class="col-sm-1 invoice-col">
-
-                                                            </div>
-
-                                                        </div>
-                                                        <!-- /.col -->
-                                                    </div>
-                                                    <!-- /.row -->
-                                                    <!-- Table row -->
-                                                    <div class="row">
-
-                                                        <div class="col-12 table-responsive">
-                                                            <a href="/items" style='color:rgb(98, 255, 0)'>
-                                                                <i class="fa fa-plus-circle" aria-hidden="true"></i>
-                                                                ADD New Item</a>
-                                                            <table class="table table-striped">
-                                                                <tr>
-                                                                    <th>ProductCode</th>
-                                                                    <th>Quantity</th>
-                                                                    <th>U-Price</th>
-                                                                    <th>SubTotal</th>
-                                                                    <th></th>
-                                                                </tr>
-                                                                <tbody id="x_add_items">
-                                                                    <tr id="">
-                                                                        <td style="width: 250px;">
-                                                                            <div class="row">
-                                                                                <div class="dropdown">
-                                                                                    <div id="x_myDropdown_0"
-                                                                                        class="dropdown-content">
-                                                                                        <input type="text"
-                                                                                            placeholder="Search Item..."
-                                                                                            id="x_myInput_0"
-                                                                                            onclick="x_myFunction(0)"
-                                                                                            onkeyup="x_filterFunction(0)"
-                                                                                            name="x_addmore[0][search_item]"
-                                                                                            class="form-control"
-                                                                                            autoComplete="off" required>
-                                                                                        <div id="x_items_0"
-                                                                                            style="display: none">
-                                                                                            {{-- item lists --}}
-                                                                                            <ul class="nav nav-pills nav-sidebar flex-column"
-                                                                                                id="x_item_list_0"
-                                                                                                data-widget="treeview"
-                                                                                                role="menu"
-                                                                                                data-accordion="false">
-
-                                                                                            </ul>
-                                                                                            {{-- end item list --}}
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </div>
-                                                                                <input type="hidden" id="x_item_id_0"
-                                                                                    name="x_addmore[0][item_id]"
-                                                                                    value="">
-                                                                            </div>
-
-                                                                        </td>
-                                                                        <td>
-                                                                            <input type="number" min="0"
-                                                                                id='x_0'
-                                                                                name="x_addmore[0][quantity]"
-                                                                                onchange="x_subTotalCal(0)"
-                                                                                class="form-control input-group-sm"
-                                                                                placeholder="Quantity" required>
-                                                                        </td>
-                                                                        <td>
-                                                                            <select id='x_u_price_0'
-                                                                                name="x_addmore[0][u_price]"
-                                                                                onchange="x_subTotalCal(0)"
-                                                                                class="form-control" style="width:120px;"
-                                                                                required>
-                                                                                <option value="">Price</option>
-                                                                            </select>
-                                                                        </td>
-
-                                                                        <td><input type="text" id="x_sub_0"
-                                                                                class="form-control x_sub" value=""
-                                                                                class="form-control"
-                                                                                placeholder="Sub Total" disabled /></td>
-
-                                                                    </tr>
-
-                                                                </tbody>
-
-
-                                                            </table>
-                                                            <a href="#" id="x_add_new_items"
-                                                                class="btn btn-success float-right"
-                                                                style="padding:5px; text-decoration:none">
-
-                                                                <i class="fa fa-plus-circle" aria-hidden="true"></i>
-                                                            </a>
-
-                                                        </div>
-                                                        <hr><br>
-                                                        <!-- /.col -->
-                                                    </div>
-                                                    <!-- /.row -->
-
-
-                                                    <!-- /.row -->
-                                                    <hr>
-                                                    <!-- this row will not appear when printing -->
-                                                    <div class="row no-print">
-                                                        <div class="col-12">
-                                                            <a href="#" rel="noopener" target="_blank"
-                                                                class="btn btn-default"><i class="fas fa-print"></i>
-                                                                Print</a>
-                                                            <button type="submit" class="btn btn-success float-right">
-                                                                Submit
-                                                                Order
-                                                            </button>
-                                                            {{-- <button type="button" class="btn btn-primary float-right" style="margin-right: 5px;">
-                                              <i class="fas fa-download"></i> Generate PDF
-                                            </button> --}}
-                                                        </div>
-                                                    </div>
-                                            </div>
-                                            <!-- /.invoice -->
-                                            </form>
-                                        </div><!-- /.col -->
-                                    </div><!-- /.row -->
-                            </div><!-- /.container-fluid -->
-    </section>
-
-    </div>
-    </div>
-    <!-- /.modal-content -->
-    </div>
-    <!-- /.modal-dialog -->
-    </div>
-
-
-
-
-
-    @forelse ($salesOrders as $salesOrder)
-        <div class="modal fade" id="modal-lg-{{ $salesOrder->id }}">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h4 class="modal-title">Edit Order - {{ $salesOrder->reference_number }}</h4>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <section class="content">
-                            <div class="container-fluid">
-                                <div class="row">
-                                    <div class="col-12">
-                                        <form method="POST" action="edit-sales-order-{{ $salesOrder->id }}">
+                                        <form method="POST" action="{{ url('add-sales-order') }}">
                                             @csrf
                                             <div class="invoice p-3 mb-3">
 
-                                                <!-- ================= Order Info ================= -->
+                                                <!-- Title row -->
                                                 <div class="row">
                                                     <div class="col-12">
                                                         <h4>
@@ -751,210 +318,194 @@
                                                     </div>
                                                 </div>
 
+                                                <!-- Info row -->
                                                 <div class="row invoice-info">
                                                     <div class="col-sm-4 invoice-col">
                                                         <address>
                                                             Business Location
                                                             <select name="business_location" class="form-control"
-                                                                required>
+                                                                id="location" required>
+                                                                <option value="">Select</option>
                                                                 @foreach ($businessLocations as $businessLocation)
-                                                                    <option value="{{ $businessLocation->id }}"
-                                                                        {{ $salesOrder->business_location_id == $businessLocation->id ? 'selected' : '' }}>
+                                                                    <option value="{{ $businessLocation->id }}">
                                                                         {{ $businessLocation->name }}
                                                                     </option>
                                                                 @endforeach
                                                             </select>
+
                                                             Invoice No
-                                                            <input type="text" readonly name="refrence_no"
-                                                                class="form-control"
-                                                                value="{{ $salesOrder->reference_number }}">
+                                                            <input type="text" name="refrence_no" class="form-control"
+                                                                value="{{ 'IMS-RF-' . random_int(100000, 9999999) }}">
                                                         </address>
                                                     </div>
 
+                                                    <div class="col-sm-1"></div>
+
                                                     <div class="col-sm-7 invoice-col">
-                                                        <div class="row">
-                                                            <div class="col-12">
-                                                                Sales Type
-                                                                <select name="sales_type" class="form-control" required>
-                                                                    <option value="{{ $salesOrder->sales_type }}">
-                                                                        {{ $salesOrder->sales_type }}
-                                                                    </option>
-                                                                    <option value="Cash Sales">Cash Sales</option>
-                                                                    <option value="Credit Sales">Credit Sales</option>
-                                                                </select>
-                                                            </div>
+                                                        <div class="form-group">
+                                                            Sales Type
+                                                            <select name="sales_type" class="form-control" required>
+                                                                <option value="Cash Sales">Cash Sales</option>
+                                                                <option value="Credit Sales">Credit Sales</option>
+                                                            </select>
                                                         </div>
 
-                                                        To &nbsp;
-                                                        <a href="/customers" style="color:rgb(98, 255, 0)">
-                                                            <i class="fa fa-plus-circle" aria-hidden="true"></i>
-                                                        </a>
-                                                        <address>
-                                                            <select name="customer" class="form-control" required>
-                                                                @foreach ($customers as $customer)
-                                                                    <option value="{{ $customer->id }}"
-                                                                        {{ $salesOrder->customer_id == $customer->id ? 'selected' : '' }}>
-                                                                        {{ $customer->name }}
-                                                                    </option>
-                                                                @endforeach
-                                                            </select>
-                                                        </address>
+                                                        To
+                                                        <select name="customer" class="form-control select2bs4" required>
+                                                            <option value="">Select</option>
+                                                            @foreach ($customers as $customer)
+                                                                <option value="{{ $customer->id }}">{{ $customer->name }}
+                                                                </option>
+                                                            @endforeach
+                                                        </select>
                                                     </div>
                                                 </div>
 
-                                                <!-- ================= Items Table ================= -->
+                                                <!-- Items table -->
                                                 <div class="row">
                                                     <div class="col-12 table-responsive">
-                                                        <a href="/items" style='color:rgb(98, 255, 0)'>
-                                                            <i class="fa fa-plus-circle"></i> ADD New Item
-                                                        </a>
                                                         <table class="table table-striped">
                                                             <thead>
                                                                 <tr>
-                                                                    <th>Item Name</th>
+                                                                    <th>Product / Item</th>
                                                                     <th>Quantity</th>
                                                                     <th>U-Price</th>
                                                                     <th>SubTotal</th>
                                                                     <th></th>
                                                                 </tr>
                                                             </thead>
-                                                            <tbody id="e_add_items_{{ $salesOrder->id }}">
-                                                                @php
-                                                                    $rowIndex = 0;
-                                                                    $vat = 0;
-                                                                @endphp
-                                                                @foreach ($salesOrderDetails as $salesOrderDetail)
-                                                                    @if ($salesOrderDetail->sales_order_id == $salesOrder->id)
-                                                                        @php
-                                                                            $rowIndex++;
-                                                                            $vat = $salesOrderDetail->tax;
-                                                                        @endphp
-                                                                        <tr
-                                                                            id="e_row_{{ $salesOrder->id }}_{{ $rowIndex }}">
-                                                                            <td style="width: 300px;">
-                                                                                <div class="dropdown w-100">
-                                                                                    <input type="text"
-                                                                                        placeholder="Search Item..."
-                                                                                        id="e_myInput_{{ $salesOrder->id }}_{{ $rowIndex }}"
-                                                                                        value="{{ $salesOrderDetail->item_name }}"
-                                                                                        onclick="e_myFunction({{ $salesOrder->id }}, {{ $rowIndex }})"
-                                                                                        onkeyup="e_filterFunction({{ $salesOrder->id }}, {{ $rowIndex }})"
-                                                                                        class="form-control"
-                                                                                        autocomplete="off" required>
-                                                                                    <div id="e_myDropdown_{{ $salesOrder->id }}_{{ $rowIndex }}"
-                                                                                        class="dropdown-content w-100"
-                                                                                        style="display:none; position:absolute; z-index:1000; max-height:250px; overflow:auto;">
-                                                                                        <div
-                                                                                            id="e_item_list_{{ $salesOrder->id }}_{{ $rowIndex }}">
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </div>
-                                                                                <input type="hidden"
-                                                                                    id="e_item_id_{{ $salesOrder->id }}_{{ $rowIndex }}"
-                                                                                    name="addmore[{{ $rowIndex }}][item_id]"
-                                                                                    value="{{ $salesOrderDetail->item_id }}">
-                                                                                {{-- Image placeholder --}}
-                                                                                <div id="e_item_images_{{ $salesOrder->id }}_{{ $rowIndex }}"
-                                                                                    style="display:flex; gap:5px; margin-top:5px;">
-                                                                                    @if ($salesOrderDetail->item->image)
-                                                                                        <img src="{{ asset($salesOrderDetail->item->image) }}"
-                                                                                            style="width:30px;height:30px;border-radius:5px;cursor:pointer;"
-                                                                                            onclick="openModal('{{ asset($salesOrderDetail->item->image) }}')">
-                                                                                    @endif
-                                                                                    @if ($salesOrderDetail->item->image2)
-                                                                                        <img src="{{ asset($salesOrderDetail->item->image2) }}"
-                                                                                            style="width:30px;height:30px;border-radius:5px;cursor:pointer;"
-                                                                                            onclick="openModal('{{ asset($salesOrderDetail->item->image2) }}')">
-                                                                                    @endif
-                                                                                </div>
-                                                                            </td>
-                                                                            <td>
-                                                                                <input type="number" min="1"
-                                                                                    id="e_qty_{{ $salesOrder->id }}_{{ $rowIndex }}"
-                                                                                    name="addmore[{{ $rowIndex }}][quantity]"
-                                                                                    value="{{ $salesOrderDetail->quantity }}"
-                                                                                    class="form-control"
-                                                                                    onchange="e_subTotalCal({{ $salesOrder->id }}, {{ $rowIndex }})">
-                                                                            </td>
-                                                                            <td>
-                                                                                <input type="number"
-                                                                                    id="e_u_price_{{ $salesOrder->id }}_{{ $rowIndex }}"
-                                                                                    name="addmore[{{ $rowIndex }}][u_price]"
-                                                                                    value="{{ $salesOrderDetail->item->selling_price1 }}"
-                                                                                    class="form-control"
-                                                                                    onchange="e_subTotalCal({{ $salesOrder->id }}, {{ $rowIndex }})">
-                                                                            </td>
-                                                                            <td>
-                                                                                <input type="text"
-                                                                                    id="e_subTotal_{{ $salesOrder->id }}_{{ $rowIndex }}"
-                                                                                    class="form-control e_sub"
-                                                                                    value="{{ $salesOrderDetail->total }}"
-                                                                                    readonly>
-                                                                            </td>
-                                                                            <td>
-                                                                                <button type="button"
-                                                                                    class="btn btn-danger btn-sm"
-                                                                                    onclick="e_removeRow({{ $salesOrder->id }}, {{ $rowIndex }})">
-                                                                                    <i class="fa fa-trash"></i>
-                                                                                </button>
-                                                                            </td>
-                                                                        </tr>
-                                                                    @endif
-                                                                @endforeach
-                                                            </tbody>
+                                                            <tbody id="add_items">
+                                                                <tr id="row_0">
+                                                                    <td style="width: 300px;">
+                                                                        <!-- Category Dropdown -->
+                                                                        <select id="category_0" class="form-control mb-2"
+                                                                            onchange="loadItemsByCategory(0)">
+                                                                            <option value="">-- Select Category --
+                                                                            </option>
+                                                                            @foreach (\App\Models\Item::select('category')->distinct()->pluck('category') as $cat)
+                                                                                <option value="{{ $cat }}">
+                                                                                    {{ $cat }}</option>
+                                                                            @endforeach
+                                                                        </select>
 
+                                                                        <!-- Item Search -->
+                                                                        <div class="item-search w-100 mb-2"
+                                                                            style="position:relative">
+                                                                            <input type="text"
+                                                                                placeholder="Search Item..."
+                                                                                id="myInput_0" onclick="myFunction(0)"
+                                                                                onkeyup="filterFunction(0)"
+                                                                                class="form-control" autocomplete="off"
+                                                                                disabled required>
+                                                                            <div id="myDropdown_0"
+                                                                                class="dropdown-content">
+                                                                                <div id="item_list_0"></div>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <input type="hidden" id="item_id_0"
+                                                                            name="addmore[0][item_id]" value="">
+                                                                        <input type="hidden" id="batch_id_0"
+                                                                            name="addmore[0][batch_id]" value="">
+                                                                        <input type="hidden" id="selling_price2_0"
+                                                                            name="addmore[0][selling_price2]"
+                                                                            value="">
+
+                                                                    </td>
+                                                                    <td>
+                                                                        <input type="number" min="1"
+                                                                            id="qty_0" name="addmore[0][quantity]"
+                                                                            onchange="subTotalCal(0)" class="form-control"
+                                                                            placeholder="Quantity" required>
+                                                                    </td>
+                                                                    <td>
+                                                                        <input type="number" id="u_price_0"
+                                                                            name="addmore[0][u_price]"
+                                                                            onchange="subTotalCal(0)" class="form-control"
+                                                                            style="width:120px;" required>
+                                                                    </td>
+                                                                    <input type="hidden" id="available_qty_0"
+                                                                        value="">
+                                                                    <td>
+                                                                        <input type="text" id="sub_0"
+                                                                            class="form-control sub"
+                                                                            placeholder="Sub Total" disabled>
+                                                                    </td>
+                                                                    <td>
+                                                                        <button type="button" class="remove-tr"><b
+                                                                                style="color:red">X</b></button>
+                                                                    </td>
+                                                                </tr>
+                                                            </tbody>
                                                         </table>
-                                                        <a href="#" class="btn btn-success float-right"
-                                                            onclick="e_addNewRow({{ $salesOrder->id }})">
-                                                            <i class="fa fa-plus-circle"></i> Add New Item
+                                                        <a href="#" id="add_new_items"
+                                                            class="btn btn-success float-right"
+                                                            style="padding:5px; text-decoration:none">
+                                                            <i class="fa fa-plus-circle" aria-hidden="true"></i>
                                                         </a>
                                                     </div>
                                                 </div>
 
-                                                <!-- ================= Totals ================= -->
-                                                <div class="row" id="calculate_{{ $salesOrder->id }}">
+                                                <!-- Totals -->
+                                                <div class="row" id="calculate">
                                                     <div class="col-7">
                                                         <div class="row">
-                                                            <div class="col-sm-6">
-                                                                Expected Delivery Date
-                                                                <input type="date" name="expected_delivery_date"
-                                                                    class="form-control"
-                                                                    value="{{ \Carbon\Carbon::now()->toDateString() }}">
+                                                            <div class="col-md-3">
+                                                                <label>Discount (%)</label>
+                                                                <input type="number" id="discount_percent"
+                                                                    class="form-control" value="0" name="discount"
+                                                                    onchange="calculateTotal()" min="0"max="100">
                                                             </div>
-                                                            <div class="col-sm-3">
-                                                                Vat %
-                                                                <input type="number" min="0" max="15"
-                                                                    value="{{ $vat }}"
-                                                                    id="e_vat_include_{{ $salesOrder->id }}"
-                                                                    name="vat_include" class="form-control"
-                                                                    onchange="calculateTotal({{ $salesOrder->id }})">
+                                                        </div>
+                                                        <div class="row mt-2">
+                                                            <div class="col-md-3">
+                                                                <input type="checkbox" id="vat_include"
+                                                                    name="vat_include" onchange="calculateTotal()"
+                                                                    value="0.15">
+                                                                <label>VAT (%)</label>
+
+                                                            </div>
+                                                        </div>
+                                                        <div class="row mt-2">
+                                                            <div class="col-md-3">
+                                                                <input type="checkbox" id="with_holding"
+                                                                    name="with_holding" onchange="calculateTotal()"
+                                                                    value="0.03">
+                                                                <label>Withholding(%)</label>
                                                             </div>
                                                         </div>
                                                     </div>
 
                                                     <div class="col-5">
-                                                        <p class="lead text-right">Total Due Amount</p>
-                                                        <div class="table-responsive">
+                                                        <p class="lead" style="float:right;">Total Due Amount</p>
+                                                        <div class="table-responsive" style="float:right;">
                                                             <table class="table">
                                                                 <tr>
-                                                                    <th>Subtotal:</th>
-                                                                    <td><i id="e_subtotal_{{ $salesOrder->id }}">0</i>
-                                                                    </td>
+                                                                    <th style="width:50%">Subtotal :</th>
+                                                                    <td><i id="sub"></i></td>
                                                                 </tr>
                                                                 <tr>
-                                                                    <th>Tax:</th>
-                                                                    <td><i id="e_vat_{{ $salesOrder->id }}">0</i></td>
+                                                                    <th id="discountRate">Discount(0%)</th>
+                                                                    <td><i id="discount"></i></td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <th id="vatRate">Tax(0%)</th>
+                                                                    <td><i id="vat"></i></td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <th id="withHoldingRate">WithHolding(0%)</th>
+                                                                    <td><i id="with_hold"></i></td>
                                                                 </tr>
                                                                 <tr>
                                                                     <th>Total:</th>
-                                                                    <td><i id="e_total_{{ $salesOrder->id }}">0</i></td>
+                                                                    <td><i id="tot" name="Gtotal"></i></td>
                                                                 </tr>
                                                             </table>
                                                         </div>
                                                     </div>
                                                 </div>
 
-                                                <!-- ================= Buttons ================= -->
+                                                <!-- Submit -->
                                                 <div class="row no-print">
                                                     <div class="col-12">
                                                         <button type="submit" class="btn btn-success float-right">Submit
@@ -963,239 +514,740 @@
                                                 </div>
                                             </div>
                                         </form>
-                                    </div><!-- /.col -->
-                                </div><!-- /.row -->
-                            </div><!-- /.container-fluid -->
-                        </section>
+                                    </div>
+                                </section>
+                            </div>
+                        </div>
                     </div>
                 </div>
+
+
+                <!-- Bootstrap 5 Image Modal -->
+                <div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-md">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Item Image</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body text-center">
+                                <img id="modalImage" src="" class="img-fluid rounded" alt="Item Image">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @forelse ($salesOrders as $salesOrder)
+                    <div class="modal fade" id="modal-lg-{{ $salesOrder->id }}">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4 class="modal-title">Edit Order - {{ $salesOrder->reference_number }}</h4>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+
+                                <div class="modal-body">
+                                    <section class="content">
+                                        <div class="container-fluid">
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <form method="POST" action="edit-sales-order-{{ $salesOrder->id }}">
+                                                        @csrf
+                                                        @method('PUT')
+                                                        <div class="invoice p-3 mb-3">
+
+                                                            <!-- Order Info -->
+                                                            <div class="row invoice-info">
+                                                                <div class="col-sm-4 invoice-col">
+                                                                    <address>
+                                                                        <label>Business Location</label>
+                                                                        <!-- IMPORTANT: id used by JS -->
+                                                                        <select id="e_location_{{ $salesOrder->id }}"
+                                                                            name="business_location" class="form-control"
+                                                                            required>
+                                                                            <option value="">Select</option>
+                                                                            @foreach ($businessLocations as $loc)
+                                                                                <option value="{{ $loc->id }}"
+                                                                                    {{ $salesOrder->location_id == $loc->id ? 'selected' : '' }}>
+                                                                                    {{ $loc->name }}
+                                                                                </option>
+                                                                            @endforeach
+                                                                        </select>
+
+                                                                        <label>Invoice No</label>
+                                                                        <input type="text" readonly name="refrence_no"
+                                                                            class="form-control"
+                                                                            value="{{ $salesOrder->reference_number }}">
+                                                                    </address>
+                                                                </div>
+
+                                                                <div class="col-sm-8 invoice-col">
+                                                                    <label>Sales Type</label>
+                                                                    <select name="sales_type" class="form-control"
+                                                                        required>
+                                                                        <option value="Cash Sales"
+                                                                            {{ $salesOrder->sales_type == 'Cash Sales' ? 'selected' : '' }}>
+                                                                            Cash Sales
+                                                                        </option>
+                                                                        <option value="Credit Sales"
+                                                                            {{ $salesOrder->sales_type == 'Credit Sales' ? 'selected' : '' }}>
+                                                                            Credit Sales
+                                                                        </option>
+                                                                    </select>
+
+                                                                    <label>Customer</label>
+                                                                    <select name="customer" class="form-control" required>
+                                                                        @foreach ($customers as $customer)
+                                                                            <option value="{{ $customer->id }}"
+                                                                                {{ $salesOrder->customer_id == $customer->id ? 'selected' : '' }}>
+                                                                                {{ $customer->name }}
+                                                                            </option>
+                                                                        @endforeach
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+
+                                                            <!-- Items table -->
+                                                            <div class="row mt-3">
+                                                                <div class="col-12 table-responsive">
+                                                                    <a href="/items" style="color:rgb(98, 255, 0)"><i
+                                                                            class="fa fa-plus-circle"></i> ADD New Item</a>
+
+                                                                    <table class="table table-striped">
+                                                                        <thead>
+                                                                            <tr>
+                                                                                <th>Item Name</th>
+                                                                                <th>Quantity</th>
+                                                                                <th>U-Price</th>
+                                                                                <th>SubTotal</th>
+                                                                                <th></th>
+                                                                            </tr>
+                                                                        </thead>
+
+                                                                        <tbody id="e_add_items_{{ $salesOrder->id }}">
+                                                                            @php
+                                                                                // compute a safe subtotal (before discount/tax)
+                                                                                $subtotal = $salesOrder->details->sum(
+                                                                                    function ($d) {
+                                                                                        return $d->quantity *
+                                                                                            $d->amount;
+                                                                                    },
+                                                                                );
+                                                                            @endphp
+
+                                                                            @foreach ($salesOrder->details ?? [] as $i => $detail)
+                                                                                <tr
+                                                                                    id="e_row_{{ $salesOrder->id }}_{{ $i }}">
+                                                                                    <td style="width:300px;">
+                                                                                        <select
+                                                                                            id="e_category_{{ $salesOrder->id }}_{{ $i }}"
+                                                                                            class="form-control mb-2"
+                                                                                            onchange="e_loadItemsByCategory({{ $salesOrder->id }}, {{ $i }})">
+                                                                                            <option value="">--
+                                                                                                Select Category --</option>
+                                                                                            @foreach ($categories as $cat)
+                                                                                                <option
+                                                                                                    value="{{ $cat->id }}"
+                                                                                                    {{ $detail->item->category_id == $cat->id ? 'selected' : '' }}>
+                                                                                                    {{ $cat->name }}
+                                                                                                </option>
+                                                                                            @endforeach
+                                                                                        </select>
+
+                                                                                        <div class="dropdown w-100"
+                                                                                            style="position:relative;">
+                                                                                            <input type="text"
+                                                                                                placeholder="Search Item..."
+                                                                                                id="e_myInput_{{ $salesOrder->id }}_{{ $i }}"
+                                                                                                onclick="e_myFunction({{ $salesOrder->id }}, {{ $i }})"
+                                                                                                onkeyup="e_filterFunction({{ $salesOrder->id }}, {{ $i }})"
+                                                                                                class="form-control"
+                                                                                                autocomplete="off"
+                                                                                                value="{{ optional($detail->item)->item_name }} | {{ optional($detail->item)->product_code }} | {{ optional($detail->batch)->batch_number ?? '' }}">
+                                                                                            <div id="e_myDropdown_{{ $salesOrder->id }}_{{ $i }}"
+                                                                                                class="dropdown-content w-100"
+                                                                                                style="display:none; position:absolute; max-height:250px; overflow:auto; z-index:2000;">
+                                                                                                <div
+                                                                                                    id="e_item_list_{{ $salesOrder->id }}_{{ $i }}">
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+
+                                                                                        <input type="hidden"
+                                                                                            id="e_item_id_{{ $salesOrder->id }}_{{ $i }}"
+                                                                                            name="addmore[{{ $i }}][item_id]"
+                                                                                            value="{{ $detail->item_id }}">
+                                                                                        <input type="hidden"
+                                                                                            id="e_available_qty_{{ $salesOrder->id }}_{{ $i }}"
+                                                                                            value="{{ optional($detail->item)->quantity ?? 0 }}">
+                                                                                    </td>
+
+                                                                                    <td>
+                                                                                        <input type="number"
+                                                                                            min="1"
+                                                                                            id="e_qty_{{ $salesOrder->id }}_{{ $i }}"
+                                                                                            name="addmore[{{ $i }}][quantity]"
+                                                                                            class="form-control"
+                                                                                            value="{{ $detail->quantity }}"
+                                                                                            onchange="e_subTotalCal({{ $salesOrder->id }}, {{ $i }})">
+                                                                                    </td>
+
+                                                                                    <td>
+                                                                                        <input type="number"
+                                                                                            id="e_u_price_{{ $salesOrder->id }}_{{ $i }}"
+                                                                                            name="addmore[{{ $i }}][u_price]"
+                                                                                            class="form-control"
+                                                                                            value="{{ $detail->amount }}"
+                                                                                            onchange="e_subTotalCal({{ $salesOrder->id }}, {{ $i }})">
+                                                                                    </td>
+
+                                                                                    <td>
+                                                                                        <input type="text"
+                                                                                            id="e_sub_{{ $salesOrder->id }}_{{ $i }}"
+                                                                                            class="form-control e_sub"
+                                                                                            value="{{ number_format($detail->quantity * $detail->amount, 2, '.', '') }}"
+                                                                                            readonly>
+                                                                                    </td>
+
+                                                                                    <td>
+                                                                                        <button type="button"
+                                                                                            class="btn btn-danger btn-sm"
+                                                                                            onclick="e_removeRow({{ $salesOrder->id }}, {{ $i }})">
+                                                                                            <i class="fa fa-trash"></i>
+                                                                                        </button>
+                                                                                    </td>
+                                                                                </tr>
+                                                                            @endforeach
+                                                                        </tbody>
+                                                                    </table>
+
+                                                                    <a href="#" class="btn btn-success float-right"
+                                                                        onclick="e_addNewRow({{ $salesOrder->id }})">
+                                                                        <i class="fa fa-plus-circle"></i> Add New Item
+                                                                    </a>
+                                                                </div>
+                                                            </div>
+
+                                                            <!-- Totals -->
+                                                            <div class="row mt-3">
+                                                                <div class="col-7">
+                                                                    <div class="row">
+                                                                        <div class="col-md-4">
+                                                                            <label>Discount (%)</label>
+                                                                            <input type="number" name="discount"
+                                                                                id="e_discount_percent_{{ $salesOrder->id }}"
+                                                                                value="{{ $subtotal > 0 ? round(($salesOrder->discount / $subtotal) * 100, 2) : 0 }}"
+                                                                                class="form-control"
+                                                                                onchange="e_calculater({{ $salesOrder->id }})"
+                                                                                onkeyup="e_calculater({{ $salesOrder->id }})"
+                                                                                min="0">
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div class="row mt-2">
+                                                                        <div class="col-md-6">
+                                                                            <input type="checkbox"
+                                                                                id="e_vat_include_{{ $salesOrder->id }}"
+                                                                                name="vat_include" value="0.15"
+                                                                                {{ $salesOrder->vat > 0 ? 'checked' : '' }}
+                                                                                onchange="e_calculater({{ $salesOrder->id }})">
+                                                                            <label
+                                                                                for="e_vat_include_{{ $salesOrder->id }}">VAT
+                                                                                (%)
+                                                                            </label>
+                                                                        </div>
+
+                                                                        <div class="col-md-6">
+                                                                            <input type="checkbox"
+                                                                                id="e_with_holding_{{ $salesOrder->id }}"
+                                                                                name="with_holding" value="0.03"
+                                                                                {{ $salesOrder->with_holding > 0 ? 'checked' : '' }}
+                                                                                onchange="e_calculater({{ $salesOrder->id }})">
+                                                                            <label
+                                                                                for="e_with_holding_{{ $salesOrder->id }}">Withholding
+                                                                                (%)</label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="col-5">
+                                                                    <p class="lead text-right">Total Due Amount</p>
+                                                                    <div class="table-responsive">
+                                                                        <table class="table">
+                                                                            <tr>
+                                                                                <th>Subtotal:</th>
+                                                                                <td><i
+                                                                                        id="e_subtotal_{{ $salesOrder->id }}">{{ number_format($subtotal, 2, '.', '') }}</i>
+                                                                                </td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <th>Discount:</th>
+                                                                                <td><i
+                                                                                        id="e_discount_{{ $salesOrder->id }}">{{ number_format($salesOrder->discount, 2, '.', '') }}</i>
+                                                                                </td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <th>Tax:</th>
+                                                                                <td><i
+                                                                                        id="e_vat_{{ $salesOrder->id }}">{{ number_format($salesOrder->vat, 2, '.', '') }}</i>
+                                                                                </td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <th>WithHolding:</th>
+                                                                                <td><i
+                                                                                        id="e_with_holding_val_{{ $salesOrder->id }}">{{ number_format($salesOrder->with_holding, 2, '.', '') }}</i>
+                                                                                </td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <th>Total:</th>
+                                                                                <td><i
+                                                                                        id="e_total_{{ $salesOrder->id }}">{{ number_format($salesOrder->grand_total, 2, '.', '') }}</i>
+                                                                                </td>
+                                                                            </tr>
+                                                                        </table>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <!-- Buttons -->
+                                                            <div class="row no-print">
+                                                                <div class="col-12">
+                                                                    <button type="submit"
+                                                                        class="btn btn-success float-right">Update
+                                                                        Order</button>
+                                                                </div>
+                                                            </div>
+
+                                                        </div>
+                                                    </form>
+                                                </div><!-- /.col -->
+                                            </div><!-- /.row -->
+                                        </div><!-- /.container-fluid -->
+                                    </section>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @empty
+                @endforelse
+
             </div>
         </div>
-    @empty
-    @endforelse
-
-
-    </div>
-    </div>
-    </div>
+        </div>
     </section>
     <script>
-        function e_subTotalCal(orderId, rowIndex) {
-            let qty = parseFloat($(`#e_qty_${orderId}_${rowIndex}`).val()) || 1;
-            if (qty < 1) {
-                qty = 1;
-                $(`#e_qty_${orderId}_${rowIndex}`).val(qty);
+        window.categories = @json($categories);
+        window.e_selectedItems = {}; // ✅ store selected items per orderId
+
+        // Build categories array safely
+        var categories = [
+            @foreach ($categories as $cat)
+                @php
+                    $catValue = is_object($cat) ? $cat->name ?? ($cat->id ?? '') : $cat;
+                    $catLabel = is_object($cat) ? $cat->name ?? $catValue : $catValue;
+                @endphp {
+                    value: {!! json_encode($catValue) !!},
+                    label: {!! json_encode($catLabel) !!}
+                }
+                @if (!$loop->last)
+                    ,
+                @endif
+            @endforeach
+        ];
+
+        function renderCategoryOptions() {
+            if (!window.categories) return '';
+            return window.categories.map(cat =>
+                `<option value="${cat}">${cat}</option>`
+            ).join('');
+        }
+
+        // jQuery ajax CSRF header
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        });
+
+        // ------------------- ADD NEW ROW -------------------
+        function e_addNewRow(orderId) {
+            if (!window.e_selectedItems[orderId]) {
+                window.e_selectedItems[orderId] = []; // ✅ init if not exists
             }
 
-            let price = parseFloat($(`#e_u_price_${orderId}_${rowIndex}`).val()) || 0;
-            let subtotal = qty * price;
-            $(`#e_subTotal_${orderId}_${rowIndex}`).val(subtotal.toFixed(2));
-
-            e_calculater(orderId);
-        }
-
-        function e_calculater(orderId) {
-            let subtotal = 0;
-            $(`#e_add_items_${orderId} .e_sub`).each(function() {
-                subtotal += parseFloat($(this).val()) || 0;
+            let maxIdx = -1;
+            $(`#e_add_items_${orderId} tr`).each(function() {
+                let id = $(this).attr('id'); // e_row_{orderId}_{i}
+                if (!id) return;
+                let parts = id.split('_');
+                let idx = parseInt(parts.pop());
+                if (!isNaN(idx) && idx > maxIdx) maxIdx = idx;
             });
-            let vatRate = parseFloat($(`#e_vat_include_${orderId}`).val()) || 0;
-            let vat = subtotal * vatRate / 100;
-            let total = subtotal + vat;
+            let i = maxIdx + 1;
 
-            $(`#e_subtotal_${orderId}`).text(subtotal.toFixed(2));
-            $(`#e_vat_${orderId}`).text(vat.toFixed(2));
-            $(`#e_total_${orderId}`).text(total.toFixed(2));
+            let newRow = `
+<tr id="e_row_${orderId}_${i}">
+  <td style="width:300px;">
+    <select id="e_category_${orderId}_${i}" class="form-control mb-2"
+            onchange="e_loadItemsByCategory(${orderId}, ${i})">
+      <option value="">-- Select Category --</option>
+      ${renderCategoryOptions()}
+    </select>
+
+    <div class="dropdown w-100" style="position:relative;">
+      <input type="text" placeholder="Search Item..." id="e_myInput_${orderId}_${i}"
+             onclick="e_myFunction(${orderId}, ${i})"
+             onkeyup="e_filterFunction(${orderId}, ${i})"
+             class="form-control" autocomplete="off" disabled required>
+      <div id="e_myDropdown_${orderId}_${i}" class="dropdown-content w-100"
+           style="display:none; position:absolute; max-height:250px; overflow:auto; z-index:2000;">
+        <div id="e_item_list_${orderId}_${i}"></div>
+      </div>
+    </div>
+
+    <input type="hidden" id="e_item_id_${orderId}_${i}" name="addmore[${i}][item_id]">
+    <input type="hidden" id="batch_id_${i}" name="addmore[${i}][batch_id]" value="">
+    <input type="hidden" id="e_available_qty_${orderId}_${i}" value="">
+  </td>
+
+  <td>
+    <input type="number" min="1" id="e_qty_${orderId}_${i}" name="addmore[${i}][quantity]"
+           class="form-control" onchange="e_subTotalCal(${orderId}, ${i})">
+  </td>
+
+  <td>
+    <input type="number" id="e_u_price_${orderId}_${i}" name="addmore[${i}][u_price]"
+           class="form-control" onchange="e_subTotalCal(${orderId}, ${i})">
+  </td>
+
+  <td>
+    <input type="text" id="e_sub_${orderId}_${i}" class="form-control e_sub" readonly>
+  </td>
+
+  <td>
+    <button type="button" class="btn btn-danger btn-sm" onclick="e_removeRow(${orderId}, ${i})">
+      <i class="fa fa-trash"></i>
+    </button>
+  </td>
+</tr>`;
+
+            $(`#e_add_items_${orderId}`).append(newRow);
         }
 
-        // Remove row
-        function e_removeRow(orderId, rowIndex) {
-            $(`#e_row_${orderId}_${rowIndex}`).remove();
-            e_calculater(orderId);
+        // ------------------- LOAD ITEMS BY CATEGORY -------------------
+        function e_loadItemsByCategory(orderId, rowIndex) {
+            let location_id = $("#e_location_" + orderId).val();
+            let categoryId = $("#e_category_" + orderId + "_" + rowIndex).val();
+
+            if (!location_id || !categoryId) {
+                $("#e_myInput_" + orderId + "_" + rowIndex)
+                    .prop("disabled", true).val("");
+                $("#e_item_list_" + orderId + "_" + rowIndex).empty();
+                return;
+            }
+
+            $("#e_myInput_" + orderId + "_" + rowIndex).prop("disabled", false).val("");
+            e_fetchItems(orderId, rowIndex, location_id, categoryId);
         }
 
-        // Dropdown search
-        function e_myFunction(orderId, rowIndex) {
-            let location_id = $(`#location`).val();
-            if (!location_id) return;
-
+        // ------------------- FETCH ITEMS -------------------
+        function e_fetchItems(orderId, rowIndex, location_id, categoryId) {
             $.ajax({
                 type: "POST",
                 url: "{{ url('getItemForSale') }}",
-                data: {
-                    '_token': '{{ csrf_token() }}',
-                    location_id: location_id
-                },
                 dataType: 'json',
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    location_id: location_id,
+                    category_id: categoryId
+                },
                 success: function(result) {
                     let container = $(`#e_item_list_${orderId}_${rowIndex}`);
                     container.html('');
+
+                    if (result.length === 0) {
+                        container.html('<div style="padding:5px;color:red;">No items found</div>');
+                    }
+
                     $.each(result, function(_, item) {
-                        let option = $(
-                            `<div style="padding:5px; cursor:pointer; border-bottom:1px solid #eee;">${item.item_name} | ${item.product_code}</div>`
-                        );
+                        // ✅ skip already selected in this order
+                        if (window.e_selectedItems[orderId].includes(item.id)) return;
+
+                        let option = $(`
+                        <div style="cursor:pointer; padding:5px; border-bottom:1px solid #eee;">
+                            ${item.item_name} | ${item.product_code}
+                        </div>
+                    `);
                         option.on('click', function() {
                             e_selectedItem(item, orderId, rowIndex);
                         });
                         container.append(option);
                     });
+
                     $(`#e_myDropdown_${orderId}_${rowIndex}`).show();
+                },
+                error: function(xhr) {
+                    console.error(xhr.responseText);
                 }
             });
+        }
+
+        // ------------------- FILTER -------------------
+        function e_myFunction(orderId, rowIndex) {
+            let category = $(`#e_category_${orderId}_${rowIndex}`).val();
+            let loc = $(`#e_location_${orderId}`).val();
+            if (!category || !loc) return;
+            e_fetchItems(orderId, rowIndex, loc, category);
         }
 
         function e_filterFunction(orderId, rowIndex) {
             let filter = $(`#e_myInput_${orderId}_${rowIndex}`).val().toUpperCase();
             $(`#e_item_list_${orderId}_${rowIndex} > div`).each(function() {
-                $(this).toggle($(this).text().toUpperCase().includes(filter));
+                $(this).toggle($(this).text().toUpperCase().indexOf(filter) > -1);
             });
             $(`#e_myDropdown_${orderId}_${rowIndex}`).show();
         }
 
+        // ------------------- SELECT ITEM -------------------
         function e_selectedItem(item, orderId, rowIndex) {
-            $(`#e_myInput_${orderId}_${rowIndex}`).val(item.item_name + " | " + item.product_code);
+            $(`#e_myInput_${orderId}_${rowIndex}`).val(
+                item.item_name + ' | ' + item.product_code + (item.batch_number ? ' | ' + item.batch_number : '')
+            );
             $(`#e_item_id_${orderId}_${rowIndex}`).val(item.id);
 
+            $(`#e_available_qty_${orderId}_${rowIndex}`).val(item.quantity || 0);
+
+            // ✅ store selected item
+            if (!window.e_selectedItems[orderId].includes(item.id)) {
+                window.e_selectedItems[orderId].push(item.id);
+            }
+
+            // set price
             let prices = [item.selling_price1, item.selling_price2, item.selling_price3].map(p => parseFloat(p || 0));
-            let minPrice = Math.min(...prices.filter(p => p > 0));
-            if (minPrice) $(`#e_u_price_${orderId}_${rowIndex}`).val(minPrice);
-
-            // Remove old images
-            $(`#e_item_images_${orderId}_${rowIndex}`).remove();
-
-            // Display images
-            let imgHtml = `<div id="e_item_images_${orderId}_${rowIndex}" style="display:flex; gap:5px; margin-top:5px;">`;
-            if (item.image) imgHtml +=
-                `<img src="/${item.image}" style="width:30px;height:30px;border-radius:5px;cursor:pointer;" onclick="openModal('/${item.image}')">`;
-            if (item.image2) imgHtml +=
-                `<img src="/${item.image2}" style="width:30px;height:30px;border-radius:5px;cursor:pointer;" onclick="openModal('/${item.image2}')">`;
-            imgHtml += '</div>';
-            $(`#e_myInput_${orderId}_${rowIndex}`).after(imgHtml);
+            let valid = prices.filter(p => p > 0);
+            let minPrice = valid.length ? Math.min(...valid) : (parseFloat(item.selling_price1 || 0) || 0);
+            if (minPrice > 0) $(`#e_u_price_${orderId}_${rowIndex}`).val(minPrice);
 
             $(`#e_myDropdown_${orderId}_${rowIndex}`).hide();
             e_subTotalCal(orderId, rowIndex);
         }
 
-        // Image modal function
-        function openModal(src) {
-            $('#modalImage').attr('src', src);
-            $('#imageModal').fadeIn();
+        // ------------------- SUBTOTAL -------------------
+        function e_subTotalCal(orderId, rowIndex) {
+            let qty = parseFloat($(`#e_qty_${orderId}_${rowIndex}`).val()) || 0;
+            if (qty < 1) {
+                qty = 1;
+                $(`#e_qty_${orderId}_${rowIndex}`).val(qty);
+            }
+
+            let available = parseInt($(`#e_available_qty_${orderId}_${rowIndex}`).val()) || 0;
+            if (available > 0 && qty > available) {
+                alert(`Quantity must be ≤ available stock (${available})`);
+                qty = available;
+                $(`#e_qty_${orderId}_${rowIndex}`).val(available);
+            }
+
+            let price = parseFloat($(`#e_u_price_${orderId}_${rowIndex}`).val()) || 0;
+            let subtotal = qty * price;
+
+            $(`#e_sub_${orderId}_${rowIndex}`).val(subtotal.toFixed(2));
+            e_calculater(orderId);
         }
 
-        $('#closeModal').click(function() {
-            $('#imageModal').fadeOut();
-        });
-        $('#imageModal').click(function(e) {
-            if (e.target.id === 'imageModal') $(this).fadeOut();
-        });
-
-
-        // Add new row
-        function e_addNewRow(orderId) {
-            let rowCount = $(`#e_add_items_${orderId} tr`).length;
-            let i = rowCount + 1;
-            $(`#e_add_items_${orderId}`).append(`
-        <tr id="e_row_${orderId}_${i}">
-            <td style="width:300px;">
-                <div class="dropdown w-100">
-                    <input type="text" placeholder="Search Item..." id="e_myInput_${orderId}_${i}" onclick="e_myFunction(${orderId}, ${i})" onkeyup="e_filterFunction(${orderId}, ${i})" name="addmore[${i}][search_item]" class="form-control" autocomplete="off" required>
-                    <div id="e_myDropdown_${orderId}_${i}" class="dropdown-content w-100" style="display:none; position:absolute; z-index:1000; max-height:250px; overflow:auto;">
-                        <div id="e_item_list_${orderId}_${i}"></div>
-                    </div>
-                </div>
-                <input type="hidden" id="e_item_id_${orderId}_${i}" name="addmore[${i}][item_id]" value="">
-            </td>
-            <td><input type="number" min="1" id="e_qty_${orderId}_${i}" name="addmore[${i}][quantity]" onchange="e_subTotalCal(${orderId}, ${i})" class="form-control" value="1"></td>
-            <td><input type="number" id="e_u_price_${orderId}_${i}" name="addmore[${i}][u_price]" onchange="e_subTotalCal(${orderId}, ${i})" class="form-control" value="0"></td>
-            <td><input type="text" id="e_subTotal_${orderId}_${i}" class="form-control e_sub" readonly></td>
-            <td><button type="button" class="btn btn-danger btn-sm" onclick="e_removeRow(${orderId}, ${i})"><i class="fa fa-trash"></i></button></td>
-        </tr>
-    `);
-        }
-
-        // Initialize totals on page load
-        @foreach ($salesOrders as $salesOrder)
-            $(document).ready(function() {
-                e_calculater({{ $salesOrder->id }});
-                $(`#e_add_items_{{ $salesOrder->id }} [id^="e_qty_{{ $salesOrder->id }}_"], #e_add_items_{{ $salesOrder->id }} [id^="e_u_price_{{ $salesOrder->id }}_"]`)
-                    .on('change keyup', function() {
-                        e_calculater({{ $salesOrder->id }});
-                    });
-                $(`#e_vat_include_{{ $salesOrder->id }}`).on('change keyup', function() {
-                    e_calculater({{ $salesOrder->id }});
-                });
+        // ------------------- TOTAL -------------------
+        function e_calculater(orderId) {
+            let subtotal = 0;
+            $(`#e_add_items_${orderId} .e_sub`).each(function() {
+                subtotal += parseFloat($(this).val()) || 0;
             });
-        @endforeach
+
+            let discountRate = parseFloat($(`#e_discount_percent_${orderId}`).val()) || 0;
+
+            let vatRate = $(`#e_vat_include_${orderId}`).is(':checked') ? (parseFloat($(`#e_vat_include_${orderId}`)
+                .val()) || 0.15) : 0;
+            let withHoldingRate = $(`#e_with_holding_${orderId}`).is(':checked') ? (parseFloat($(
+                `#e_with_holding_${orderId}`).val()) || 0.03) : 0;
+
+            let discount = subtotal * discountRate / 100;
+            let afterDiscount = subtotal - discount;
+            let vat = afterDiscount * vatRate;
+            let withHold = afterDiscount * withHoldingRate;
+
+            let total = afterDiscount + vat - withHold;
+
+            $(`#e_subtotal_${orderId}`).text(subtotal.toFixed(2));
+            $(`#e_discount_${orderId}`).text(discount.toFixed(2));
+            $(`#e_vat_${orderId}`).text(vat.toFixed(2));
+            $(`#e_with_holding_val_${orderId}`).text(withHold.toFixed(2));
+            $(`#e_total_${orderId}`).text(total.toFixed(2));
+
+            $(`#e_discountRate_${orderId}`).text(`Discount(${discountRate}%)`);
+            $(`#e_vatRate_${orderId}`).text(`Tax(${(vatRate * 100).toFixed(0)}%)`);
+            $(`#e_withHoldingRate_${orderId}`).text(`WithHolding(${(withHoldingRate * 100).toFixed(0)}%)`);
+        }
+
+        // ------------------- REMOVE ROW -------------------
+        function e_removeRow(orderId, rowIndex) {
+            let removedId = $(`#e_item_id_${orderId}_${rowIndex}`).val();
+            if (removedId) {
+                // ✅ remove from selected list
+                window.e_selectedItems[orderId] = window.e_selectedItems[orderId].filter(id => id != removedId);
+            }
+            $(`#e_row_${orderId}_${rowIndex}`).remove();
+            e_calculater(orderId);
+        }
+
+        // ------------------- LISTENERS -------------------
+        $(document).on('input change', "[id^='e_qty_'], [id^='e_u_price_']", function() {
+            let id = $(this).attr('id');
+            let parts = id.split('_');
+            let rowIndex = parts.pop();
+            let orderId = parts.pop();
+            if (!isNaN(orderId) && !isNaN(rowIndex)) {
+                e_subTotalCal(orderId, rowIndex);
+            }
+        });
+
+        $(document).on('change keyup', "[id^='e_discount_percent_'], [id^='e_vat_include_'], [id^='e_with_holding_']",
+            function() {
+                let id = $(this).attr('id');
+                let parts = id.split('_');
+                let orderId = parts[parts.length - 1];
+                if (!isNaN(orderId)) e_calculater(orderId);
+            });
+
+        // close dropdowns on outside click
+        $(document).on('click', function(e) {
+            if (!$(e.target).closest('.dropdown').length) {
+                $('.dropdown-content').hide();
+            }
+        });
+
+        // init calculations
+        $(function() {
+            $("tbody[id^='e_add_items_']").each(function() {
+                let id = $(this).attr('id').replace('e_add_items_', '');
+                if (id) e_calculater(id);
+            });
+        });
     </script>
-
-
 
     <script>
         var i = 0;
+        var selectedItems = []; // ✅ track selected item IDs globally
 
-        // Add new row
-        $("#add_new_items").click(function() {
+        // Get categories from PHP safely
+        var categories = @json(\App\Models\Item::select('category')->distinct()->pluck('category'));
+
+        // ------------------- ADD NEW ROW -------------------
+        $("#add_new_items").click(function(e) {
+            e.preventDefault();
             ++i;
+            var categoryOptions = `<option value="">-- Select Category --</option>`;
+            categories.forEach(function(cat) {
+                categoryOptions += `<option value="${cat}">${cat}</option>`;
+            });
+
             $("#add_items").append(`
-     <tr id="row_${i}">
-        <td style="width: 300px;">
-            <div class="dropdown w-100">
-                <input type="text" placeholder="Search Item..." id="myInput_${i}"
-                       onclick="myFunction(${i})" onkeyup="filterFunction(${i})"
-                       name="addmore[${i}][search_item]" class="form-control" autocomplete="off" required>
-                <div id="myDropdown_${i}" class="dropdown-content w-100" style="display:none; position:absolute; z-index:1000; max-height:250px; overflow:auto;">
-                    <div id="item_list_${i}"></div>
-                </div>
+<tr id="row_${i}">
+    <td style="width: 350px;">
+        <select id="category_${i}" class="form-control mb-2" onchange="loadItemsByCategory(${i})">
+            ${categoryOptions}
+        </select>
+        <div class="dropdown w-100 mb-2" style="position:relative">
+            <input type="text" placeholder="Search Item..." id="myInput_${i}"
+                   onclick="myFunction(${i})" onkeyup="filterFunction(${i})"
+                   class="form-control" autocomplete="off" disabled required>
+            <div id="myDropdown_${i}" class="dropdown-content w-100"
+                 style="display:none; position:absolute; z-index:1000; max-height:250px; overflow:auto;">
+                <div id="item_list_${i}"></div>
             </div>
-            <input type="hidden" id="item_id_${i}" name="addmore[${i}][item_id]" value="">
-        </td>
-        <td>
-            <input type="number" min="1" id="qty_${i}" name="addmore[${i}][quantity]" onchange="subTotalCal(${i})" class="form-control" placeholder="Quantity" required>
-        </td>
-        <td>
-            <input type="number" id="u_price_${i}" name="addmore[${i}][u_price]" onchange="subTotalCal(${i})" class="form-control" style="width:120px;" required>
-        </td>
-        <td>
-            <input type="text" id="sub_${i}" class="form-control sub" placeholder="Sub Total" disabled>
-        </td>
-        <td>
-            <button type="button" class="remove-tr"><b style="color:red">X</b></button>
-        </td>
-    </tr>
-    `);
+        </div>
+        <input type="hidden" id="item_id_${i}" name="addmore[${i}][item_id]" value="">
+        <input type="hidden" id="batch_id_${i}" name="addmore[${i}][batch_id]" value="">
+          <input type="hidden" id="selling_price2_${i}" name="addmore[${i}][selling_price2]" value="">
+        <div id="selected_image_${i}" class="mt-2"></div>
+    </td>
+    <td>
+        <input type="number" min="1" id="qty_${i}" name="addmore[${i}][quantity]"
+               onchange="subTotalCal(${i})" class="form-control" placeholder="Quantity" required>
+    </td>
+    <td>
+        <input type="number" id="u_price_${i}" name="addmore[${i}][u_price]"
+               onchange="subTotalCal(${i})" class="form-control" style="width:120px;" required>
+    </td>
+    <input type="hidden" id="available_qty_${i}" value="">
+    <td>
+        <input type="text" id="sub_${i}" class="form-control sub" placeholder="Sub Total" disabled>
+    </td>
+    <td>
+        <button type="button" class="remove-tr"><b style="color:red">X</b></button>
+    </td>
+</tr>
+        `);
         });
 
-        // Remove row
+        // ------------------- REMOVE ROW -------------------
         $(document).on('click', '.remove-tr', function() {
-            $(this).closest('tr').remove();
+            var row = $(this).closest('tr');
+            var removedId = row.find("input[name*='item_id']").val();
+            if (removedId) {
+                selectedItems = selectedItems.filter(id => id != removedId); // ✅ allow reuse
+            }
+            row.remove();
             calculateTotal();
         });
 
-        // Fetch items for dropdown
-        function myFunction(no) {
-            var location_id = document.getElementById("location") ? document.getElementById("location").value : '';
-            if (location_id === '') return;
+        // ------------------- LOAD ITEMS BY CATEGORY -------------------
+        function loadItemsByCategory(no) {
+            var location_id = $("#location").val();
+            var category = $('#category_' + no).val();
+            if (!category) {
+                $('#myInput_' + no).prop('disabled', true).val('');
+                $('#item_list_' + no).empty();
+                return;
+            }
+            $('#myInput_' + no).prop('disabled', false);
+            fetchItems(no, location_id, category);
+        }
 
+        // ------------------- FETCH ITEMS -------------------
+        function fetchItems(no, location_id, category) {
             $.ajax({
                 type: "POST",
                 url: "{{ url('getItemForSale') }}",
                 dataType: 'json',
                 data: {
-                    '_token': '{{ csrf_token() }}',
-                    location_id: location_id
+                    _token: '{{ csrf_token() }}',
+                    location_id: location_id,
+                    category: category
                 },
                 success: function(result) {
                     var container = $('#item_list_' + no);
                     container.html('');
 
                     $.each(result, function(idx, item) {
-                        var img1 = item.image ? item.image.replace(/\\/g, '/') : '';
-                        var img2 = item.image2 ? item.image2.replace(/\\/g, '/') : '';
-                        var option = $(`<div style="display:flex; align-items:center; gap:5px; padding:5px; cursor:pointer; border-bottom:1px solid #eee;">
-                        <span>${item.item_name} | ${item.product_code}</span>
-                        ${img1 ? `<img src="/${img1}" style="width:30px;height:30px;border-radius:5px;">` : ''}
-                        ${img2 ? `<img src="/${img2}" style="width:30px;height:30px;border-radius:5px;">` : ''}
-                    </div>`);
+                        // ✅ Skip already selected items
+                        if (selectedItems.includes(String(item.id))) return;
+
+                        var imageUrl = item.image ? item.image : "{{ asset('images/no-image.png') }}";
+
+                        // ✅ Build clean display text
+                        var displayText = `${item.item_name} | ${item.product_code}`;
+                        if (item.batch_number) displayText += ` | Batch: ${item.batch_number}`;
+                        if (item.selling_price2) displayText +=
+                            ` |max-p: ${item.selling_price2}`;
+
+                        // ✅ Create clickable option
+                        var option = $(`
+                    <div style="padding:8px; cursor:pointer; border-bottom:1px solid #eee; display:flex; align-items:center; justify-content:space-between;">
+                        <div style="flex:1;">${displayText}</div>
+                        <img src="${imageUrl}" width="40" height="40" style="object-fit:cover; margin-left:10px; border:1px solid #ccc; border-radius:4px;">
+                    </div>
+                `);
 
                         option.on('click', function() {
                             selectedItem(item, no);
@@ -1205,94 +1257,147 @@
                     });
 
                     $('#myDropdown_' + no).show();
+                },
+                error: function(err) {
+                    console.error('Could not fetch items', err);
                 }
             });
         }
 
-        // Filter items in dropdown
-        function filterFunction(no) {
-            var input = document.getElementById("myInput_" + no);
-            var filter = input.value.toUpperCase();
-            $("#item_list_" + no + " > div").each(function() {
-                var text = $(this).text().toUpperCase();
-                $(this).toggle(text.indexOf(filter) > -1);
-            });
-            $('#myDropdown_' + no).show();
+
+        function myFunction(no) {
+            var location_id = $("#location").val();
+            var category = $('#category_' + no).val();
+            if (!category) return;
+            fetchItems(no, location_id, category);
         }
 
-        // Select item from dropdown
+        function filterFunction(no) {
+            var input = $("#myInput_" + no).val().toUpperCase();
+            var found = false;
+
+            $("#item_list_" + no + " > div").each(function() {
+                var text = $(this).text().toUpperCase();
+                var match = text.indexOf(input) > -1;
+                $(this).toggle(match);
+                if (match) found = true;
+            });
+
+            if (found) {
+                $('#myDropdown_' + no).show();
+            } else {
+                $('#myDropdown_' + no).hide();
+            }
+        }
+
+        // ------------------- SELECT ITEM -------------------
         function selectedItem(item, no) {
-            var img1 = item.image ? "{{ url('/') }}/" + item.image : '';
-            var img2 = item.image2 ? "{{ url('/') }}/" + item.image2 : '';
-
-            $('#myInput_' + no).val(item.item_name + " | " + item.product_code);
+            var imageUrl = item.image ? item.image : "{{ asset('images/no-image.png') }}";
+            $('#myInput_' + no).val((item.item_name || '') + " | " + (item.product_code || '') +
+                (item.batch_number ? " | Batch: " + item.batch_number : ""));
             $('#item_id_' + no).val(item.id);
+            $('#batch_id_' + no).val(item.batch_id ?? '');
+            $('#selling_price2_' + no).val(item.selling_price2 ?? '');
+            $('#available_qty_' + no).val(item.quantity ?? 0);
 
-            // Minimum price -> set directly into input field
-            var prices = [item.selling_price1, item.selling_price2, item.selling_price3].map(p => parseFloat(p || 0));
-            var minPrice = Math.min(...prices.filter(p => p > 0));
-            if (minPrice && minPrice > 0) {
-                $('#u_price_' + no).val(minPrice);
+            $('#selected_image_' + no).html(`
+            <img src="${imageUrl}" width="70" height="70" class="img-thumbnail" style="cursor:pointer;" onclick="showImageModal('${imageUrl}')">
+        `);
+
+            // ✅ Add to selectedItems
+            if (!selectedItems.includes(String(item.id))) {
+                selectedItems.push(String(item.id));
             }
 
-            // Display images next to input with modal click
-            $("#item_images_" + no).remove();
-            var imgHtml = '<div id="item_images_' + no + '" style="display:flex; gap:5px; margin-top:5px;">';
-            if (img1) imgHtml +=
-                `<img src="${img1}" style="width:30px;height:30px;border-radius:5px;cursor:pointer;" onclick="openModal('${img1}')">`;
-            if (img2) imgHtml +=
-                `<img src="${img2}" style="width:30px;height:30px;border-radius:5px;cursor:pointer;" onclick="openModal('${img2}')">`;
-            imgHtml += '</div>';
-            $('#myInput_' + no).after(imgHtml);
+            // Set minimum price (selling_price1) if exists
+            var prices = [item.selling_price1, item.selling_price2, item.selling_price3]
+                .map(p => parseFloat(p || 0)).filter(p => p > 0);
+            var minPrice = prices.length ? Math.min(...prices) : 0;
+            if (minPrice && minPrice > 0) {
+                $('#u_price_' + no).val(minPrice.toFixed(2));
+            }
+
+            if ($('#selling_price1_' + no).length === 0) {
+                $('#row_' + no).append(
+                    `<input type="hidden" id="selling_price1_${no}" value="${item.selling_price1 || 0}">`
+                );
+            } else {
+                $('#selling_price1_' + no).val(item.selling_price1 || 0);
+            }
 
             $('#myDropdown_' + no).hide();
             subTotalCal(no);
         }
 
-        // Subtotal and total calculation
+        // ------------------- IMAGE MODAL -------------------
+        function showImageModal(url) {
+            $('#modalImage').attr('src', url);
+            $('#imageModal').modal('show');
+        }
+
+        // ------------------- CALCULATE SUBTOTAL -------------------
         function subTotalCal(i) {
             var qty = parseInt($('#qty_' + i).val()) || 1;
-            if (qty < 1) {
-                $('#qty_' + i).val(1);
-                qty = 1;
+            var available = parseInt($('#available_qty_' + i).val()) || 0;
+            var enteredPrice = parseFloat($('#u_price_' + i).val()) || 0;
+            var sellingPrice1 = parseFloat($('#selling_price1_' + i).val()) || 0;
+
+            if (available > 0 && qty > available) {
+                alert('Quantity must be ≤ available stock (' + available + ')');
+                qty = available;
+                $('#qty_' + i).val(qty);
             }
 
-            var price = parseFloat($('#u_price_' + i).val()) || 0;
-            var subtotal = qty * price;
-            $('#sub_' + i).val(subtotal.toFixed(2));
+            if (sellingPrice1 > 0 && enteredPrice < sellingPrice1) {
+                alert('Unit Price cannot be less than Selling Price 1 (' + sellingPrice1 + ')');
+                $('#u_price_' + i).val(sellingPrice1.toFixed(2));
+                enteredPrice = sellingPrice1;
+            }
 
+            var subtotal = qty * enteredPrice;
+            $('#sub_' + i).val(subtotal.toFixed(2));
             calculateTotal();
         }
 
+        // ------------------- CALCULATE TOTAL -------------------
         function calculateTotal() {
             var subtotal = 0;
             $('.sub').each(function() {
                 subtotal += parseFloat($(this).val()) || 0;
             });
 
-            var vatRate = parseFloat($('#vat_include').val()) || 0;
-            var vat = subtotal * vatRate / 100;
-            var total = subtotal + vat;
+            var discountPercent = parseFloat($('#discount_percent').val()) || 0;
+            var discountRate = discountPercent / 100;
+
+            var vatRate = $('#vat_include').is(':checked') ? parseFloat($('#vat_include').val()) || 0 : 0;
+            var withHoldingRate = $('#with_holding').is(':checked') ? parseFloat($('#with_holding').val()) || 0 : 0;
+
+            var discount = subtotal * discountRate;
+            var afterDiscount = subtotal - discount;
+
+            var vat = afterDiscount * vatRate;
+            var withHolding = afterDiscount * withHoldingRate;
+
+            var total = afterDiscount + vat - withHolding;
 
             $('#sub').text(subtotal.toFixed(2));
+            $('#discount').text(discount.toFixed(2));
             $('#vat').text(vat.toFixed(2));
+            $('#with_hold').text(withHolding.toFixed(2));
             $('#tot').text(total.toFixed(2));
-            $('#vatRate').text(`Tax(${vatRate}%)`);
+
+            $('#discountRate').text(`Discount(${discountPercent}%)`);
+            $('#vatRate').text(`Tax(${(vatRate * 100).toFixed(2)}%)`);
+            $('#withHoldingRate').text(`WithHolding(${(withHoldingRate * 100).toFixed(2)}%)`);
         }
 
-        // Modal functions
-        function openModal(src) {
-            $('#modalImage').attr('src', src);
-            $('#imageModal').fadeIn();
-        }
-
-        $('#closeModal').click(function() {
-            $('#imageModal').fadeOut();
-        });
-
-        $('#imageModal').click(function(e) {
-            if (e.target.id === 'imageModal') $(this).fadeOut();
+        // Auto calculate on modal show
+        $('#modal-lg').on('shown.bs.modal', function() {
+            calculateTotal();
         });
     </script>
+
+
+
 
 @endsection

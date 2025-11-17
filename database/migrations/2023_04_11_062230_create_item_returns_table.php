@@ -22,6 +22,7 @@ return new class extends Migration
             $table->foreignId('return_to');
             $table->string('refunded_type');
             $table->string('refunded_amount')->nullable();
+            $table->text('reason')->nullable();
             $table->timestamps();
         });
     }

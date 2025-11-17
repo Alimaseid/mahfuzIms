@@ -21,7 +21,15 @@
 
                         </div>
                     </div>
-
+                    @if ($errors->any())
+                        <div class="alert alert-danger">
+                            <ul class="mb-0">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
                     <div class="card">
                         <div class="row">
                             <div class="col-8 lg">
@@ -57,22 +65,20 @@
                                                         <td>{{ $location->address }}</td>
 
                                                         <td>
-                                                            @if ($location->type == 'Shop')
-                                                                <a class="btn btn-warning btn-sm"
-                                                                    href="ItemsOn-{{ $location->id }}">
-                                                                    <i class="fas fa-eye "></i>
+                                                            @if ($permission->manage_edit_location == 'on')
+                                                                <button type="button" class="btn btn-primary btn-sm"
+                                                                    data-toggle="modal"
+                                                                    data-target="#modal-lg-{{ $location->id }}">
+                                                                    <i class="fas fa-edit "></i>
+                                                                </button>
+                                                            @endif
+                                                            @if ($permission->manage_delete_location == 'on')
+                                                                <a type="button" class="btn btn-danger btn-sm"
+                                                                    href="delete-location-{{ $location->id }}"
+                                                                    onclick="return confirm('Are you sure you ?');">
+                                                                    <i class="fas fa-trash "></i>
                                                                 </a>
                                                             @endif
-                                                            <button type="button" class="btn btn-primary btn-sm"
-                                                                data-toggle="modal"
-                                                                data-target="#modal-lg-{{ $location->id }}">
-                                                                <i class="fas fa-edit "></i>
-                                                            </button>
-                                                            <a type="button" class="btn btn-danger btn-sm"
-                                                                href="delete-location-{{ $location->id }}"
-                                                                onclick="return confirm('Are you sure you ?');">
-                                                                <i class="fas fa-trash "></i>
-                                                            </a>
                                                         </td>
                                                     </tr>
 
