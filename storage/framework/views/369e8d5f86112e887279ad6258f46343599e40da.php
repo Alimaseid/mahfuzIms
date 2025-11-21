@@ -64,11 +64,13 @@
                                     <td><?php echo e($plan->required_qty); ?></td>
                                     <td><?php echo e($plan->message); ?></td>
                                     <td>
-                                        <a type="button" class="btn btn-danger btn-sm"
-                                            href="delete-plans-<?php echo e($plan->id); ?>"
-                                            onclick="return confirm('Are you sure you ?');">
-                                            <i class="fas fa-trash"></i>
-                                        </a>
+                                        <?php if($permission->manage_delete_purchasePlan == 'on'): ?>
+                                            <a type="button" class="btn btn-danger btn-sm"
+                                                href="delete-plans-<?php echo e($plan->id); ?>"
+                                                onclick="return confirm('Are you sure you ?');">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        <?php endif; ?>
                                     </td>
                                     <div class="modal fade" id="imageModal" tabindex="-1" role="dialog">
                                         <div class="modal-dialog modal-lg" role="document">

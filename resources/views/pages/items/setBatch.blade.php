@@ -32,6 +32,7 @@
                                         @php
                                             $no = 0;
                                         @endphp
+                                        ItemName: <strong> {{ $item->item_name }}</strong>
                                         @foreach ($batchs as $batch)
                                             @php
                                                 $no = $no + 1;
@@ -68,6 +69,7 @@
                                                                 value="{{ $item->id }}">
                                                         </div>
                                                     </div>
+                                                    <input type="hidden" name="request_token" value="{{ Str::uuid() }}">
                                                     <div class="col-6">
                                                         <div class="form-group">
                                                             <label>Batch Number</label>
@@ -111,4 +113,14 @@
             </div>
         </div>
     </section>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('quickForm');
+            form.addEventListener('submit', function(e) {
+                const btn = form.querySelector('button[type="submit"]');
+                btn.disabled = true;
+                btn.innerHTML = "Processing...";
+            });
+        });
+    </script>
 @endsection

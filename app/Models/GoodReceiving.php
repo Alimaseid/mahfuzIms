@@ -17,6 +17,9 @@ class GoodReceiving extends Model
         'invoice_no',
         'cost_price',
     ];
+    protected $casts = [
+        'receiving_date' => 'date', // <--- this converts the string to Carbon
+    ];
     public function item()
     {
         return $this->belongsTo(Item::class, 'item_id');

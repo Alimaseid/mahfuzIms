@@ -6,6 +6,7 @@ use App\Models\Item;
 use App\Models\ItemShelf;
 use App\Models\Shelf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ItemShelfController extends Controller
 {
@@ -21,6 +22,21 @@ class ItemShelfController extends Controller
     }
     public function addItemShelf(Request $request)
     {
+        // 1️⃣ Reject reused tokens
+        $exists = DB::table('request_tokens')
+            ->where('token', $request->request_token)
+            ->exists();
+
+        if ($exists) {
+            return back()->with('error', 'Duplicate submission blocked.');
+        }
+
+        // 2️⃣ Store token immediately so duplicates are blocked
+        DB::table('request_tokens')->insert([
+            'token' => $request->request_token,
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
         $validated = $request->validate([
             'item_id' => ['required'],
             'shelf_id' => ['required'],

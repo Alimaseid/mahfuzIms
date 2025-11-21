@@ -28,11 +28,11 @@ class CategoryController extends Controller
     public function addCategory(Request $request)
     {
 
-        $validated = $request->validate([
-            'name' => 'required|unique:categories,name',
+        $data = $request->validate([
+            'category_name' => 'required|unique:categories,name',
         ], [
-            'name.unique' => 'This name already exists. Please choose another name.',
-            'name.required' => 'This name already exists. Please choose another name.',
+            'category_name.unique' => 'This name already exists. Please choose another name.',
+            'category_name.required' => 'name is required.',
         ]);
         $category = Category::create([
             'name' => $request->category_name,

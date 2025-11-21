@@ -178,6 +178,8 @@
                                                                     required>
                                                             </div>
                                                         </div>
+                                                          <input type="hidden" name="request_token"
+                                                                        value="{{ Str::uuid() }}">
                                                         <div class="col-12">
                                                             <div class="form-group">
                                                                 <label>Description</label>

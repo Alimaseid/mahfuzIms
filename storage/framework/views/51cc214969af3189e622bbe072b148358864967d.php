@@ -224,7 +224,8 @@
                                                                 <input type="text" name="name" class="form-control"
                                                                     placeholder="Business Location Name">
                                                             </div>
-
+                                                            <input type="hidden" name="request_token"
+                                                                value="<?php echo e(Str::uuid()); ?>">
                                                             <div class="form-group">
                                                                 <label>Type</label>
                                                                 <select name="type" id=""
@@ -275,7 +276,16 @@
                 </div>
             </div>
     </section>
-
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('quickForm');
+            form.addEventListener('submit', function(e) {
+                const btn = form.querySelector('button[type="submit"]');
+                btn.disabled = true;
+                btn.innerHTML = "Processing...";
+            });
+        });
+    </script>
 <?php $__env->stopSection(); ?>
 
 <?php echo $__env->make('inc.frame', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\Users\Halima\Documents\ims\resources\views/pages/business_location/location.blade.php ENDPATH**/ ?>

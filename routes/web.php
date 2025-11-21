@@ -190,11 +190,14 @@ Route::get('/activity-logs', [ActivityLogController::class, 'index'])->name('act
 Route::controller(SalesOrderController::class)
     ->middleware(['auth', 'verified', 'isSetRole', 'manage_sales'])->group(function () {
         Route::get('sales-order', 'index');
+        Route::get('addsales', 'create');
+        Route::get('editsales-{id}', 'edit');
         Route::post('add-sales-order', 'addSalesOrder');
         Route::post('edit-sales-order-{id}', 'editSalesOrder');
         Route::post('search-sales-order', 'searchSalesOrders');
         Route::get('delete-sales-order-{id}', 'deleteSalesOrders');
         Route::post('getItemForSale', 'getItemForSale');
+        Route::post('e_getItemForSale', 'e_getItemForSale');
         Route::post('xgetItemForSale', 'xgetItemForSale');
         Route::get('sales-invoice-{id}', 'printSalesInvoice');
         Route::get('unpaid-sales', 'unpaidSales');
@@ -310,6 +313,10 @@ Route::controller(ReportController::class)
 Route::match(['get', 'post'], 'daily-sales-report', [ReportController::class, 'dailySalesReport'])
     ->middleware(['auth', 'verified', 'isSetRole'])
     ->name('reports.dailySales');
+
+Route::match(['get', 'post'], 'good_receiving_report', [ReportController::class, 'goodReceivingReport'])
+    ->middleware(['auth', 'verified', 'isSetRole'])
+    ->name('reports.goodReceiving');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

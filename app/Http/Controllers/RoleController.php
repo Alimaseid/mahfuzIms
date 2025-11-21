@@ -7,12 +7,27 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreRoleRequest;
 use App\Http\Requests\UpdateRoleRequest;
+use Illuminate\Support\Facades\DB;
 
 class RoleController extends Controller
 {
     public function addRole(Request $request)
     {
+        // 1️⃣ Reject reused tokens
+        $exists = DB::table('request_tokens')
+            ->where('token', $request->request_token)
+            ->exists();
 
+        if ($exists) {
+            return back()->with('error', 'Duplicate submission blocked.');
+        }
+
+        // 2️⃣ Store token immediately so duplicates are blocked
+        DB::table('request_tokens')->insert([
+            'token' => $request->request_token,
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
         $role = Role::create([
             'role_name' => $request->role_name,
             'manage_user' => $request->manage_user,
@@ -68,6 +83,7 @@ class RoleController extends Controller
             'approval' => $request->approval,
 
             'manage_stock_reports' => $request->manage_stock_reports,
+            'manage_notification' => $request->manage_notification,
             'manage_storeTRansferReports' => $request->manage_storeTRansferReports
         ]);
 

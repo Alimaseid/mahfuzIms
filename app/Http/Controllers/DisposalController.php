@@ -10,6 +10,7 @@ use App\Models\Item;
 use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class DisposalController extends Controller
 {
@@ -22,44 +23,64 @@ class DisposalController extends Controller
         return view('pages.disposal.disposal', compact('items', 'disposals', 'businessLocations', 'permission'));
     }
 
+
     public function addDisposal(Request $request)
     {
+        // 1️⃣ Reject reused tokens
+        $exists = DB::table('request_tokens')
+            ->where('token', $request->request_token)
+            ->exists();
 
-        $request->validate([
-            'item_id'    => 'required',
-            'batch_id'    => 'required',
-            'location_id' => 'required',
-            'quantity'   => 'required|integer|min:1',
-            'reason'     => 'nullable|string',
-        ]);
-
-        $disposal = Disposal::create([
-            'item_id'    => $request->item_id,
-            'batch_id'    => $request->batch_id,
-            'location_id' => $request->location_id,
-            'quantity'   => $request->quantity,
-            'reason'     => $request->reason,
-        ]);
-
-        // ✅ Update inventory for that location
-        $inventory = Inventory::where('item_id', $request->item_id)
-            ->where('location_id', $request->location_id)
-            ->where('batch_id', $request->batch_id)
-            ->first();
-
-        if ($inventory) {
-            $inventory->quantity -= $request->quantity;
-            $inventory->save();
+        if ($exists) {
+            return back()->with('error', 'Duplicate submission blocked.');
         }
 
-        activity()
-            ->causedBy(auth()->user())
-            ->performedOn($disposal)
-            ->withProperties(['data' => $disposal])
-            ->log('Added new disposal');
+        // 2️⃣ Store token immediately so duplicates are blocked
+        DB::table('request_tokens')->insert([
+            'token' => $request->request_token,
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
 
-        return back()->with('success', 'Disposal Added Successfully.');
+        // 3️⃣ Now process disposal normally
+        return DB::transaction(function () use ($request) {
+
+            $request->validate([
+                'item_id' => 'required',
+                'batch_id' => 'required',
+                'location_id' => 'required',
+                'quantity' => 'required|integer|min:1',
+            ]);
+
+            $inventory = Inventory::where('item_id', $request->item_id)
+                ->where('location_id', $request->location_id)
+                ->where('batch_id', $request->batch_id)
+                ->lockForUpdate()
+                ->first();
+
+            if (!$inventory) {
+                return back()->with('error', 'Inventory not found.');
+            }
+
+            if ($inventory->quantity < $request->quantity) {
+                return back()->with('error', 'Not enough quantity.');
+            }
+
+            $disposal = Disposal::create([
+                'item_id' => $request->item_id,
+                'batch_id' => $request->batch_id,
+                'location_id' => $request->location_id,
+                'quantity' => $request->quantity,
+                'reason' => $request->reason,
+            ]);
+
+            $inventory->quantity -= $request->quantity;
+            $inventory->save();
+
+            return back()->with('success', 'Disposal Added Successfully.');
+        });
     }
+
 
 
     public function editDisposal(Request $request, $id)

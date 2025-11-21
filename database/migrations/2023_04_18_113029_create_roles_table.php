@@ -60,6 +60,7 @@ return new class extends Migration
             $table->string('manage_storeTRansferReports')->nullable();
             $table->string('manage_stock_reports')->nullable();
             $table->string('manage_shopStock_reports')->nullable();
+            $table->string('manage_notification')->nullable();
             $table->string('supper_admin')->nullable();
             $table->timestamps();
         });

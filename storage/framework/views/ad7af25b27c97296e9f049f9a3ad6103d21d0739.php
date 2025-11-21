@@ -1,267 +1,188 @@
 <?php $__env->startSection('content'); ?>
-
     <section class="content">
         <div class="container-fluid">
             <div class="row">
                 <div class="card">
                     <div class="card-body text-sm">
-                        
-                        <table id="example1" class="table table-bordered table-striped"
-                            style=" overflow-y:scroll;display:block;overflow-y: hidden;">
+                        <table id="example1" class="table table-bordered table-striped">
                             <thead>
                                 <tr>
                                     <th>No</th>
                                     <th>SalesDate</th>
                                     <th>InvoiceNo</th>
-                                    <th>CustomerName</th>
+                                    <th>Customer</th>
                                     <th>SalesPerson</th>
-                                    <th>View </th>
+                                    <th>View</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
-                            <tbody id='list'>
-                                <?php if(count($salesOrders) > 0): ?>
-                                    <?php
-                                        $no = 0;
-                                    ?>
-                                    <?php $__currentLoopData = $salesOrders; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $salesOrder): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                        <?php
-                                            $no = $no + 1;
-                                        ?>
-                                        <tr>
-                                            <td><?php echo e($no); ?></td>
-                                            <td><?php echo e($salesOrder->created_at->toDateString()); ?></td>
-                                            <td><?php echo e($salesOrder->reference_number); ?></td>
-                                            <td>
-                                                <?php $__empty_1 = true; $__currentLoopData = $customers; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $customer): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
-                                                    <?php if($customer->id == $salesOrder->customer_id): ?>
-                                                        <?php echo e($customer->name); ?>
 
-                                                    <?php endif; ?>
-                                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                            <tbody>
+                                <?php $no = 1; ?>
+                                <?php $__currentLoopData = $salesOrders; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $salesOrder): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <tr>
+                                        <td><?php echo e($no++); ?></td>
+                                        <td><?php echo e($salesOrder->created_at->toDateString()); ?></td>
+                                        <td><?php echo e($salesOrder->reference_number); ?></td>
+                                        <td>
+                                            <?php $__currentLoopData = $customers; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $c): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                <?php if($c->id == $salesOrder->customer_id): ?>
+                                                    <?php echo e($c->name); ?>
+
                                                 <?php endif; ?>
-                                            </td>
-                                            <td><?php echo e($salesOrder->sales_person); ?></td>
-                                            <td>
-                                                <button type="button" class="btn btn-success btn-sm" data-toggle="modal"
-                                                    data-target="#modal-lg-view-<?php echo e($salesOrder->id); ?>">
-                                                    SalesDetails
-                                                </button>
-
-                                            </td>
-                                            <td>
-                                                <div class="btn-group">
-                                                    <?php if($salesOrder->SM_status == 'Accepted'): ?>
+                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                        </td>
+                                        <td><?php echo e($salesOrder->sales_person); ?></td>
+                                        <td>
+                                            <button class="btn btn-success btn-sm" data-toggle="modal"
+                                                data-target="#modal-lg-view-<?php echo e($salesOrder->id); ?>">
+                                                SalesDetails
+                                            </button>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group">
+                                                <?php if($salesOrder->SM_status == 'Accepted'): ?>
+                                                    <button type="button"
+                                                        class="btn btn-success btn-sm"><?php echo e($salesOrder->SM_status); ?></button>
+                                                    <button type="button"
+                                                        class="btn btn-success dropdown-toggle dropdown-icon"
+                                                        data-toggle="dropdown">
+                                                    <?php elseif($salesOrder->SM_status == 'Pending'): ?>
                                                         <button type="button"
-                                                            class="btn btn-success btn-sm"><?php echo e($salesOrder->SM_status); ?></button>
+                                                            class="btn btn-info btn-xs"><?php echo e($salesOrder->SM_status); ?></button>
                                                         <button type="button"
-                                                            class="btn btn-success dropdown-toggle dropdown-icon"
+                                                            class="btn btn-info dropdown-toggle dropdown-icon"
                                                             data-toggle="dropdown">
-                                                        <?php elseif($salesOrder->SM_status == 'Pending'): ?>
+                                                        <?php else: ?>
                                                             <button type="button"
-                                                                class="btn btn-info btn-xs"><?php echo e($salesOrder->SM_status); ?></button>
+                                                                class="btn btn-danger btn-sm"><?php echo e($salesOrder->SM_status); ?></button>
                                                             <button type="button"
-                                                                class="btn btn-info dropdown-toggle dropdown-icon"
+                                                                class="btn btn-danger dropdown-toggle dropdown-icon"
                                                                 data-toggle="dropdown">
-                                                            <?php else: ?>
-                                                                <button type="button"
-                                                                    class="btn btn-danger btn-sm"><?php echo e($salesOrder->SM_status); ?></button>
-                                                                <button type="button"
-                                                                    class="btn btn-danger dropdown-toggle dropdown-icon"
-                                                                    data-toggle="dropdown">
-                                                    <?php endif; ?>
-                                                    <span class="sr-only">Toggle Dropdown</span>
-                                                    </button>
-                                                    <div class="dropdown-menu" role="menu">
-                                                        <a class="dropdown-item" href="acceptOrder-<?php echo e($salesOrder->id); ?>">
-                                                            Accepte</a>
-                                                        <a class="dropdown-item" data-toggle="modal"
-                                                            data-target="#modal-lg-reject-<?php echo e($salesOrder->id); ?>">Reject</a>
-                                                        
-                                                    </div>
-                                            </td>
-
-                                        </tr>
-                                        <!-- /.card -->
-
-                                        <div class="modal fade" id="modal-lg-view-<?php echo e($salesOrder->id); ?>">
-                                            <div class="modal-dialog modal-lg">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h4 class="modal-title"><?php echo e($salesOrder->reference_number); ?>
-
-                                                        </h4>
-                                                        <button type="button" class="close" data-dismiss="modal"
-                                                            aria-label="Close">
-                                                            <span aria-hidden="true">&times;</span>
-                                                        </button>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        <div class="row">
-                                                            <div class="col">
-                                                                Item
-                                                            </div>
-                                                            <div class="col">
-                                                                Part no1
-                                                            </div>
-                                                            <div class="col">
-                                                                Part no2
-                                                            </div>
-                                                            <div class="col">
-                                                                Image1
-                                                            </div>
-                                                            <div class="col">
-                                                                Image2
-                                                            </div>
-                                                            <div class="col">
-                                                                Unit
-                                                            </div>
-                                                            <div class="col">
-                                                                Category
-                                                            </div>
-                                                            <div class="col">
-                                                                Shelf
-                                                            </div>
-                                                            <div class="col">
-                                                                Batch
-                                                            </div>
-                                                            <div class="col">
-                                                                Quantity
-                                                            </div>
-
-                                                        </div>
-                                                        <hr>
-                                                        <?php
-                                                            $total = 0;
-                                                        ?>
-                                                        <?php $__empty_1 = true; $__currentLoopData = $salesOrderDetails; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $salesOrderDetail): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
-                                                            <?php if($salesOrderDetail->sales_order_id == $salesOrder->id): ?>
-                                                                <?php
-                                                                    $total = $total + $salesOrderDetail->total;
-                                                                ?>
-                                                                <?php
-                                                                    $imagePath1 = str_replace(
-                                                                        '\\',
-                                                                        '/',
-                                                                        $salesOrderDetail->item->image,
-                                                                    );
-                                                                    $imagePath2 = str_replace(
-                                                                        '\\',
-                                                                        '/',
-                                                                        $salesOrderDetail->item->image2,
-                                                                    );
-                                                                ?>
-                                                                <div class="row">
-                                                                    <div class="col">
-                                                                        <b><?php echo e($salesOrderDetail->item->item_name); ?></b>
-                                                                    </div>
-                                                                    <div class="col">
-                                                                        <b><?php echo e($salesOrderDetail->item->product_code); ?></b>
-                                                                    </div>
-                                                                    <div class="col">
-                                                                        <b><?php echo e($salesOrderDetail->item->part_number); ?></b>
-                                                                    </div>
-                                                                    <div class="col">
-                                                                        <img src="<?php echo e(asset($imagePath1)); ?>" alt=""
-                                                                            style="width: 60px; height: 60px; object-fit: cover; border-radius: 5px; cursor: pointer;">
-
-                                                                    </div>
-                                                                    <div class="col">
-                                                                        <b> <img src="<?php echo e(asset($imagePath2)); ?>"
-                                                                                alt=""
-                                                                                style="width: 60px; height: 60px; object-fit: cover; border-radius: 5px; cursor: pointer;">
-                                                                        </b>
-                                                                    </div>
-                                                                    <div class="col">
-                                                                        <b><?php echo e($salesOrderDetail->item->unit); ?></b>
-                                                                    </div>
-                                                                    <div class="col">
-                                                                        <b><?php echo e($salesOrderDetail->item->category); ?></b>
-                                                                    </div>
-                                                                    <div class="col">
-                                                                        <b><?php echo e($salesOrderDetail->item->shelf); ?></b>
-                                                                    </div>
-                                                                    <div class="col">
-                                                                        <b><?php echo e($salesOrderDetail->batch->batch_number); ?></b>
-                                                                    </div>
-
-                                                                    <div class="col">
-                                                                        <?php echo e(number_format($salesOrderDetail->quantity)); ?>
-
-                                                                    </div>
-
-
-                                                                </div>
-                                                                <br>
-                                                            <?php endif; ?>
-                                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
-                                                        <?php endif; ?>
-                                                        <div class="row no-print">
-                                                            <div class="col-12">
-                                                                <a rel="noopener" class="btn btn-danger" data-toggle="modal"
-                                                                    data-target="#modal-lg-reject-<?php echo e($salesOrder->id); ?>">Reject</a>
-                                                                <a
-                                                                    href="acceptOrder-<?php echo e($salesOrder->id); ?>"class="btn btn-success float-right">
-                                                                    Accept</a>
-
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
+                                                <?php endif; ?>
+                                                <span class="sr-only">Toggle Dropdown</span>
+                                                </button>
+                                                <div class="dropdown-menu" role="menu">
+                                                    <a class="dropdown-item" href="acceptOrder-<?php echo e($salesOrder->id); ?>">
+                                                        Accepte</a>
+                                                    <a class="dropdown-item" data-toggle="modal"
+                                                        data-target="#modal-lg-reject-<?php echo e($salesOrder->id); ?>">Reject</a>
+                                                    
                                                 </div>
-                                                <!-- /.modal-content -->
-                                            </div>
-                                            <!-- /.modal-dialog -->
-                                        </div>
-                                        <!-- /.modal -->
-
-                                        <div class="modal fade" id="modal-lg-reject-<?php echo e($salesOrder->id); ?>">
-                                            <div class="modal-dialog modal-md">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h4 class="modal-title"><?php echo e($salesOrder->reference_number); ?>
-
-                                                        </h4>
-                                                        <button type="button" class="close" data-dismiss="modal"
-                                                            aria-label="Close">
-                                                            <span aria-hidden="true">&times;</span>
-                                                        </button>
-                                                    </div>
-                                                    <form action="regect-order-<?php echo e($salesOrder->id); ?>" method="POST">
-                                                        <?php echo csrf_field(); ?>
-                                                        <div class="modal-body">
-                                                            <div class="row">
-                                                                <div class="col-12">
-                                                                    <div class="form-group">
-                                                                        <label for="">I reject this order due to
-                                                                            this reasone</label>
-                                                                        <textarea name="rejectReasone" class="form-control" id="" placeholder="reasone..."></textarea>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            </br>
-                                                            <div class="row no-print">
-                                                                <div class="col-12">
-                                                                    <button type="submit"
-                                                                        class="btn btn-success float-right"> Save</a>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </form>
-                                                </div>
-                                                <!-- /.modal-content -->
-                                            </div>
-                                            <!-- /.modal-dialog -->
-                                        </div>
-                                        <!-- /.modal -->
-                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                <?php else: ?>
-                                    <h2>No salesOrder Found !</h2>
-                                <?php endif; ?>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </tbody>
                         </table>
-                        
                     </div>
+
+                    <!-- ==================== MODALS ==================== -->
+                    <?php $__currentLoopData = $salesOrders; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $salesOrder): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <!-- DETAILS MODAL -->
+                        <div class="modal fade" id="modal-lg-view-<?php echo e($salesOrder->id); ?>">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+
+                                    <div class="modal-header">
+                                        <h4 class="modal-title"><?php echo e($salesOrder->reference_number); ?></h4>
+                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    </div>
+
+                                    <div class="modal-body">
+
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered table-striped table-sm">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Item</th>
+                                                        <th>Part no1</th>
+                                                        <th>Part no2</th>
+                                                        <th>Image1</th>
+                                                        <th>Image2</th>
+                                                        <th>Unit</th>
+                                                        <th>Category</th>
+                                                        <th>Shelf</th>
+                                                        <th>Batch</th>
+                                                        <th>Quantity</th>
+                                                    </tr>
+                                                </thead>
+
+                                                <tbody>
+                                                    <?php $__currentLoopData = $salesOrderDetails; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $detail): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                        <?php if($detail->sales_order_id == $salesOrder->id): ?>
+                                                            <?php
+                                                                $img1 = str_replace('\\', '/', $detail->item->image);
+                                                                $img2 = str_replace('\\', '/', $detail->item->image2);
+                                                            ?>
+                                                            <tr>
+                                                                <td><?php echo e($detail->item->item_name); ?></td>
+                                                                <td><?php echo e($detail->item->product_code); ?></td>
+                                                                <td><?php echo e($detail->item->part_number); ?></td>
+                                                                <td>
+                                                                    <img src="<?php echo e(asset($img1)); ?>"
+                                                                        style="width:50px;height:50px;border-radius:5px;object-fit:cover;">
+                                                                </td>
+                                                                <td>
+                                                                    <img src="<?php echo e(asset($img2)); ?>"
+                                                                        style="width:50px;height:50px;border-radius:5px;object-fit:cover;">
+                                                                </td>
+                                                                <td><?php echo e($detail->item->unit); ?></td>
+                                                                <td><?php echo e($detail->item->category); ?></td>
+                                                                <td><?php echo e($detail->item->shelf); ?></td>
+                                                                <td><?php echo e($detail->batch->batch_number); ?></td>
+                                                                <td><?php echo e(number_format($detail->quantity)); ?></td>
+                                                            </tr>
+                                                        <?php endif; ?>
+                                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                        <div class="text-right mt-3">
+                                            <button class="btn btn-danger" data-toggle="modal"
+                                                data-target="#modal-lg-reject-<?php echo e($salesOrder->id); ?>">
+                                                Reject
+                                            </button>
+
+                                            <a href="acceptOrder-<?php echo e($salesOrder->id); ?>" class="btn btn-success">
+                                                Accept
+                                            </a>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- REJECT MODAL -->
+                        <div class="modal fade" id="modal-lg-reject-<?php echo e($salesOrder->id); ?>">
+                            <div class="modal-dialog modal-md">
+                                <div class="modal-content">
+
+                                    <div class="modal-header">
+                                        <h4 class="modal-title">Reject Order <?php echo e($salesOrder->reference_number); ?></h4>
+                                        <button class="close" data-dismiss="modal"><span>&times;</span></button>
+                                    </div>
+
+                                    <form action="regect-order-<?php echo e($salesOrder->id); ?>" method="POST">
+                                        <?php echo csrf_field(); ?>
+                                        <div class="modal-body">
+                                            <label>Reject Reason</label>
+                                            <textarea name="rejectReasone" class="form-control" required></textarea>
+
+                                            <div class="text-right mt-3">
+                                                <button type="submit" class="btn btn-success">Save</button>
+                                            </div>
+                                        </div>
+                                    </form>
+
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+
+
+
                     <!-- /.card-body -->
                 </div>
                 <!-- /.card -->

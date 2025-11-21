@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\PurchaseOrderDetail;
 use App\Models\Requisition;
 
+
 class ReportController extends Controller
 {
     public function index()
@@ -224,6 +225,20 @@ class ReportController extends Controller
         ]);
     }
 
+
+
+    public function goodReceivingReport(Request $request)
+    {
+        // If request has from/to date, parse it; else default to today
+        $fromDate = $request->from_date ? Carbon::parse($request->from_date) : Carbon::today();
+        $toDate   = $request->to_date ? Carbon::parse($request->to_date) : Carbon::today();
+
+        $goodReceivings = \App\Models\GoodReceiving::whereBetween('receiving_date', [$fromDate, $toDate])
+            ->with(['item', 'batch', 'location'])
+            ->get();
+
+        return view('pages.goodreceiving.goodReceiving_report', compact('fromDate', 'toDate', 'goodReceivings'));
+    }
 
 
 

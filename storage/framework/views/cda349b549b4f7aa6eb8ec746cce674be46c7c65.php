@@ -27,7 +27,11 @@
                                     <td><?php echo e($activity->description); ?></td>
                                     <td><?php echo e(class_basename($activity->subject_type)); ?></td>
                                     
-                                    <td><?php echo e($activity->created_at->format('Y-m-d H:i:s')); ?></td>
+                                    <td><?php echo e($activity->created_at->timezone('Africa/Mogadishu')->format('Y-m-d h:i:s A')); ?>
+
+                                    </td>
+
+
                                 </tr>
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                                 <tr>

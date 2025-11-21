@@ -40,8 +40,8 @@
                                     <th>ItemName </th>
                                     <th>Image1</th>
                                     <th>Image2</th>
-                                    <th style="background-color: rgb(2, 2, 39)">Part Number1</th>
-                                    <th style="background-color: rgb(2, 2, 39)">Part Number2</th>
+                                    <th>Part Number1</th>
+                                    <th>Part Number2</th>
                                     <th>Category</th>
                                     <th>Reorder</th>
                                     <th>Price1</th>
@@ -81,15 +81,8 @@
                                                     data-toggle="modal" data-target="#imageModal"
                                                     onclick="setModalImage('<?php echo e(asset($imagePath2)); ?>')">
                                             </td>
-                                            <td style="background-color: rgb(2, 2, 39)"><a type="button"
-                                                    style="color: gold" href="#"data-toggle="modal"
-                                                    data-target="#modal-lg-O-<?php echo e($item->id); ?>"><?php echo e($item->product_code); ?></a>
-                                            </td>
-                                            <td style="background-color: rgb(2, 2, 39)"><a type="button"
-                                                    style="color: gold" href="#"data-toggle="modal"
-                                                    data-target="#modal-lg-O-<?php echo e($item->id); ?>"><?php echo e($item->part_number); ?></a>
-                                            </td>
-
+                                            <td><?php echo e($item->product_code); ?></td>
+                                            <td><?php echo e($item->part_number); ?></td>
                                             <!-- Image Modal (works with Bootstrap 4) -->
                                             <div class="modal fade" id="imageModal" tabindex="-1" role="dialog">
                                                 <div class="modal-dialog modal-lg" role="document">
@@ -101,17 +94,8 @@
                                                 </div>
                                             </div>
                                             <td><?php echo e($item->category); ?></td>
-                                            <?php if($item->quantity < $item->reorder): ?>
-                                                <td style="background-color: rgb(2, 2, 39)"> <a type="button"
-                                                        style="color: rgb(248, 75, 6)" href="#"data-toggle="modal"
-                                                        data-target="#modal-lg-O-<?php echo e($item->id); ?>"><?php echo e($item->reorder); ?></a>
-                                                </td>
-                                            <?php else: ?>
-                                                <td style="background-color: rgb(2, 2, 39)"> <a type="button"
-                                                        style="color: rgb(207, 199, 196)" href="#"data-toggle="modal"
-                                                        data-target="#modal-lg-O-<?php echo e($item->id); ?>"><?php echo e($item->reorder); ?></a>
-                                                </td>
-                                            <?php endif; ?>
+                                            <td><?php echo e($item->reorder); ?></td>
+
                                             <td><?php echo e($item->selling_price1); ?></td>
                                             <td><?php echo e($item->selling_price2); ?></td>
                                             <td>
@@ -465,7 +449,6 @@
                 </div>
 
                 <!-- /.card -->
-
                 <div class="modal fade" id="modal-lg">
                     <div class="modal-dialog modal-lg">
                         <div class="modal-content">
@@ -477,12 +460,10 @@
                             </div>
                             <div class="modal-body">
                                 <div class="container-fluid">
-
                                     <div class="card card-primary">
                                         <div class="card-header">
                                             <h3 class="card-title">item <small>Information</small></h3>
                                         </div>
-                                        <!-- /.card-header -->
                                         <!-- form start -->
                                         <form action="/add-item" method="POST" id="quickForm"
                                             enctype="multipart/form-data">
@@ -496,7 +477,6 @@
                                                                 placeholder="Item Name" required>
                                                         </div>
                                                     </div>
-
                                                     <div class="col-4">
                                                         <div class="form-group">
                                                             <label>p-No 1</label>
@@ -536,7 +516,6 @@
                                                             </select>
                                                         </div>
                                                     </div>
-                                                    
                                                 </div>
                                                 <div class="row">
                                                     <div class="col-4">
@@ -567,10 +546,8 @@
                                                                 placeholder="Brand">
                                                         </div>
                                                     </div>
-
                                                 </div>
                                                 <div class="row">
-
                                                     <div class="col-4">
                                                         <div class="form-group">
                                                             <label>Price 1</label>
@@ -643,7 +620,6 @@
                     </div>
                     <!-- /.modal-dialog -->
                 </div>
-
 
                 <!-- /.modal -->
             </div>

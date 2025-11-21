@@ -19,7 +19,15 @@
                         </div>
                     </div>
                 </div>
-
+                <?php if($errors->any()): ?>
+                    <div class="alert alert-danger">
+                        <ul class="mb-0">
+                            <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <li><?php echo e($error); ?></li>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                        </ul>
+                    </div>
+                <?php endif; ?>
                 <div class="card">
                     <div class="card-body">
                         
@@ -274,6 +282,8 @@
                                                                                 placeholder="Customer Full Name" required>
                                                                         </div>
                                                                     </div>
+                                                                    <input type="hidden" name="request_token"
+                                                                        value="<?php echo e(Str::uuid()); ?>">
                                                                     <div class="col-6">
                                                                         <div class="form-group">
                                                                             <label for="exampleInputPassword1"
@@ -362,6 +372,16 @@
         </div>
         </div>
     </section>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('quickForm');
+            form.addEventListener('submit', function(e) {
+                const btn = form.querySelector('button[type="submit"]');
+                btn.disabled = true;
+                btn.innerHTML = "Processing...";
+            });
+        });
+    </script>
 <?php $__env->stopSection(); ?>
 
 <?php echo $__env->make('inc.frame', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\Users\Halima\Documents\ims\resources\views/pages/customers/customer.blade.php ENDPATH**/ ?>

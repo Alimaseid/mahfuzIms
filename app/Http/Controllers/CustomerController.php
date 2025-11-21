@@ -11,6 +11,7 @@ use App\Http\Requests\UpdateCustomerRequest;
 use App\Models\PaymentLedger;
 use App\Models\Role;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class CustomerController extends Controller
 {
@@ -38,6 +39,23 @@ class CustomerController extends Controller
 
     public function addCustomer(Request $request)
     {
+
+        // 1️⃣ Reject reused tokens
+        $exists = DB::table('request_tokens')
+            ->where('token', $request->request_token)
+            ->exists();
+
+        if ($exists) {
+            return back()->with('error', 'Duplicate submission blocked.');
+        }
+
+        // 2️⃣ Store token immediately so duplicates are blocked
+        DB::table('request_tokens')->insert([
+            'token' => $request->request_token,
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
+
         $validated = $request->validate([
             'phone' => 'required|unique:customers,phone',
             'tin' => 'nullable|unique',
@@ -71,6 +89,7 @@ class CustomerController extends Controller
         ]);
         return back()->with('success', 'Customer Registerd.');
     }
+
 
     public function editCustomer(Request $request, $id)
     {

@@ -21,8 +21,8 @@
                                 <th>ItemName</th>
                                 <th>Itemimage1</th>
                                 <th>Itemimage2</th>
-                                <th style="background-color: rgb(2, 2, 39)">Part Number1</th>
-                                <th style="background-color: rgb(2, 2, 39)">Part Number2</th>
+                                <th>Part Number1</th>
+                                <th>Part Number2</th>
                                 <th>Quantity</th>
                                 <th>Unit</th>
                                 <th>Category</th>
@@ -58,16 +58,20 @@
                                         onclick="setModalImage('<?php echo e(asset($imagePath2)); ?>')">
 
                                 </td>
-                                <td style="background-color: rgb(2, 2, 39)"><a type="button" style="color: gold"
-                                        href="#"data-toggle="modal"
-                                        data-target="#modal-lg-O-<?php echo e($stock->id); ?>"><?php echo e($stock->item->product_code); ?></a>
+                                <td><?php echo e($stock->item->product_code); ?></a>
                                 </td>
-                                <td style="background-color: rgb(2, 2, 39)"><a type="button" style="color: gold"
-                                        href="#"data-toggle="modal"
-                                        data-target="#modal-lg-O-<?php echo e($stock->id); ?>"><?php echo e($stock->item->part_number); ?></a>
+                                <td><?php echo e($stock->item->part_number); ?></a>
                                 </td>
-                                <td><?php echo e($stock->quantity); ?></td>
-                                <td><?php echo e($stock->item->unit); ?></td>
+
+                                <?php if($stock->item->reorder > $stock->quantity): ?>
+                                    <td style="background-color: rgb(2, 2, 39)"><a type="button"
+                                            style="color: rgb(169, 55, 20)">
+                                            <?php echo e($stock->quantity); ?></td>
+                                <?php else: ?>
+                                    <td> <?php echo e($stock->quantity); ?></td>
+                                <?php endif; ?>
+
+                                <td><?php echo e($stock->item->unit); ?>,<?php echo e($stock->item->other_unit); ?></td>
                                 <td><?php echo e($stock->item->category); ?></td>
                                 <td>
                                     <?php $__currentLoopData = $shelfs; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $shelff): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>

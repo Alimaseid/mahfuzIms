@@ -51,17 +51,20 @@
                                                         <td><?php echo e($disposal->location->name ?? '-'); ?></td>
                                                         <td><?php echo e($disposal->reason); ?></td>
                                                         <td>
-
-                                                            <button type="button" class="btn btn-primary btn-sm"
-                                                                data-toggle="modal"
-                                                                data-target="#modal-lg-<?php echo e($disposal->id); ?>">
-                                                                <i class="fas fa-edit "></i>
-                                                            </button>
-                                                            <a type="button" class="btn btn-danger btn-sm"
-                                                                href="delete-disposal-<?php echo e($disposal->id); ?>"
-                                                                onclick="return confirm('Are you sure you ?');">
-                                                                <i class="fas fa-trash "></i>
-                                                            </a>
+                                                            <?php if($permission->manage_edit_disposal == 'on'): ?>
+                                                                <button type="button" class="btn btn-primary btn-sm"
+                                                                    data-toggle="modal"
+                                                                    data-target="#modal-lg-<?php echo e($disposal->id); ?>">
+                                                                    <i class="fas fa-edit "></i>
+                                                                </button>
+                                                            <?php endif; ?>
+                                                            <?php if($permission->manage_delete_disposal == 'on'): ?>
+                                                                <a type="button" class="btn btn-danger btn-sm"
+                                                                    href="delete-disposal-<?php echo e($disposal->id); ?>"
+                                                                    onclick="return confirm('Are you sure you ?');">
+                                                                    <i class="fas fa-trash "></i>
+                                                                </a>
+                                                            <?php endif; ?>
                                                         </td>
                                                     </tr>
 
@@ -232,7 +235,8 @@
                                                             <div class="form-group">
                                                                 <label>Item</label>
                                                                 <!-- Item Search -->
-
+                                                                <input type="hidden" name="request_token"
+                                                                    value="<?php echo e(Str::uuid()); ?>">
                                                                 <div class="item-search w-100 mb-2"
                                                                     style="position:relative">
                                                                     <input type="text" placeholder="Search Item..."
@@ -270,8 +274,8 @@
                                                             </div>
                                                             <div class="form-group">
                                                                 <label>Quantity</label>
-                                                                <input type="text" name="quantity"
-                                                                    class="form-control" placeholder="Quantity">
+                                                                <input type="number" name="quantity" min="1"
+                                                                    class="form-control" placeholder="Quantity" required>
                                                             </div>
 
 
@@ -395,6 +399,17 @@
             if (!$(e.target).closest('.item-search').length) {
                 $('.dropdown-content').hide(); // hide all dropdowns
             }
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('quickForm');
+            form.addEventListener('submit', function(e) {
+                const btn = form.querySelector('button[type="submit"]');
+                btn.disabled = true;
+                btn.innerHTML = "Processing...";
+            });
         });
     </script>
 

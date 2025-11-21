@@ -2,7 +2,6 @@
 
     <section class="content">
         <div class="container-fluid">
-            
             <div class="row">
                 <div class="col-md-12">
                     <div class="card card-primary card-outline">
@@ -22,7 +21,6 @@
                         </div>
                     </div>
                 </div>
-
                 <form action="<?php echo e(route('good-receivings.import')); ?>" method="POST" enctype="multipart/form-data">
                     <?php echo csrf_field(); ?>
                     <div class="form-group">
@@ -31,10 +29,8 @@
                     </div>
                     <button class="btn btn-primary">Import Goods</button>
                 </form>
-
                 <div class="card">
                     <div class="card-body">
-                        
                         <table id="example1" class="table table-bordered table-striped "
                             style=" overflow-y:scroll;display:block;overflow-y: hidden;">
                             <thead>
@@ -44,13 +40,12 @@
                                     <th>ItemName </th>
                                     <th>Image1</th>
                                     <th>Image2</th>
-                                    <th style="background-color: rgb(2, 2, 39)">Part Number</th>
-                                    <th style="background-color: rgb(2, 2, 39)">Part Number2</th>
+                                    <th>Part Number</th>
+                                    <th>Part Number2</th>
                                     <th>Category</th>
                                     <th>Location</th>
-                                    <th style="background-color: rgb(2, 2, 39)">Quantity</th>
+                                    <th>Quantity</th>
                                     <th>CostPrice</th>
-                                    
                                     <th>SetAction</th>
                                 </tr>
                             </thead>
@@ -84,14 +79,8 @@
                                                     data-toggle="modal" data-target="#imageModal"
                                                     onclick="setModalImage('<?php echo e(asset($imagePath2)); ?>')">
                                             </td>
-                                            <td style="background-color: rgb(2, 2, 39)"><a type="button"
-                                                    style="color: gold" href="#"data-toggle="modal"
-                                                    data-target="#modal-lg-O-<?php echo e($receiving->item_id); ?>"><?php echo e($receiving->item->product_code); ?></a>
-                                            </td>
-                                            <td style="background-color: rgb(2, 2, 39)"><a type="button"
-                                                    style="color: gold" href="#"data-toggle="modal"
-                                                    data-target="#modal-lg-O-<?php echo e($receiving->item_id); ?>"><?php echo e($receiving->item->part_number); ?></a>
-                                            </td>
+                                            <td><?php echo e($receiving->item->product_code); ?></td>
+                                            <td><?php echo e($receiving->item->part_number); ?></td>
                                             <!-- Image Modal (works with Bootstrap 4) -->
                                             <div class="modal fade" id="imageModal" tabindex="-1" role="dialog">
                                                 <div class="modal-dialog modal-lg" role="document">
@@ -104,15 +93,8 @@
                                             </div>
                                             <td><?php echo e($receiving->item->category); ?></td>
                                             <td><?php echo e($receiving->location->name ?? '-'); ?></td>
-                                            <td style="background-color: rgb(2, 2, 39)"> <a type="button"
-                                                    style="color: rgb(6, 248, 6)" href="#"data-toggle="modal"
-                                                    data-target="#modal-lg-O-<?php echo e($receiving->id); ?>"><?php echo e($receiving->quantity); ?></a>
-                                            </td>
+                                            <td><?php echo e($receiving->quantity); ?></td>
                                             <td><?php echo e($receiving->cost_price); ?></td>
-                                            
-
-                                            
-
                                             <td>
                                                 <?php if($permission->manage_edit_goodreceiving == 'on'): ?>
                                                     <button type="button" class="btn btn-primary btn-sm"
@@ -129,9 +111,6 @@
                                                 <?php endif; ?>
                                             </td>
                                         </tr>
-                                        <!-- /.card -->
-
-                                        <!-- Edit Good Receiving Modal -->
                                         <!-- 🔹 EDIT GOOD RECEIVING MODAL -->
                                         <div class="modal fade" id="modal-lg-<?php echo e($receiving->id); ?>">
                                             <div class="modal-dialog modal-lg">
@@ -144,14 +123,11 @@
                                                             <span>&times;</span>
                                                         </button>
                                                     </div>
-
                                                     <div class="modal-body">
                                                         <form action="/edit-good-receiving-<?php echo e($receiving->id); ?>"
                                                             method="POST" enctype="multipart/form-data">
                                                             <?php echo csrf_field(); ?>
-
                                                             <div class="card-body">
-
                                                                 <!-- 🔸 ITEM SEARCH -->
                                                                 <div class="form-group">
                                                                     <label>Item</label>
@@ -164,11 +140,9 @@
                                                                             class="form-control"
                                                                             value="<?php echo e($receiving->item->item_name ?? ''); ?> (<?php echo e($receiving->item->item_code ?? ''); ?>)"
                                                                             autocomplete="off" required>
-
                                                                         <input type="hidden" name="item_id"
                                                                             id="item_id_<?php echo e($receiving->id); ?>"
                                                                             value="<?php echo e($receiving->item_id); ?>">
-
                                                                         <div id="myDropdown_<?php echo e($receiving->id); ?>"
                                                                             class="dropdown-content"
                                                                             style="display:none; position:absolute; z-index:1000; background:#2c2b2b; border:1px solid #ccc; max-height:250px; overflow-y:auto; width:100%;">
@@ -335,9 +309,7 @@
                                                                             value="<?php echo e($receiving->quantity); ?>" required>
                                                                     </div>
                                                                 </div>
-
                                                             </div>
-
                                                             <div class="modal-footer justify-content-between mt-3">
                                                                 <button type="button" class="btn btn-default"
                                                                     data-dismiss="modal">Close</button>
@@ -351,7 +323,6 @@
                                                 </div>
                                             </div>
                                         </div>
-
                                         <!-- /.modal -->
                                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                 <?php else: ?>
@@ -359,7 +330,6 @@
                                 <?php endif; ?>
                             </tbody>
                         </table>
-
                     </div>
                     <!-- /.card-body -->
                 </div>
@@ -375,18 +345,15 @@
                             </div>
                             <div class="modal-body">
                                 <div class="container-fluid">
-
                                     <div class="card card-primary">
                                         <div class="card-header">
                                             <h3 class="card-title">GoodReceiving <small>Information</small></h3>
                                         </div>
-                                        <!-- /.card-header -->
                                         <!-- form start -->
                                         <form action="/add-good-receiving" method="POST" id="quickForm"
                                             enctype="multipart/form-data">
                                             <?php echo csrf_field(); ?>
                                             <div class="card-body">
-
                                                 <div class="form-group">
                                                     <label>Item</label>
                                                     <div class="item-search w-100 mb-2" style="position:relative">
@@ -420,7 +387,6 @@
                                                         </div>
                                                     </div>
                                                 </div>
-
                                                 <div class="row">
                                                     <div class="col-4">
                                                         <label>Item Code</label>
@@ -497,7 +463,6 @@
                                                                 placeholder="">
                                                         </div>
                                                     </div>
-
                                                 </div>
                                                 <div class="row">
                                                     <div class="col-4">
@@ -507,7 +472,6 @@
                                                                 required>
                                                                 <option value="">Select</option>
                                                             </select>
-
                                                         </div>
                                                     </div>
                                                     <div class="col-4">
@@ -712,13 +676,11 @@
         });
     </script>
 
-
     <script>
         function setModalImage(src) {
             document.getElementById('modalImage').src = src;
         }
     </script>
-
 <?php $__env->stopSection(); ?>
 
 <?php echo $__env->make('inc.frame', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\Users\Halima\Documents\ims\resources\views/pages/goodreceiving/good_receiving.blade.php ENDPATH**/ ?>

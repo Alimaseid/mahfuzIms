@@ -35,6 +35,27 @@
 <body class="hold-transition dark-mode sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed">
     <div class="wrapper">
         <!-- Navbar -->
+        @php
+            $payments = 0;
+            $sales = 0;
+            $requisition = 0;
+            $sales = App\Models\SalesOrder::where('SM_status', 'Pending')->orderBy('id', 'desc')->get();
+            $requisition = App\Models\Requisition::where('status', 'Pending')->orderBy('id', 'desc')->get();
+            $payment = App\Models\PaymentLedger::where('status', 'Pending')
+                ->where('debit', '=', 0)
+                ->orderBy('created_at', 'desc')
+                ->get();
+            if (!empty($payment)) {
+                $payments = count($payment);
+            }
+            if (!empty($sales)) {
+                $sales = count($sales);
+                $permission = App\Models\Role::where('id', Auth::user()->role)->first();
+            }
+            if (!empty($requisition)) {
+                $requisition = count($requisition);
+            }
+        @endphp
         <nav class="main-header navbar navbar-expand navbar-dark">
             <!-- Left navbar links -->
             <ul class="navbar-nav">
@@ -45,23 +66,16 @@
                 <li class="nav-item d-none d-sm-inline-block">
                     <a href="/" class="nav-link">Home</a>
                 </li>
-                {{-- <li class="nav-item d-none d-sm-inline-block">
-                    <a href="#" class="nav-link">Contact</a>
-                </li> --}}
+
             </ul>
 
             <!-- Right navbar links -->
             <ul class="navbar-nav ml-auto">
                 <!-- Navbar Search -->
                 <li class="nav-item">
-                    {{-- <a class="nav-link" data-widget="navbar-search" href="#" role="button">
-                        <i class="fas fa-search"></i>
-                    </a> --}}
                     <div class="navbar-search-block">
                         <form class="form-inline">
                             <div class="input-group input-group-sm">
-                                {{-- <input class="form-control form-control-navbar" type="search" placeholder="Search"
-                                    aria-label="Search"> --}}
                                 <div class="input-group-append">
                                     <button class="btn btn-navbar" type="submit">
                                         <i class="fas fa-search"></i>
@@ -77,130 +91,84 @@
 
                 <!-- Messages Dropdown Menu -->
                 <li class="nav-item dropdown">
-                    {{-- <a class="nav-link" data-toggle="dropdown" href="#">
-                        <i class="far fa-comments"></i>
-                        <span class="badge badge-danger navbar-badge">3</span>
-                    </a> --}}
                     <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-                        {{-- <a href="#" class="dropdown-item">
-            <!-- Message Start -->
-            <div class="media">
-              <img src="dist/img/user1-128x128.jpg" alt="User Avatar" class="img-size-50 mr-3 img-circle">
-              <div class="media-body">
-                <h3 class="dropdown-item-title">
-                  Brad Diesel
-                  <span class="float-right text-sm text-danger"><i class="fas fa-star"></i></span>
-                </h3>
-                <p class="text-sm">Call me whenever you can...</p>
-                <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> 4 Hours Ago</p>
-              </div>
-            </div>
-            <!-- Message End -->
-          </a> --}}
                         <div class="dropdown-divider"></div>
-                        {{-- <a href="#" class="dropdown-item">
-            <!-- Message Start -->
-            <div class="media">
-              <img src="dist/img/user8-128x128.jpg" alt="User Avatar" class="img-size-50 img-circle mr-3">
-              <div class="media-body">
-                <h3 class="dropdown-item-title">
-                  John Pierce
-                  <span class="float-right text-sm text-muted"><i class="fas fa-star"></i></span>
-                </h3>
-                <p class="text-sm">I got your message bro</p>
-                <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> 4 Hours Ago</p>
-              </div>
-            </div>
-            <!-- Message End -->
-          </a> --}}
                         <div class="dropdown-divider"></div>
                         <a href="#" class="dropdown-item">
-                            {{-- <!-- Message Start -->
-            <div class="media">
-              <img src="dist/img/user3-128x128.jpg" alt="User Avatar" class="img-size-50 img-circle mr-3">
-              <div class="media-body">
-                <h3 class="dropdown-item-title">
-                  Nora Silvester
-                  <span class="float-right text-sm text-warning"><i class="fas fa-star"></i></span>
-                </h3>
-                <p class="text-sm">The subject goes here</p>
-                <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> 4 Hours Ago</p>
-              </div>
-            </div>
-            <!-- Message End -->
-          </a> --}}
-                            {{-- <div class="dropdown-divider"></div>
-                            <a href="#" class="dropdown-item dropdown-footer">See All Messages</a> --}}
                     </div>
                 </li>
                 <!-- Notifications Dropdown Menu -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link" data-toggle="dropdown" href="#">
-                        <i class="far fa-bell">shop</i>
-                        @if ($lowShopItems->count() > 0)
-                            <span class="badge badge-warning navbar-badge">{{ $lowShopItems->count() }}</span>
-                        @endif
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-                        <span class="dropdown-item dropdown-header">
-                            {{ $lowShopItems->count() }} Low ShopStock Notifications
-                        </span>
+                @if ($permission->manage_notification == 'on')
+                    <li class="nav-item dropdown">
+                        <a class="nav-link" data-toggle="dropdown" href="#">
+                            <i class="far fa-bell">shop</i>
+                            @if ($lowShopItems->count() > 0)
+                                <span class="badge badge-warning navbar-badge">{{ $lowShopItems->count() }}</span>
+                            @endif
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                            <span class="dropdown-item dropdown-header">
+                                {{ $lowShopItems->count() }} Low ShopStock Notifications
+                            </span>
 
-                        <div class="dropdown-divider"></div>
-                        @forelse($lowShopItems as $items)
-                            <a href="#" class="dropdown-item">
-                                <i class="fas fa-box mr-2"></i>
-                                {{ $items->item->item_name }} is low
-                                ({{ $items->quantity }})
-                                <span class="float-right text-muted text-sm">Reorder Needed</span>
-                            </a>
                             <div class="dropdown-divider"></div>
-                        @empty
-                            <a href="#" class="dropdown-item text-muted">No low stock items 🎉</a>
-                        @endforelse
+                            @forelse($lowShopItems as $items)
+                                <a href="#" class="dropdown-item">
+                                    <i class="fas fa-box mr-2"></i>
+                                    {{ $items->item->item_name }} is low
+                                    ({{ $items->quantity }})
+                                    <span class="float-right text-muted text-sm">Reorder Needed</span>
+                                </a>
+                                <div class="dropdown-divider"></div>
+                            @empty
+                                <a href="#" class="dropdown-item text-muted">No low stock items 🎉</a>
+                            @endforelse
 
-                        <a href="{{ url('/shopStock_reports') }}" class="dropdown-item dropdown-footer">See All
-                            Items</a>
-                    </div>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link" data-toggle="dropdown" href="#">
-                        <i class="far fa-bell">store</i>
-                        @if ($lowStockItems->count() > 0)
-                            <span class="badge badge-warning navbar-badge">{{ $lowStockItems->count() }}</span>
-                        @endif
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-                        <span class="dropdown-item dropdown-header">
-                            {{ $lowStockItems->count() }} Low Stock Notifications
-                        </span>
+                            <a href="{{ url('/shopStock_reports') }}" class="dropdown-item dropdown-footer">See All
+                                Items</a>
+                        </div>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link" data-toggle="dropdown" href="#">
+                            <i class="far fa-bell">store</i>
+                            @if ($lowStockItems->count() > 0)
+                                <span class="badge badge-warning navbar-badge">{{ $lowStockItems->count() }}</span>
+                            @endif
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                            <span class="dropdown-item dropdown-header">
+                                {{ $lowStockItems->count() }} Low Stock Notifications
+                            </span>
 
-                        <div class="dropdown-divider"></div>
-                        @forelse($lowStockItems as $items)
-                            <a href="#" class="dropdown-item">
-                                <i class="fas fa-box mr-2"></i>
-                                {{ $items->item->item_name }} is low ({{ $items->quantity }})
-                                <span class="float-right text-muted text-sm">Reorder Needed</span>
-                            </a>
                             <div class="dropdown-divider"></div>
-                        @empty
-                            <a href="#" class="dropdown-item text-muted">No low stock items 🎉</a>
-                        @endforelse
+                            @forelse($lowStockItems as $items)
+                                <a href="#" class="dropdown-item">
+                                    <i class="fas fa-box mr-2"></i>
+                                    {{ $items->item->item_name }} is low ({{ $items->quantity }})
+                                    <span class="float-right text-muted text-sm">Reorder Needed</span>
+                                </a>
+                                <div class="dropdown-divider"></div>
+                            @empty
+                                <a href="#" class="dropdown-item text-muted">No low stock items 🎉</a>
+                            @endforelse
 
-                        <a href="{{ url('/stock_reports') }}" class="dropdown-item dropdown-footer">See All Items</a>
-                    </div>
-                </li>
+                            <a href="{{ url('/stock_reports') }}" class="dropdown-item dropdown-footer">See All
+                                Items</a>
+                        </div>
+                    </li>
+
+                @endif
                 <li class="nav-item">
                     <a class="nav-link" data-widget="fullscreen" href="#" role="button">
                         <i class="fas fa-expand-arrows-alt"></i>
                     </a>
                 </li>
-                <li class="nav-item">
+                {{-- <li class="nav-item">
                     <a class="nav-link" data-widget="control-sidebar" data-slide="true" href="#"
                         role="button">
                         <i class="fas fa-th-large"></i>
                     </a>
-                </li>
+                </li> --}}
             </ul>
         </nav>
         <!-- /.navbar -->
@@ -212,336 +180,378 @@
                 <span class="brand-text font-weight-light"> <i> Inventory <small><sup>System</sup></small></i></span>
             </a>
             <!-- Sidebar -->
+            @php
+                function isActive($pattern)
+                {
+                    return Request::is($pattern) ? 'active' : '';
+                }
+
+                function isMenuOpen($patterns)
+                {
+                    foreach ($patterns as $p) {
+                        if (Request::is($p)) {
+                            return 'menu-open';
+                        }
+                    }
+                    return '';
+                }
+            @endphp
+
             <div class="sidebar">
-                <!-- SidebarSearch Form -->
                 <hr>
-                @php
-                    $payments = 0;
-                    $sales = 0;
-                    $requisition = 0;
-                    $sales = App\Models\SalesOrder::where('SM_status', 'Pending')->orderBy('id', 'desc')->get();
-                    $requisition = App\Models\Requisition::where('status', 'Pending')->orderBy('id', 'desc')->get();
-                    $payment = App\Models\PaymentLedger::where('status', 'Pending')
-                        ->where('debit', '=', 0)
-                        ->orderBy('created_at', 'desc')
-                        ->get();
-                    if (!empty($payment)) {
-                        $payments = count($payment);
-                    }
-                    if (!empty($sales)) {
-                        $sales = count($sales);
-                        $permission = App\Models\Role::where('id', Auth::user()->role)->first();
-                    }
-                    if (!empty($requisition)) {
-                        $requisition = count($requisition);
-                    }
-                @endphp
-                <!-- Sidebar Menu -->
+
                 <nav class="mt-2">
                     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
                         data-accordion="false">
-                        <!-- Add icons to the links using the .nav-icon class
-               with font-awesome or any other icon font library -->
+
+                        <!-- Dashboard -->
                         <li class="nav-item">
-                            <a href="/" class="nav-link active">
+                            <a href="/" class="nav-link {{ isActive('/') }}">
                                 <i class="nav-icon fas fa-tachometer-alt"></i>
                                 <p class="text-sm">Dashboard</p>
                             </a>
                         </li>
 
-                        </li>
                         @if ($permission != null)
 
-                         
-                            <li class="nav-item">
-                                <a href="#" class="nav-link">
+                            <!-- REGISTER -->
+                            <li
+                                class="nav-item {{ isMenuOpen(['location*', 'shelfs*', 'item_unit*', 'category*', 'items*', 'customers*']) }}">
+                                <a href="#"
+                                    class="nav-link {{ isMenuOpen(['location*', 'shelfs*', 'item_unit*', 'category*', 'items*', 'customers*']) }}">
                                     <i class="nav-icon fas fa-copy"></i>
                                     <p class="text-sm">
                                         Register
                                         <i class="fas fa-angle-left right"></i>
-                                        <span class="badge badge-info right"></span>
                                     </p>
                                 </a>
+
                                 <ul class="nav nav-treeview">
                                     @if ($permission->manage_location == 'on')
                                         <li class="nav-item">
-                                            <a href="location" class="nav-link">
+                                            <a href="location" class="nav-link {{ isActive('location*') }}">
                                                 <i class="far fa-circle nav-icon"></i>
-                                                <p class="text-sm">Business Location </p>
+                                                <p>Business Location</p>
                                             </a>
                                         </li>
                                     @endif
+
                                     @if ($permission->manage_shelf == 'on')
                                         <li class="nav-item">
-                                            <a href="shelfs" class="nav-link">
+                                            <a href="shelfs" class="nav-link {{ isActive('shelfs*') }}">
                                                 <i class="far fa-circle nav-icon"></i>
-                                                <p class="text-sm">Shelfs</p>
+                                                <p>Shelfs</p>
                                             </a>
                                         </li>
                                     @endif
+
                                     @if ($permission->manage_item_unit == 'on')
                                         <li class="nav-item">
-                                            <a href="item_unit" class="nav-link">
+                                            <a href="item_unit" class="nav-link {{ isActive('item_unit*') }}">
                                                 <i class="far fa-circle nav-icon"></i>
-                                                <p class="text-sm">Item Unit</p>
+                                                <p>Item Unit</p>
                                             </a>
                                         </li>
                                     @endif
+
                                     @if ($permission->manage_category == 'on')
                                         <li class="nav-item">
-                                            <a href="category" class="nav-link">
+                                            <a href="category" class="nav-link {{ isActive('category*') }}">
                                                 <i class="far fa-circle nav-icon"></i>
-                                                <p class="text-sm">Category</p>
+                                                <p>Category</p>
                                             </a>
                                         </li>
                                     @endif
+
                                     @if ($permission->manage_item == 'on')
                                         <li class="nav-item">
-                                            <a href="items" class="nav-link">
+                                            <a href="items" class="nav-link {{ isActive('items*') }}">
                                                 <i class="far fa-circle nav-icon"></i>
-                                                <p class="text-sm">Items</p>
+                                                <p>Items</p>
                                             </a>
                                         </li>
                                     @endif
+
                                     @if ($permission->manage_customer == 'on')
                                         <li class="nav-item">
-                                            <a href="customers" class="nav-link">
+                                            <a href="customers" class="nav-link {{ isActive('customers*') }}">
                                                 <i class="far fa-circle nav-icon"></i>
-                                                <p class="text-sm">Customers</p>
+                                                <p>Customers</p>
                                             </a>
                                         </li>
                                     @endif
-
-
                                 </ul>
                             </li>
+
+                            <!-- GOOD RECEIVING -->
                             @if ($permission->manage_good_receiving == 'on')
-                                <li class="nav-item">
-                                    <a href="#" class="nav-link">
+                                <li
+                                    class="nav-item {{ isMenuOpen(['good-receiving*', 'purchase_plan*', 'planned_item*', 'good_receiving_report*']) }}">
+                                    <a href="#"
+                                        class="nav-link {{ isMenuOpen(['good-receiving*', 'purchase_plan*', 'planned_item*', 'good_receiving_report*']) }}">
                                         <i class="nav-icon fas fa-file"></i>
                                         <p class="text-sm">
                                             Good Receiving
                                             <i class="fas fa-angle-left right"></i>
                                         </p>
                                     </a>
+
                                     <ul class="nav nav-treeview">
-                                      @if ($permission->manage_good_receiving == 'on')
                                         <li class="nav-item">
-                                            <a href="good-receiving" class="nav-link">
+                                            <a href="good-receiving"
+                                                class="nav-link {{ isActive('good-receiving*') }}">
                                                 <i class="far fa-circle nav-icon"></i>
-                                                <p class="text-sm">
-                                                    Good Receiving
-                                                </p>
+                                                <p>Good Receiving</p>
                                             </a>
                                         </li>
-                                        @endif
-                                          @if ($permission->manage_purchase_plan == 'on')
+
                                         <li class="nav-item">
-                                            <a href="purchase_plan" class="nav-link">
+                                            <a href="purchase_plan"
+                                                class="nav-link {{ isActive('purchase_plan*') }}">
                                                 <i class="far fa-circle nav-icon"></i>
-                                                <p class="text-sm">Purchase Plan</p>
+                                                <p>Purchase Plan</p>
                                             </a>
                                         </li>
-                                        @endif
-                                          @if ($permission->manage_purchase_plan == 'on')
+
                                         <li class="nav-item">
-                                            <a href="planned_item" class="nav-link">
+                                            <a href="planned_item" class="nav-link {{ isActive('planned_item*') }}">
                                                 <i class="far fa-circle nav-icon"></i>
-                                                <p class="text-sm"> Planned Item</p>
+                                                <p>Planned Item</p>
                                             </a>
                                         </li>
-                                        @endif
+
+                                        <li class="nav-item">
+                                            <a href="good_receiving_report"
+                                                class="nav-link {{ isActive('good_receiving_report*') }}">
+                                                <i class="far fa-circle nav-icon"></i>
+                                                <p>Good Receiving Report</p>
+                                            </a>
+                                        </li>
                                     </ul>
                                 </li>
                             @endif
+
+                            <!-- CUSTOMER MANAGEMENT -->
                             @if ($permission->manage_customer == 'on')
-                                <li class="nav-item">
-                                    <a href="#" class="nav-link">
+                                <li
+                                    class="nav-item {{ isMenuOpen(['customers*', 'customerPerformance*', 'daily-customer-report*', 'creditCustomers*']) }}">
+                                    <a href="#"
+                                        class="nav-link {{ isMenuOpen(['customers*', 'customerPerformance*', 'daily-customer-report*', 'creditCustomers*']) }}">
                                         <i class="nav-icon fa fa-user-secret"></i>
                                         <p class="text-sm">
                                             Customer Management
                                             <i class="fas fa-angle-left right"></i>
                                         </p>
                                     </a>
+
                                     <ul class="nav nav-treeview">
-                                      @if ($permission->manage_customer == 'on')
-                                        <li class="nav-item">
-                                            <a href="customers" class="nav-link">
-                                                <i class="far fa-circle nav-icon"></i>
-                                                <p class="text-sm">
-                                                    Customer
-                                                </p>
-                                            </a>
-                                        </li>
+                                        {{-- @if ($permission->manage_customer == 'on')
+                                            <li class="nav-item">
+                                                <a href="customers" class="nav-link {{ isActive('customers*') }}">
+                                                    <i class="far fa-circle nav-icon"></i>
+                                                    <p>Customer</p>
+                                                </a>
+                                            </li>
+                                        @endif --}}
+
+                                        @if ($permission->manage_customer_history == 'on')
+                                            <li class="nav-item">
+                                                <a href="customerPerformance"
+                                                    class="nav-link {{ isActive('customerPerformance*') }}">
+                                                    <i class="far fa-circle nav-icon"></i>
+                                                    <p>Customer Performance</p>
+                                                </a>
+                                            </li>
                                         @endif
-                                          @if ($permission->manage_customer_history == 'on')
-                                        <li class="nav-item">
-                                            <a href="customerPerformance" class="nav-link">
-                                                <i class="far fa-circle nav-icon"></i>
-                                                <p class="text-sm">Customer Performance</p>
-                                            </a>
-                                        </li>
+
+                                        @if ($permission->manage_dailycustomerReport == 'on')
+                                            <li class="nav-item">
+                                                <a href="daily-customer-report"
+                                                    class="nav-link {{ isActive('daily-customer-report*') }}">
+                                                    <i class="far fa-circle nav-icon"></i>
+                                                    <p>Customer Report</p>
+                                                </a>
+                                            </li>
                                         @endif
-                                          @if ($permission->manage_dailycustomerReport == 'on')
-                                        <li class="nav-item">
-                                            <a href="daily-customer-report" class="nav-link">
-                                                <i class="far fa-circle nav-icon"></i>
-                                                <p class="text-sm"> Customer Report</p>
-                                            </a>
-                                        </li>
-                                        @endif
-                                          @if ($permission->manage_customer == 'on')
-                                        <li class="nav-item">
-                                            <a href="creditCustomers" class="nav-link">
-                                                <i class="far fa-circle nav-icon"></i>
-                                                <p class="text-sm">
-                                                    creditSales
-                                                </p>
-                                            </a>
-                                        </li>
+
+                                        @if ($permission->manage_customer == 'on')
+                                            <li class="nav-item">
+                                                <a href="creditCustomers"
+                                                    class="nav-link {{ isActive('creditCustomers*') }}">
+                                                    <i class="far fa-circle nav-icon"></i>
+                                                    <p>Credit Sales</p>
+                                                </a>
+                                            </li>
                                         @endif
                                     </ul>
                                 </li>
                             @endif
+
+                            <!-- TRANSFER REQUISITION -->
                             @if ($permission->manage_item_transfer == 'on')
                                 <li class="nav-item">
-                                    <a href="transfer-requisition" class="nav-link">
+                                    <a href="transfer-requisition"
+                                        class="nav-link {{ isActive('transfer-requisition*') }}">
                                         <i class="nav-icon fas fa-recycle"></i>
-                                        <p class="text-sm">Transfer Requisition
-                                            <span class="badge badge-warning right"></span>
-                                        </p>
+                                        <p class="text-sm">Transfer Requisition</p>
                                     </a>
                                 </li>
                             @endif
+                            <!-- SALES MANAGEMENT -->
                             @if ($permission->manage_sales == 'on')
-                                <li class="nav-item">
-                                    <a href="#" class="nav-link">
-                                        <i class="nav-icon  fas fa-book"></i>
+                                <li
+                                    class="nav-item {{ isMenuOpen(['sales-order*', 'shopStock_reports*', 'daily-sales-report*', 'transfer_shop_reports*']) }}">
+                                    <a href="#"
+                                        class="nav-link {{ isMenuOpen(['sales-order*', 'shopStock_reports*', 'daily-sales-report*', 'transfer_shop_reports*']) }}">
+                                        <i class="nav-icon fas fa-book"></i>
                                         <p class="text-sm">
                                             Sales Management
                                             <i class="fas fa-angle-left right"></i>
                                         </p>
                                     </a>
+
                                     <ul class="nav nav-treeview">
-                                      @if ($permission->manage_sales == 'on')
                                         <li class="nav-item">
-                                            <a href="sales-order" class="nav-link">
+                                            <a href="sales-order" class="nav-link {{ isActive('sales-order*') }}">
                                                 <i class="far fa-circle nav-icon"></i>
-                                                <p class="text-sm">
-                                                    Sales
-                                                </p>
+                                                <p>Sales</p>
                                             </a>
                                         </li>
+
+                                        @if ($permission->manage_shopStock_reports == 'on')
+                                            <li class="nav-item">
+                                                <a href="shopStock_reports"
+                                                    class="nav-link {{ isActive('shopStock_reports*') }}">
+                                                    <i class="far fa-circle nav-icon"></i>
+                                                    <p>Shop Stock Report</p>
+                                                </a>
+                                            </li>
                                         @endif
-                                          @if ($permission->manage_shopStock_reports == 'on')
-                                        <li class="nav-item">
-                                            <a href="shopStock_reports" class="nav-link">
-                                                <i class="far fa-circle nav-icon"></i>
-                                                <p class="text-sm">Shop Stock Report</p>
-                                            </a>
-                                        </li>
+
+                                        @if ($permission->manage_dailysalesReport == 'on')
+                                            <li class="nav-item">
+                                                <a href="daily-sales-report"
+                                                    class="nav-link {{ isActive('daily-sales-report*') }}">
+                                                    <i class="far fa-circle nav-icon"></i>
+                                                    <p>Sales Report</p>
+                                                </a>
+                                            </li>
                                         @endif
-                                          @if ($permission->manage_dailysalesReport == 'on')
-                                        <li class="nav-item">
-                                            <a href="daily-sales-report" class="nav-link">
-                                                <i class="far fa-circle nav-icon"></i>
-                                                <p class="text-sm"> Sales Report</p>
-                                            </a>
-                                        </li>
-                                        @endif
-                                          @if ($permission->manage_shopTRansferReports == 'on')
-                                        <li class="nav-item">
-                                            <a href="transfer_shop_reports" class="nav-link">
-                                                <i class="far fa-circle nav-icon"></i>
-                                                <p class="text-sm"> Transfer Item Report</p>
-                                            </a>
-                                        </li>
+
+                                        @if ($permission->manage_shopTRansferReports == 'on')
+                                            <li class="nav-item">
+                                                <a href="transfer_shop_reports"
+                                                    class="nav-link {{ isActive('transfer_shop_reports*') }}">
+                                                    <i class="far fa-circle nav-icon"></i>
+                                                    <p>Transfer Item Report</p>
+                                                </a>
+                                            </li>
                                         @endif
                                     </ul>
                                 </li>
                             @endif
-                            @if ($permission->approval == 'on' || $permission->manage_stock_reports == 'on' || $permission->manage_storeTRansferReports == 'on')
-                                <li class="nav-item">
-                                    <a href="#" class="nav-link">
+
+                            <!-- WAREHOUSE -->
+                            @if (
+                                $permission->approval == 'on' ||
+                                    $permission->manage_stock_reports == 'on' ||
+                                    $permission->manage_storeTRansferReports == 'on')
+                                <li
+                                    class="nav-item {{ isMenuOpen(['orders-to-approve*', 'approve-requisition*', 'stock_reports*', 'transfer_warehouse_reports*']) }}">
+                                    <a href="#"
+                                        class="nav-link {{ isMenuOpen(['orders-to-approve*', 'approve-requisition*', 'stock_reports*', 'transfer_warehouse_reports*']) }}">
                                         <i class="nav-icon fas fa-home"></i>
                                         <p class="text-sm">
                                             Warehouse Management
                                             <i class="fas fa-angle-left right"></i>
                                         </p>
                                     </a>
+
                                     <ul class="nav nav-treeview">
+
                                         @if ($permission->approval == 'on')
                                             <li class="nav-item">
-                                                <a href="orders-to-approve" class="nav-link">
+
+                                                <a href="orders-to-approve"
+                                                    class="nav-link {{ isActive('orders-to-approve*') }}">
                                                     <i class="far fa-circle nav-icon"></i>
-                                                    <p class="text-sm">Approve SalesOrder
-                                                        <span
+                                                    <p class="text-sm">Approve SalesOrder <span
                                                             class="badge badge-warning right">{{ $sales }}</span>
                                                     </p>
                                                 </a>
                                             </li>
-                                            @endif
-                                             @if ($permission->approval == 'on')
+                                        @endif
+
+                                        @if ($permission->approval == 'on')
                                             <li class="nav-item">
-                                                <a href="approve-requisition" class="nav-link">
+                                                <a href="approve-requisition"
+                                                    class="nav-link {{ isActive('approve-requisition*') }}">
                                                     <i class="far fa-circle nav-icon"></i>
-                                                    <p class="text-sm">ApproveRequisition
-                                                        <span
+                                                    <p class="text-sm">ApproveRequisition <span
                                                             class="badge badge-warning right">{{ $requisition }}</span>
                                                     </p>
                                                 </a>
                                             </li>
                                         @endif
-                                         @if ($permission->manage_stock_reports == 'on')
-                                        <li class="nav-item">
-                                            <a href="stock_reports" class="nav-link">
-                                                <i class="far fa-circle nav-icon"></i>
-                                                <p class="text-sm"> Stock Report</p>
-                                            </a>
-                                        </li>
+
+                                        @if ($permission->manage_stock_reports == 'on')
+                                            <li class="nav-item">
+                                                <a href="stock_reports"
+                                                    class="nav-link {{ isActive('stock_reports*') }}">
+                                                    <i class="far fa-circle nav-icon"></i>
+                                                    <p>Stock Report</p>
+                                                </a>
+                                            </li>
                                         @endif
-                                         @if ($permission->manage_storeTRansferReports == 'on')
-                                        <li class="nav-item">
-                                            <a href="transfer_warehouse_reports" class="nav-link">
-                                                <i class="far fa-circle nav-icon"></i>
-                                                <p class="text-sm"> Transfer Item Report</p>
-                                            </a>
-                                        </li>
+
+                                        @if ($permission->manage_storeTRansferReports == 'on')
+                                            <li class="nav-item">
+                                                <a href="transfer_warehouse_reports"
+                                                    class="nav-link {{ isActive('transfer_warehouse_reports*') }}">
+                                                    <i class="far fa-circle nav-icon"></i>
+                                                    <p>Transfer Item Report</p>
+                                                </a>
+                                            </li>
                                         @endif
+
                                     </ul>
                                 </li>
                             @endif
+
+                            <!-- DISPOSAL -->
                             @if ($permission->manage_disposal == 'on')
                                 <li class="nav-item">
-                                    <a href="disposals" class="nav-link">
-                                        <i class="nav-icon  fas fa-file" aria-hidden="true"></i>
-                                        <p class="text-sm">Disposal</p>
+                                    <a href="disposals" class="nav-link {{ isActive('disposals*') }}">
+                                        <i class="nav-icon fas fa-file"></i>
+                                        <p>Disposal</p>
                                     </a>
                                 </li>
                             @endif
 
+                            <!-- USER MANAGEMENT -->
                             <li class="nav-header">User Management</li>
+
                             @if ($permission->manage_user == 'on')
                                 <li class="nav-item">
-                                    <a href="users" class="nav-link">
+                                    <a href="users" class="nav-link {{ isActive('users*') }}">
                                         <i class="nav-icon fas fa-users"></i>
-                                        <p class="text-sm">User Management</p>
+                                        <p>User Management</p>
                                     </a>
                                 </li>
                             @endif
-                        @endif
-                        <li class="nav-header"></li>
 
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
+                        @endif
+
+                        <!-- MY ACCOUNT -->
+                        <li class="nav-item {{ isMenuOpen(['profile*']) }}">
+                            <a href="#" class="nav-link {{ isMenuOpen(['profile*']) }}">
                                 <i class="nav-icon far fa-user"></i>
                                 <p class="text-sm">
                                     My Account
                                     <i class="fas fa-angle-left right"></i>
-                                    <span class="badge badge-success right">Auth</span>
-
                                 </p>
                             </a>
+
                             <ul class="nav nav-treeview">
                                 <div class="user-panel mt-3 pb-3 mb-3 d-flex">
                                     <div class="image">
@@ -554,36 +564,39 @@
                                 </div>
 
                                 <li class="nav-item">
-                                    <a class="nav-link" href="/profile">
+                                    <a href="/profile" class="nav-link {{ isActive('profile*') }}">
                                         <i class="far fa-circle nav-icon"></i>
-                                        <p>Edit Acount</p>
+                                        <p>Edit Account</p>
                                     </a>
                                 </li>
+
                                 <li class="nav-item">
                                     <form method="POST" action="{{ route('logout') }}">
                                         @csrf
                                         <a class="nav-link" href="route('logout')"
                                             onclick="event.preventDefault(); this.closest('form').submit();">
                                             <i class="far fa-circle nav-icon"></i>
-                                            <p>LogOut</p>
+                                            <p>Logout</p>
                                         </a>
                                     </form>
                                 </li>
-
                             </ul>
                         </li>
+
+                        <!-- ACTIVITY LOGS -->
                         @if ($permission->manage_activity_log == 'on')
                             <li class="nav-item">
-                                <a href="/activity-logs" class="nav-link">
-                                    <i class="nav-icon  fas fa-file" aria-hidden="true"></i>
-                                    <p class="text-sm">Activity Logs</p>
+                                <a href="/activity-logs" class="nav-link {{ isActive('activity-logs*') }}">
+                                    <i class="nav-icon fas fa-file"></i>
+                                    <p>Activity Logs</p>
                                 </a>
                             </li>
                         @endif
+
                     </ul>
                 </nav>
-                <!-- /.sidebar-menu -->
             </div>
+
             <!-- /.sidebar -->
         </aside>
 

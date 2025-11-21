@@ -15,7 +15,6 @@
 
                         </div>
                     </div>
-
                     <div class="card">
                         <div class="card-body">
                             <table id="example1" class="table table-bordered table-striped"
@@ -64,13 +63,10 @@
                                                         <button type="button" class="btn btn-primary btn-sm"
                                                             data-toggle="modal" data-target="#modal-lg-<?php echo e($user->id); ?>">
                                                             <i class="fas fa-edit"></i>
-
                                                         </button>
                                                     <?php endif; ?>
                                                     <?php if(auth()->user()->role == 1): ?>
-                                                        
                                                         <?php if($user->role != 1): ?>
-                                                            
                                                             <a type="button" class="btn btn-danger btn-sm"
                                                                 href="delete-user-<?php echo e($user->id); ?>"
                                                                 onclick="return confirm('Are you sure you want to delete this user?');">
@@ -78,7 +74,6 @@
                                                             </a>
                                                         <?php endif; ?>
                                                     <?php else: ?>
-                                                        
                                                         <?php if($permission->manage_delete_user == 'on' && $user->role != 1): ?>
                                                             <a type="button" class="btn btn-danger btn-sm"
                                                                 href="delete-user-<?php echo e($user->id); ?>"
@@ -87,11 +82,8 @@
                                                             </a>
                                                         <?php endif; ?>
                                                     <?php endif; ?>
-
-
                                                 </td>
                                             </tr>
-
                                             <div class="modal fade" id="modal-lg-<?php echo e($user->id); ?>">
                                                 <div class="modal-dialog modal-lg-<?php echo e($user->id); ?>">
                                                     <div class="modal-content">
@@ -105,16 +97,13 @@
                                                         <div class="modal-body">
                                                             <div class="container-fluid">
                                                                 <div class="row">
-                                                                    <!-- left column -->
                                                                     <div class="col-md-12">
-                                                                        <!-- jquery validation -->
                                                                         <div class="card card-primary">
                                                                             <div class="card-header">
                                                                                 <h3 class="card-title">user
                                                                                     <small>Information</small>
                                                                                 </h3>
                                                                             </div>
-                                                                            <!-- /.card-header -->
                                                                             <!-- form start -->
                                                                             <form action="/editUser-<?php echo e($user->id); ?>"
                                                                                 method="POST" id="quickForm">
@@ -158,12 +147,9 @@
                                                                         </div>
                                                                         <!-- /.card -->
                                                                     </div>
-
-                                                                    <!--/.col (right) -->
                                                                 </div>
                                                                 <!-- /.row -->
-                                                            </div><!-- /.container-fluid -->
-
+                                                            </div>
                                                         </div>
                                                     </div>
                                                     <!-- /.modal-content -->
@@ -192,9 +178,7 @@
                                                         <div class="modal-body">
                                                             <div class="container-fluid">
                                                                 <div class="row">
-                                                                    <!-- left column -->
                                                                     <div class="col-md-12">
-                                                                        <!-- jquery validation -->
                                                                         <div class="card card-primary">
                                                                             <div class="card-header">
                                                                                 <h3 class="card-title"><small>set role to -
@@ -756,6 +740,14 @@
                                                                             for="manage_activity_log">M-ActivityLog</label>
                                                                     </div>
                                                                 </div>
+                                                                <div class="col-sm-3">
+                                                                    <div class="icheck-success d-inline">
+                                                                        <input type="checkbox" name="manage_notification"
+                                                                            id="manage_notification">
+                                                                        <label
+                                                                            for="manage_notification">M-Notification</label>
+                                                                    </div>
+                                                                </div>
 
                                                             </div>
                                                             <div class="row mt">
@@ -817,7 +809,6 @@
                                         <div class="row p-2">
                                             <div class="table-responsive">
                                                 <table class="table align-middle table-bordered">
-                                                    
                                                     <tbody class="text-info">
                                                         <?php $__empty_1 = true; $__currentLoopData = $roles; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $role): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                                                             <?php if($role->SuperAdmin != 'on'): ?>
@@ -830,8 +821,6 @@
                                                                             <?php echo e($role->role_name); ?>
 
                                                                         </td>
-
-                                                                        <!-- Column 1: User Management -->
                                                                         <td>
                                                                             <div class="form-check">
                                                                                 <input type="hidden" name="manage_user"
@@ -870,7 +859,6 @@
                                                                                 <label class="form-check-label"
                                                                                     for="manage_delete_user<?php echo e($role->id); ?>">Delete-User</label>
                                                                             </div>
-
                                                                             <div class="form-check">
                                                                                 <input type="hidden"
                                                                                     name="manage_item_unit"
@@ -912,7 +900,6 @@
                                                                             </div>
                                                                         </td>
 
-                                                                        <!-- Column 2: Location / Item / Unit -->
                                                                         <td>
                                                                             <div class="form-check">
                                                                                 <input type="hidden"

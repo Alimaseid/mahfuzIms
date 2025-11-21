@@ -6,6 +6,7 @@ use App\Models\ItemUnit;
 use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class ItemUnitController extends Controller
 {
@@ -20,6 +21,21 @@ class ItemUnitController extends Controller
 
     public function addItemUnit(Request $request)
     {
+        // 1️⃣ Reject reused tokens
+        $exists = DB::table('request_tokens')
+            ->where('token', $request->request_token)
+            ->exists();
+
+        if ($exists) {
+            return back()->with('error', 'Duplicate submission blocked.');
+        }
+
+        // 2️⃣ Store token immediately so duplicates are blocked
+        DB::table('request_tokens')->insert([
+            'token' => $request->request_token,
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
         $data = $request->validate([
             'unit' => 'required|unique:item_units,unit',
         ], [

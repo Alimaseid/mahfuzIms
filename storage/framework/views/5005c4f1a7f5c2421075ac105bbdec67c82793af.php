@@ -29,6 +29,7 @@
                                         <?php
                                             $no = 0;
                                         ?>
+                                        ItemName: <strong> <?php echo e($item->item_name); ?></strong>
                                         <?php $__currentLoopData = $batchs; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $batch): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                             <?php
                                                 $no = $no + 1;

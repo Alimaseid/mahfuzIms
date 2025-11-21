@@ -7,9 +7,7 @@
             <div class="row p-3">
                 <div class="card">
                     <div class="card-body text-sm">
-                        {{-- <div class="p-2" style="float: right"> {{ $salesOrders->links() }}</div> --}}
-                        <table id="example1" class="table table-bordered table-striped"
-                            style=" overflow-y:scroll;display:block;overflow-y: hidden;">
+                        <table id="example1" class="table table-bordered table-striped">
                             <thead>
                                 <tr>
                                     <th>No</th>
@@ -19,167 +17,111 @@
                                     <th>RequestTo</th>
                                     <th>Status</th>
                                     <th>Details</th>
-                                    <th></th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
-                            <tbody id='list'>
+                            <tbody>
                                 @php $no = 0 ; @endphp
                                 @forelse ($requisitions as $requisition)
-                                    @php $no = $no + 1 ; @endphp
-                                    <tr>
+                                    @php $no++ ; @endphp
                                     <tr>
                                         <td>{{ $no }}</td>
                                         <td>{{ $requisition->created_at->toDateString() }}</td>
                                         <td>{{ $requisition->requestFrom->name ?? '-' }}</td>
                                         <td>{{ $requisition->request_by }}</td>
                                         <td>{{ $requisition->requestTo->name ?? '-' }}</td>
-
-                                        <td> <a href="">{{ $requisition->status }} </a></td>
-                                        <td style="">
+                                        <td>{{ $requisition->status }}</td>
+                                        <td>
                                             <button type="button" class="btn btn-success btn-sm" data-toggle="modal"
                                                 data-target="#modal-lg-view-{{ $requisition->id }}">
-                                                view
+                                                View
                                             </button>
                                         </td>
-
                                         <td>
                                             <a href="approveRequisition/{{ $requisition->id }}/{{ Auth::user()->name }}"
                                                 class="btn btn-success btn-sm">
-                                                <i class="fas fa-check "></i>
+                                                <i class="fas fa-check"></i>
                                             </a>
                                         </td>
-                                        {{-- <td>
-                                            <a href="rejectRequisition-{{ $requisition->id }}"
-                                                class="btn btn-danger btn-sm">
-                                                <i class="fas fa-trash "></i>
-                                            </a>
-                                        </td> --}}
                                     </tr>
-                                    <div class="modal fade" id="modal-lg-view-{{ $requisition->id }}">
-                                        <div class="modal-dialog modal-lg">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h4 class="modal-title">
-                                                    </h4>
-                                                    <button type="button" class="close" data-dismiss="modal"
-                                                        aria-label="Close">
-                                                        <span aria-hidden="true">&times;</span>
-                                                    </button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <div class="row">
-                                                        <div class="col">
-                                                            Item
-                                                        </div>
-                                                        <div class="col">
-                                                            Part no1
-                                                        </div>
-                                                        <div class="col">
-                                                            Part no2
-                                                        </div>
-                                                        <div class="col">
-                                                            Image1
-                                                        </div>
-                                                        <div class="col">
-                                                            Image2
-                                                        </div>
-                                                        <div class="col">
-                                                            unit
-                                                        </div>
-                                                        <div class="col">
-                                                            Category
-                                                        </div>
-                                                        <div class="col">
-                                                            Shelf
-                                                        </div>
-                                                        <div class="col">
-                                                            Batch
-                                                        </div>
-                                                        <div class="col">
-                                                            Quantity
-                                                        </div>
-
-                                                    </div>
-                                                    <hr>
-                                                    @php
-                                                        $total = 0;
-                                                    @endphp
-                                                    @forelse ($requisitionDetails as $requisitionDetail)
-                                                        @if ($requisitionDetail->requisition_id == $requisition->id)
-                                                            @php
-                                                                $imagePath1 = str_replace(
-                                                                    '\\',
-                                                                    '/',
-                                                                    $requisitionDetail->item->image,
-                                                                );
-                                                                $imagePath2 = str_replace(
-                                                                    '\\',
-                                                                    '/',
-                                                                    $requisitionDetail->item->image2,
-                                                                );
-                                                            @endphp
-                                                            <div class="row">
-                                                                <div class="col">
-                                                                    <b>{{ $requisitionDetail->item->item_name }}</b>
-                                                                </div>
-                                                                <div class="col">
-                                                                    <b>{{ $requisitionDetail->item->product_code }}</b>
-                                                                </div>
-                                                                <div class="col">
-                                                                    <b>{{ $requisitionDetail->item->part_number }}</b>
-                                                                </div>
-                                                                <div class="col">
-                                                                    <img src="{{ asset($imagePath1) }}" alt=""
-                                                                        style="width: 60px; height: 60px; object-fit: cover; border-radius: 5px; cursor: pointer;">
-
-                                                                </div>
-                                                                <div class="col">
-                                                                    <b> <img src="{{ asset($imagePath2) }}" alt=""
-                                                                            style="width: 60px; height: 60px; object-fit: cover; border-radius: 5px; cursor: pointer;">
-                                                                    </b>
-                                                                </div>
-                                                                <div class="col">
-                                                                    <b>{{ $requisitionDetail->item->unit }}</b>
-                                                                </div>
-                                                                <div class="col">
-                                                                    <b>{{ $requisitionDetail->item->category }}</b>
-                                                                </div>
-                                                                <div class="col">
-                                                                    <b>
-                                                                        @foreach ($shelfs as $shelff)
-                                                                            @if (
-                                                                                $shelff->shelf->business_locations_id == $requisition->request_from &&
-                                                                                    $requisitionDetail->item_id == $shelff->item_id)
-                                                                                {{ $shelff->shelf->shelf_name ?? '-' }}
-                                                                            @endif
-                                                                        @endforeach
-                                                                    </b>
-                                                                </div>
-                                                                <div class="col">
-                                                                    <b>{{ $requisitionDetail->batch->batch_number ?? '' }}</b>
-                                                                </div>
-                                                                <div class="col">
-                                                                    {{ number_format($requisitionDetail->quantity) }}
-                                                                </div>
-                                                            </div>
-                                                            <br>
-                                                        @endif
-                                                    @empty
-                                                    @endforelse
-
-                                                </div>
-
-                                            </div>
-                                            <!-- /.modal-content -->
-                                        </div>
-                                        <!-- /.modal-dialog -->
-                                    </div>
                                 @empty
+                                    <tr>
+                                        <td colspan="8" class="text-center">No Requisitions Found!</td>
+                                    </tr>
                                 @endforelse
                             </tbody>
                         </table>
-                        {{-- <div class="p-2" style="float: right"> {{ $salesOrders->links("pagination::bootstrap-4") }}</div> --}}
                     </div>
+
+                    <!-- ==================== MODALS ==================== -->
+                    @foreach ($requisitions as $requisition)
+                        <div class="modal fade" id="modal-lg-view-{{ $requisition->id }}">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+
+                                    <div class="modal-header">
+                                        <h4 class="modal-title">Requisition #{{ $requisition->id }}</h4>
+                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    </div>
+
+                                    <div class="modal-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered table-striped table-sm">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Item</th>
+                                                        <th>Part no1</th>
+                                                        <th>Part no2</th>
+                                                        <th>Image1</th>
+                                                        <th>Image2</th>
+                                                        <th>Unit</th>
+                                                        <th>Category</th>
+                                                        <th>Shelf</th>
+                                                        <th>Batch</th>
+                                                        <th>Quantity</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach ($requisitionDetails as $detail)
+                                                        @if ($detail->requisition_id == $requisition->id)
+                                                            @php
+                                                                $img1 = str_replace('\\', '/', $detail->item->image);
+                                                                $img2 = str_replace('\\', '/', $detail->item->image2);
+                                                            @endphp
+                                                            <tr>
+                                                                <td>{{ $detail->item->item_name }}</td>
+                                                                <td>{{ $detail->item->product_code }}</td>
+                                                                <td>{{ $detail->item->part_number }}</td>
+                                                                <td><img src="{{ asset($img1) }}"
+                                                                        style="width:60px;height:60px;border-radius:5px;object-fit:cover;">
+                                                                </td>
+                                                                <td><img src="{{ asset($img2) }}"
+                                                                        style="width:60px;height:60px;border-radius:5px;object-fit:cover;">
+                                                                </td>
+                                                                <td>{{ $detail->item->unit }}</td>
+                                                                <td>{{ $detail->item->category }}</td>
+                                                                <td>
+                                                                    @foreach ($shelfs as $shelff)
+                                                                        @if ($shelff->shelf->business_locations_id == $requisition->request_from && $detail->item_id == $shelff->item_id)
+                                                                            {{ $shelff->shelf->shelf_name ?? '-' }}
+                                                                        @endif
+                                                                    @endforeach
+                                                                </td>
+                                                                <td>{{ $detail->batch->batch_number ?? '-' }}</td>
+                                                                <td>{{ number_format($detail->quantity) }}</td>
+                                                            </tr>
+                                                        @endif
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+
                     <!-- /.card-body -->
                 </div>
                 <!-- /.card -->

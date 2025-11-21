@@ -70,6 +70,7 @@ class Role extends Model
 
         'manage_activity_log',
         'approval',
+        'manage_notification',
 
 
     ];

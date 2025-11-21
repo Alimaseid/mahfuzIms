@@ -284,6 +284,8 @@
                                                                                 placeholder="Customer Full Name" required>
                                                                         </div>
                                                                     </div>
+                                                                    <input type="hidden" name="request_token"
+                                                                        value="{{ Str::uuid() }}">
                                                                     <div class="col-6">
                                                                         <div class="form-group">
                                                                             <label for="exampleInputPassword1"
@@ -372,4 +374,14 @@
         </div>
         </div>
     </section>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('quickForm');
+            form.addEventListener('submit', function(e) {
+                const btn = form.querySelector('button[type="submit"]');
+                btn.disabled = true;
+                btn.innerHTML = "Processing...";
+            });
+        });
+    </script>
 @endsection

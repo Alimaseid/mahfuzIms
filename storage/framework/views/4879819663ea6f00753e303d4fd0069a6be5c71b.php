@@ -6,13 +6,11 @@
                     <div class="card card-primary card-outline">
                         <div class="card-header">
                             <h3 class="card-title">
-                                <div class="p-2 " style="float: left"> Set batch <b>
+                                <div class="p-2 " style="float: left"> Set Shelf <b>
                                     </b></div>
                             </h3>
-
                         </div>
                     </div>
-
                     <div class="card">
                         <div class="row">
                             <div class="col-6 lg">
@@ -21,7 +19,8 @@
                                     <thead>
                                         <tr>
                                             <th>No</th>
-                                            <th>BatchNumber </th>
+                                            <th>Shelf </th>
+                                            <th>Location</th>
                                             <th></th>
                                         </tr>
                                     </thead>
@@ -29,6 +28,7 @@
                                         <?php
                                             $no = 0;
                                         ?>
+                                        ItemName: <strong> <?php echo e($item->item_name); ?></strong>
                                         <?php $__currentLoopData = $itemshelfs; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $itemshelf): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                             <?php
                                                 $no = $no + 1;
@@ -36,6 +36,7 @@
                                             <tr>
                                                 <td><?php echo e($no); ?></td>
                                                 <td><?php echo e($itemshelf->shelf->shelf_name); ?></td>
+                                                <td><?php echo e($itemshelf->shelf->location->name); ?></td>
                                                 <td>
                                                     <a type="button" class="btn btn-danger btn-sm"
                                                         href="delete-itemShelf-<?php echo e($itemshelf->id); ?>"

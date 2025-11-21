@@ -9,13 +9,11 @@
                     <div class="card card-primary card-outline">
                         <div class="card-header">
                             <h3 class="card-title">
-                                <div class="p-2 " style="float: left"> Set batch <b>
+                                <div class="p-2 " style="float: left"> Set Shelf <b>
                                     </b></div>
                             </h3>
-
                         </div>
                     </div>
-
                     <div class="card">
                         <div class="row">
                             <div class="col-6 lg">
@@ -24,7 +22,8 @@
                                     <thead>
                                         <tr>
                                             <th>No</th>
-                                            <th>BatchNumber </th>
+                                            <th>Shelf </th>
+                                            <th>Location</th>
                                             <th></th>
                                         </tr>
                                     </thead>
@@ -32,6 +31,7 @@
                                         @php
                                             $no = 0;
                                         @endphp
+                                        ItemName: <strong> {{ $item->item_name }}</strong>
                                         @foreach ($itemshelfs as $itemshelf)
                                             @php
                                                 $no = $no + 1;
@@ -39,6 +39,7 @@
                                             <tr>
                                                 <td>{{ $no }}</td>
                                                 <td>{{ $itemshelf->shelf->shelf_name }}</td>
+                                                <td>{{ $itemshelf->shelf->location->name }}</td>
                                                 <td>
                                                     <a type="button" class="btn btn-danger btn-sm"
                                                         href="delete-itemShelf-{{ $itemshelf->id }}"
@@ -68,6 +69,7 @@
                                                                 value="{{ $item->id }}">
                                                         </div>
                                                     </div>
+                                                    <input type="hidden" name="request_token" value="{{ Str::uuid() }}">
                                                     <div class="col-6">
                                                         <div class="form-group">
                                                             <label>Shelf</label>
@@ -110,4 +112,14 @@
             </div>
         </div>
     </section>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('quickForm');
+            form.addEventListener('submit', function(e) {
+                const btn = form.querySelector('button[type="submit"]');
+                btn.disabled = true;
+                btn.innerHTML = "Processing...";
+            });
+        });
+    </script>
 @endsection

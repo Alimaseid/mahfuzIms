@@ -1,12 +1,12 @@
 @extends('inc.frame')
-<style>
+{{-- <style>
     /* Make dropdown appear above input */
     .dropdown-menu.show-top {
         top: auto !important;
         bottom: 100% !important;
         margin-bottom: 5px !important;
     }
-</style>
+</style> --}}
 
 @section('content')
     <section class="content">
@@ -31,8 +31,7 @@
             <div class="row p-3">
                 <div class="card">
                     <div class="card-body text-sm">
-                        {{-- <div class="p-2" style="float: right"> {{ $salesOrders->links() }}</div> --}}
-                        <table id="example1" class="table table-bordered table-striped"
+                        <table id="example1" class="table table-bordered table-striped "
                             style=" overflow-y:scroll;display:block;overflow-y: hidden;">
                             <thead>
                                 <tr>
@@ -43,171 +42,121 @@
                                     <th>RequestTo</th>
                                     <th>Status</th>
                                     <th>ItemList</th>
-                                    <th></th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
-                            <tbody id='list'>
-                                @php $no = 0 ; @endphp
-                                @forelse ($requisitions as $requisition)
-                                    @php $no = $no + 1 ; @endphp
+                            <tbody>
+                                @php $no = 0; @endphp
+                                @forelse($requisitions as $requisition)
+                                    @php $no++; @endphp
                                     <tr>
                                         <td>{{ $no }}</td>
                                         <td>{{ $requisition->created_at->toDateString() }}</td>
                                         <td>{{ $requisition->requestFrom->name ?? '-' }}</td>
                                         <td>{{ $requisition->request_by }}</td>
                                         <td>{{ $requisition->requestTo->name ?? '-' }}</td>
-
-                                        <td> <a href="">{{ $requisition->status }} </a></td>
-
+                                        <td>{{ $requisition->status }}</td>
                                         <td>
                                             <button type="button" class="btn btn-success btn-sm" data-toggle="modal"
-                                                data-target="#modal-lg-view-{{ $requisition->id }}">
-                                                view
+                                                data-target="#modal-view-{{ $requisition->id }}">
+                                                View
                                             </button>
-
                                         </td>
-
                                         <td>
-                                            <a href="/transfer-print-{{ $requisition->id }}" rel="noopener" target="_blank"
-                                                class="btn btn-warning btn-sm"><i class="fas fa-print"></i> Print</a>
+                                            <a href="/transfer-print-{{ $requisition->id }}" target="_blank"
+                                                class="btn btn-warning btn-sm">
+                                                <i class="fas fa-print"></i> Print
+                                            </a>
                                             @if ($requisition->status != 'Approved')
                                                 <a href="/delete-requisition-{{ $requisition->id }}"
                                                     class="btn btn-danger btn-sm">
-                                                    <i class="fas fa-trash "></i>
+                                                    <i class="fas fa-trash"></i>
                                                 </a>
                                             @endif
-
                                         </td>
                                     </tr>
-                                    <div class="modal fade" id="modal-lg-view-{{ $requisition->id }}">
-                                        <div class="modal-dialog modal-lg">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h4 class="modal-title">
-                                                    </h4>
-                                                    <button type="button" class="close" data-dismiss="modal"
-                                                        aria-label="Close">
-                                                        <span aria-hidden="true">&times;</span>
-                                                    </button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <div class="row">
-                                                        <div class="col">
-                                                            Item
-                                                        </div>
-                                                        <div class="col">
-                                                            Part no1
-                                                        </div>
-                                                        <div class="col">
-                                                            Part no2
-                                                        </div>
-                                                        <div class="col">
-                                                            Image1
-                                                        </div>
-                                                        <div class="col">
-                                                            Image2
-                                                        </div>
-                                                        <div class="col">
-                                                            unit
-                                                        </div>
-                                                        <div class="col">
-                                                            Category
-                                                        </div>
-                                                        <div class="col">
-                                                            Shelf
-                                                        </div>
-                                                        <div class="col">
-                                                            Batch
-                                                        </div>
-                                                        <div class="col">
-                                                            Quantity
-                                                        </div>
-
-                                                    </div>
-                                                    <hr>
-                                                    @php
-                                                        $total = 0;
-                                                    @endphp
-                                                    @forelse ($requisitionDetails as $requisitionDetail)
-                                                        @if ($requisitionDetail->requisition_id == $requisition->id)
-                                                            @php
-                                                                $imagePath1 = str_replace(
-                                                                    '\\',
-                                                                    '/',
-                                                                    $requisitionDetail->item->image,
-                                                                );
-                                                                $imagePath2 = str_replace(
-                                                                    '\\',
-                                                                    '/',
-                                                                    $requisitionDetail->item->image2,
-                                                                );
-                                                            @endphp
-                                                            <div class="row">
-                                                                <div class="col">
-                                                                    <b>{{ $requisitionDetail->item->item_name }}</b>
-                                                                </div>
-                                                                <div class="col">
-                                                                    <b>{{ $requisitionDetail->item->product_code }}</b>
-                                                                </div>
-                                                                <div class="col">
-                                                                    <b>{{ $requisitionDetail->item->part_number }}</b>
-                                                                </div>
-                                                                <div class="col">
-                                                                    <img src="{{ asset($imagePath1) }}" alt=""
-                                                                        style="width: 60px; height: 60px; object-fit: cover; border-radius: 5px; cursor: pointer;">
-
-                                                                </div>
-                                                                <div class="col">
-                                                                    <b> <img src="{{ asset($imagePath2) }}" alt=""
-                                                                            style="width: 60px; height: 60px; object-fit: cover; border-radius: 5px; cursor: pointer;">
-                                                                    </b>
-                                                                </div>
-                                                                <div class="col">
-                                                                    <b>{{ $requisitionDetail->item->unit }}</b>
-                                                                </div>
-                                                                <div class="col">
-                                                                    <b>{{ $requisitionDetail->item->category }}</b>
-                                                                </div>
-                                                                <div class="col">
-                                                                    <b>
-                                                                        @foreach ($shelfs as $shelff)
-                                                                            @if (
-                                                                                $shelff->shelf->business_locations_id == $requisition->request_from &&
-                                                                                    $requisitionDetail->item_id == $shelff->item_id)
-                                                                                {{ $shelff->shelf->shelf_name ?? '-' }}
-                                                                            @endif
-                                                                        @endforeach
-                                                                    </b>
-                                                                </div>
-                                                                <div class="col">
-                                                                    <b>{{ $requisitionDetail->batch->batch_number ?? '' }}</b>
-                                                                </div>
-                                                                <div class="col">
-                                                                    {{ number_format($requisitionDetail->quantity) }}
-                                                                </div>
-                                                            </div>
-                                                            <br>
-                                                        @endif
-                                                    @empty
-                                                    @endforelse
-
-                                                </div>
-
-                                            </div>
-                                            <!-- /.modal-content -->
-                                        </div>
-                                        <!-- /.modal-dialog -->
-                                    </div>
                                 @empty
+                                    <tr>
+                                        <td colspan="8" class="text-center">No requisitions found</td>
+                                    </tr>
                                 @endforelse
                             </tbody>
                         </table>
-                        {{-- <div class="p-2" style="float: right"> {{ $salesOrders->links("pagination::bootstrap-4") }}</div> --}}
                     </div>
-                    <!-- /.card-body -->
                 </div>
-                <!-- /.card -->
             </div>
+
+            <!-- Modals placed **outside of table** -->
+            @foreach ($requisitions as $requisition)
+                <div class="modal fade" id="modal-view-{{ $requisition->id }}">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Requisition Items</h5>
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th>Item</th>
+                                                <th>Part No1</th>
+                                                <th>Part No2</th>
+                                                <th>Image1</th>
+                                                <th>Image2</th>
+                                                <th>Unit</th>
+                                                <th>Category</th>
+                                                <th>Shelf</th>
+                                                <th>Batch</th>
+                                                <th>Quantity</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @forelse($requisitionDetails->where('requisition_id', $requisition->id) as $detail)
+                                                <tr>
+                                                    <td>{{ $detail->item->item_name }}</td>
+                                                    <td>{{ $detail->item->product_code }}</td>
+                                                    <td>{{ $detail->item->part_number }}</td>
+                                                    <td>
+                                                        @php
+                                                            $imagePath1 = str_replace('\\', '/', $detail->item->image);
+                                                            $imagePath2 = str_replace('\\', '/', $detail->item->image2);
+                                                        @endphp
+                                                        <img src="{{ asset($imagePath1) }}" alt=""
+                                                            style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px; cursor: pointer;"
+                                                            data-toggle="modal" data-target="#imageModal"
+                                                            onclick="setModalImage('{{ asset($imagePath1) }}')">
+                                                    </td>
+                                                    <td>
+                                                        <img src="{{ asset($imagePath2) }}" alt=""
+                                                            style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px; cursor: pointer;"
+                                                            data-toggle="modal" data-target="#imageModal"
+                                                            onclick="setModalImage('{{ asset($imagePath2) }}')">
+                                                    </td>
+                                                    <td>{{ $detail->item->unit }}</td>
+                                                    <td>{{ $detail->item->category }}</td>
+                                                    <td>{{ $shelfs->firstWhere('item_id', $detail->item_id)?->shelf->shelf_name ?? '-' }}
+                                                    </td>
+                                                    <td>{{ $detail->batch->batch_number ?? '-' }}</td>
+                                                    <td>{{ number_format($detail->quantity) }}</td>
+                                                </tr>
+                                            @empty
+                                                <tr>
+                                                    <td colspan="10" class="text-center">No items found</td>
+                                                </tr>
+                                            @endforelse
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
             <div class="modal fade" id="modal-lg">
                 <div class="modal-dialog modal-lg">
                     <div class="modal-content">
@@ -290,82 +239,80 @@
                                                                     </div>
 
                                                             </div>
-                                                            <div class="row">
 
-                                                                <div class="col-12 table-responsive">
-
-                                                                    <table class="table table-striped">
-                                                                        <tr>
-                                                                            <th>ProductNameCode</th>
-                                                                            <th>Quantity</th>
-                                                                            {{-- <th>CurrntBalance</th> --}}
-                                                                            <th></th>
-                                                                        </tr>
-                                                                        <tbody id="add_items">
-                                                                            <tr id="row_0">
-                                                                                <td style="width: 300px;">
-                                                                                    <div class="item-search w-100 mb-2"
-                                                                                        style="position:relative">
-                                                                                        <input type="text"
-                                                                                            placeholder="Search Item..."
-                                                                                            id="myInput_0"
-                                                                                            onclick="myFunction(0)"
-                                                                                            onkeyup="filterFunction(0)"
-                                                                                            class="form-control"
-                                                                                            autocomplete="off" required>
-
-                                                                                        <div id="items_0"
-                                                                                            class="dropdown-menu w-100"
-                                                                                            style="display:none; position:absolute; z-index:1000; max-height:250px; overflow-y:auto;">
-                                                                                            <ul id="item_list_0"
-                                                                                                class="list-unstyled mb-0">
-                                                                                            </ul>
-                                                                                        </div>
-                                                                                    </div>
-
-                                                                                    <input type="hidden" id="item_id_0"
-                                                                                        name="addmore[0][item_id]"
-                                                                                        value="">
-                                                                                    <input type="hidden" id="batch_id_0"
-                                                                                        name="addmore[0][batch_id]"
-                                                                                        value="">
-                                                                                    <div id="item_image_preview_0"
-                                                                                        class="mt-2"></div>
-                                                                                </td>
-
-
-                                                                                <td>
-                                                                                    <input type="number" min="0"
-                                                                                        id='quantity_0'
-                                                                                        name="addmore[0][quantity]"
-                                                                                        placeholder="Quantity"
-                                                                                        class="form-control input-group-sm"
-                                                                                        required>
-                                                                                </td>
-                                                                                {{-- <td>
-                                                            <input type="number" min="0" id='remain_0' readonly value="0" class="form-control input-group-sm">
-                                                         </td> --}}
-                                                                            </tr>
-                                                                        </tbody>
-
-                                                                    </table>
-                                                                    <a href="#" id="add_new_items"
-                                                                        class="btn btn-success float-right"
-                                                                        style="padding:5px; text-decoration:none">
-
-                                                                        <i class="fa fa-plus-circle"
-                                                                            aria-hidden="true"></i>
-                                                                    </a>
-
-                                                                </div>
-                                                                <hr><br>
-                                                                <!-- /.col -->
-                                                            </div>
 
                                                         </div>
-                                                        <!-- /.card-body -->
+                                                        <div class="row">
+
+                                                            <div class="col-12 table-responsive">
+
+                                                                <table class="table table-striped">
+                                                                    <tr>
+                                                                        <th>ProductNameCode</th>
+                                                                        <th>Quantity</th>
+                                                                        {{-- <th>CurrntBalance</th> --}}
+                                                                        <th></th>
+                                                                    </tr>
+                                                                    <tbody id="add_items">
+                                                                        <tr id="row_0">
+                                                                            <td style="width: 450px;">
+                                                                                <div class="item-search w-100 mb-2"
+                                                                                    style="position:relative">
+                                                                                    <input type="text"
+                                                                                        placeholder="Search Item..."
+                                                                                        id="myInput_0"
+                                                                                        onclick="myFunction(0)"
+                                                                                        onkeyup="filterFunction(0)"
+                                                                                        class="form-control"
+                                                                                        autocomplete="off" required>
+
+                                                                                    <div id="items_0"
+                                                                                        class="dropdown-menu w-100"
+                                                                                        style="display:none; position:absolute; z-index:1000; max-height:250px; overflow-y:auto;">
+                                                                                        <ul id="item_list_0"
+                                                                                            class="list-unstyled mb-0">
+                                                                                        </ul>
+                                                                                    </div>
+                                                                                </div>
+
+                                                                                <input type="hidden" id="item_id_0"
+                                                                                    name="addmore[0][item_id]"
+                                                                                    value="">
+                                                                                <input type="hidden" id="batch_id_0"
+                                                                                    name="addmore[0][batch_id]"
+                                                                                    value="">
+                                                                                <div id="item_image_preview_0"
+                                                                                    class="mt-2"></div>
+                                                                            </td>
+
+
+                                                                            <td>
+                                                                                <input type="number" min="0"
+                                                                                    id='quantity_0'
+                                                                                    name="addmore[0][quantity]"
+                                                                                    placeholder="Quantity"
+                                                                                    class="form-control input-group-sm"
+                                                                                    required>
+                                                                            </td>
+
+                                                                        </tr>
+                                                                    </tbody>
+
+                                                                </table>
+                                                                <a href="#" id="add_new_items"
+                                                                    class="btn btn-success float-right"
+                                                                    style="padding:5px; text-decoration:none">
+
+                                                                    <i class="fa fa-plus-circle" aria-hidden="true"></i>
+                                                                </a>
+
+                                                            </div>
+                                                            <hr><br>
+                                                            <!-- /.col -->
+                                                        </div>
                                                         <button type="submit"
                                                             class="btn btn-primary swalDefaultSuccess">Submit</button>
+                                                    </div>
                                                 </form>
                                             </div>
                                             <!-- /.card-body -->
@@ -378,7 +325,6 @@
                 </div>
             </div>
         </div>
-
         <!-- Image Modal -->
         <div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
@@ -464,8 +410,8 @@
                 success: function(result) {
                     $.each(result, function(index, value) {
                         if (selectedItems.includes(String(value.id))) return;
-
-                        let imageUrl = value.image ? `/${value.image}` : '/images/no-image.png';
+                        let imageUrl = value.image ? "{{ asset('') }}" + value.image.replace(/\\/g,
+                            "/") : "{{ asset('images/no-image.png') }}";
                         let listItem = `
                     <li class="dropdown-item d-flex align-items-center border-bottom py-2"
                         style="cursor:pointer;"
@@ -474,8 +420,8 @@
 
                         <img src="${imageUrl}" style="width:40px;height:40px;object-fit:cover;border-radius:5px;margin-right:10px;">
                         <div>
-                            <strong>${value.item_name}</strong><br>
-                            <small class="text-muted">${value.product_code} | Stock: ${value.quantity}</small>
+                            <strong>${value.item_name}| ${value.product_code}</strong><br>
+                            <small class="text-muted"> batch: ${value.batch_number} | Stock: ${value.quantity}</small>
                         </div>
                     </li>
                 `;
@@ -542,11 +488,14 @@
 
             $("#quantity_" + no).attr("max", quantity);
 
+            // Use proper quotes for src
             $("#item_image_preview_" + no).html(`
-        <img src="${imageUrl}" style="width:60px;height:60px;border-radius:5px;cursor:pointer;border:1px solid #ccc;"
+        <img src="${imageUrl}"
+            style="width:60px;height:60px;border-radius:5px;cursor:pointer;border:1px solid #ccc;"
             onclick="openImageModal('${imageUrl}')">
     `);
         }
+
 
         // ---------------- DROPDOWN POSITION FIX ----------------
         function positionDropdown(no) {
@@ -585,7 +534,4 @@
             }
         });
     </script>
-
-
-
 @endsection

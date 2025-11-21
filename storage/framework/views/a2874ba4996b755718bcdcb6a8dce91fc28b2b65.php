@@ -4,9 +4,7 @@
             <div class="row p-3">
                 <div class="card">
                     <div class="card-body text-sm">
-                        
-                        <table id="example1" class="table table-bordered table-striped"
-                            style=" overflow-y:scroll;display:block;overflow-y: hidden;">
+                        <table id="example1" class="table table-bordered table-striped">
                             <thead>
                                 <tr>
                                     <th>No</th>
@@ -16,164 +14,112 @@
                                     <th>RequestTo</th>
                                     <th>Status</th>
                                     <th>Details</th>
-                                    <th></th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
-                            <tbody id='list'>
+                            <tbody>
                                 <?php $no = 0 ; ?>
                                 <?php $__empty_1 = true; $__currentLoopData = $requisitions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $requisition): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
-                                    <?php $no = $no + 1 ; ?>
-                                    <tr>
+                                    <?php $no++ ; ?>
                                     <tr>
                                         <td><?php echo e($no); ?></td>
                                         <td><?php echo e($requisition->created_at->toDateString()); ?></td>
                                         <td><?php echo e($requisition->requestFrom->name ?? '-'); ?></td>
                                         <td><?php echo e($requisition->request_by); ?></td>
                                         <td><?php echo e($requisition->requestTo->name ?? '-'); ?></td>
-
-                                        <td> <a href=""><?php echo e($requisition->status); ?> </a></td>
-                                        <td style="">
+                                        <td><?php echo e($requisition->status); ?></td>
+                                        <td>
                                             <button type="button" class="btn btn-success btn-sm" data-toggle="modal"
                                                 data-target="#modal-lg-view-<?php echo e($requisition->id); ?>">
-                                                view
+                                                View
                                             </button>
                                         </td>
-
                                         <td>
                                             <a href="approveRequisition/<?php echo e($requisition->id); ?>/<?php echo e(Auth::user()->name); ?>"
                                                 class="btn btn-success btn-sm">
-                                                <i class="fas fa-check "></i>
+                                                <i class="fas fa-check"></i>
                                             </a>
                                         </td>
-                                        
                                     </tr>
-                                    <div class="modal fade" id="modal-lg-view-<?php echo e($requisition->id); ?>">
-                                        <div class="modal-dialog modal-lg">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h4 class="modal-title">
-                                                    </h4>
-                                                    <button type="button" class="close" data-dismiss="modal"
-                                                        aria-label="Close">
-                                                        <span aria-hidden="true">&times;</span>
-                                                    </button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <div class="row">
-                                                        <div class="col">
-                                                            Item
-                                                        </div>
-                                                        <div class="col">
-                                                            Part no1
-                                                        </div>
-                                                        <div class="col">
-                                                            Part no2
-                                                        </div>
-                                                        <div class="col">
-                                                            Image1
-                                                        </div>
-                                                        <div class="col">
-                                                            Image2
-                                                        </div>
-                                                        <div class="col">
-                                                            unit
-                                                        </div>
-                                                        <div class="col">
-                                                            Category
-                                                        </div>
-                                                        <div class="col">
-                                                            Shelf
-                                                        </div>
-                                                        <div class="col">
-                                                            Batch
-                                                        </div>
-                                                        <div class="col">
-                                                            Quantity
-                                                        </div>
-
-                                                    </div>
-                                                    <hr>
-                                                    <?php
-                                                        $total = 0;
-                                                    ?>
-                                                    <?php $__empty_2 = true; $__currentLoopData = $requisitionDetails; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $requisitionDetail): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_2 = false; ?>
-                                                        <?php if($requisitionDetail->requisition_id == $requisition->id): ?>
-                                                            <?php
-                                                                $imagePath1 = str_replace(
-                                                                    '\\',
-                                                                    '/',
-                                                                    $requisitionDetail->item->image,
-                                                                );
-                                                                $imagePath2 = str_replace(
-                                                                    '\\',
-                                                                    '/',
-                                                                    $requisitionDetail->item->image2,
-                                                                );
-                                                            ?>
-                                                            <div class="row">
-                                                                <div class="col">
-                                                                    <b><?php echo e($requisitionDetail->item->item_name); ?></b>
-                                                                </div>
-                                                                <div class="col">
-                                                                    <b><?php echo e($requisitionDetail->item->product_code); ?></b>
-                                                                </div>
-                                                                <div class="col">
-                                                                    <b><?php echo e($requisitionDetail->item->part_number); ?></b>
-                                                                </div>
-                                                                <div class="col">
-                                                                    <img src="<?php echo e(asset($imagePath1)); ?>" alt=""
-                                                                        style="width: 60px; height: 60px; object-fit: cover; border-radius: 5px; cursor: pointer;">
-
-                                                                </div>
-                                                                <div class="col">
-                                                                    <b> <img src="<?php echo e(asset($imagePath2)); ?>" alt=""
-                                                                            style="width: 60px; height: 60px; object-fit: cover; border-radius: 5px; cursor: pointer;">
-                                                                    </b>
-                                                                </div>
-                                                                <div class="col">
-                                                                    <b><?php echo e($requisitionDetail->item->unit); ?></b>
-                                                                </div>
-                                                                <div class="col">
-                                                                    <b><?php echo e($requisitionDetail->item->category); ?></b>
-                                                                </div>
-                                                                <div class="col">
-                                                                    <b>
-                                                                        <?php $__currentLoopData = $shelfs; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $shelff): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                                                            <?php if(
-                                                                                $shelff->shelf->business_locations_id == $requisition->request_from &&
-                                                                                    $requisitionDetail->item_id == $shelff->item_id): ?>
-                                                                                <?php echo e($shelff->shelf->shelf_name ?? '-'); ?>
-
-                                                                            <?php endif; ?>
-                                                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                                                    </b>
-                                                                </div>
-                                                                <div class="col">
-                                                                    <b><?php echo e($requisitionDetail->batch->batch_number ?? ''); ?></b>
-                                                                </div>
-                                                                <div class="col">
-                                                                    <?php echo e(number_format($requisitionDetail->quantity)); ?>
-
-                                                                </div>
-                                                            </div>
-                                                            <br>
-                                                        <?php endif; ?>
-                                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_2): ?>
-                                                    <?php endif; ?>
-
-                                                </div>
-
-                                            </div>
-                                            <!-- /.modal-content -->
-                                        </div>
-                                        <!-- /.modal-dialog -->
-                                    </div>
                                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                                    <tr>
+                                        <td colspan="8" class="text-center">No Requisitions Found!</td>
+                                    </tr>
                                 <?php endif; ?>
                             </tbody>
                         </table>
-                        
                     </div>
+
+                    <!-- ==================== MODALS ==================== -->
+                    <?php $__currentLoopData = $requisitions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $requisition): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <div class="modal fade" id="modal-lg-view-<?php echo e($requisition->id); ?>">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+
+                                    <div class="modal-header">
+                                        <h4 class="modal-title">Requisition #<?php echo e($requisition->id); ?></h4>
+                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    </div>
+
+                                    <div class="modal-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered table-striped table-sm">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Item</th>
+                                                        <th>Part no1</th>
+                                                        <th>Part no2</th>
+                                                        <th>Image1</th>
+                                                        <th>Image2</th>
+                                                        <th>Unit</th>
+                                                        <th>Category</th>
+                                                        <th>Shelf</th>
+                                                        <th>Batch</th>
+                                                        <th>Quantity</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <?php $__currentLoopData = $requisitionDetails; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $detail): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                        <?php if($detail->requisition_id == $requisition->id): ?>
+                                                            <?php
+                                                                $img1 = str_replace('\\', '/', $detail->item->image);
+                                                                $img2 = str_replace('\\', '/', $detail->item->image2);
+                                                            ?>
+                                                            <tr>
+                                                                <td><?php echo e($detail->item->item_name); ?></td>
+                                                                <td><?php echo e($detail->item->product_code); ?></td>
+                                                                <td><?php echo e($detail->item->part_number); ?></td>
+                                                                <td><img src="<?php echo e(asset($img1)); ?>"
+                                                                        style="width:60px;height:60px;border-radius:5px;object-fit:cover;">
+                                                                </td>
+                                                                <td><img src="<?php echo e(asset($img2)); ?>"
+                                                                        style="width:60px;height:60px;border-radius:5px;object-fit:cover;">
+                                                                </td>
+                                                                <td><?php echo e($detail->item->unit); ?></td>
+                                                                <td><?php echo e($detail->item->category); ?></td>
+                                                                <td>
+                                                                    <?php $__currentLoopData = $shelfs; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $shelff): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                                        <?php if($shelff->shelf->business_locations_id == $requisition->request_from && $detail->item_id == $shelff->item_id): ?>
+                                                                            <?php echo e($shelff->shelf->shelf_name ?? '-'); ?>
+
+                                                                        <?php endif; ?>
+                                                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                                                </td>
+                                                                <td><?php echo e($detail->batch->batch_number ?? '-'); ?></td>
+                                                                <td><?php echo e(number_format($detail->quantity)); ?></td>
+                                                            </tr>
+                                                        <?php endif; ?>
+                                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+
                     <!-- /.card-body -->
                 </div>
                 <!-- /.card -->

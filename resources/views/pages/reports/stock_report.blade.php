@@ -23,8 +23,8 @@
                                 <th>ItemName</th>
                                 <th>Itemimage1</th>
                                 <th>Itemimage2</th>
-                                <th style="background-color: rgb(2, 2, 39)">Part Number1</th>
-                                <th style="background-color: rgb(2, 2, 39)">Part Number2</th>
+                                <th>Part Number1</th>
+                                <th>Part Number2</th>
                                 <th>Quantity</th>
                                 <th>Unit</th>
                                 <th>Category</th>
@@ -60,16 +60,20 @@
                                         onclick="setModalImage('{{ asset($imagePath2) }}')">
 
                                 </td>
-                                <td style="background-color: rgb(2, 2, 39)"><a type="button" style="color: gold"
-                                        href="#"data-toggle="modal"
-                                        data-target="#modal-lg-O-{{ $stock->id }}">{{ $stock->item->product_code }}</a>
+                                <td>{{ $stock->item->product_code }}</a>
                                 </td>
-                                <td style="background-color: rgb(2, 2, 39)"><a type="button" style="color: gold"
-                                        href="#"data-toggle="modal"
-                                        data-target="#modal-lg-O-{{ $stock->id }}">{{ $stock->item->part_number }}</a>
+                                <td>{{ $stock->item->part_number }}</a>
                                 </td>
-                                <td>{{ $stock->quantity }}</td>
-                                <td>{{ $stock->item->unit }}</td>
+
+                                @if ($stock->item->reorder > $stock->quantity)
+                                    <td style="background-color: rgb(2, 2, 39)"><a type="button"
+                                            style="color: rgb(169, 55, 20)">
+                                            {{ $stock->quantity }}</td>
+                                @else
+                                    <td> {{ $stock->quantity }}</td>
+                                @endif
+
+                                <td>{{ $stock->item->unit }},{{ $stock->item->other_unit }}</td>
                                 <td>{{ $stock->item->category }}</td>
                                 <td>
                                     @foreach ($shelfs as $shelff)

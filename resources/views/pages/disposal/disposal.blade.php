@@ -237,7 +237,8 @@
                                                             <div class="form-group">
                                                                 <label>Item</label>
                                                                 <!-- Item Search -->
-
+                                                                <input type="hidden" name="request_token"
+                                                                    value="{{ Str::uuid() }}">
                                                                 <div class="item-search w-100 mb-2"
                                                                     style="position:relative">
                                                                     <input type="text" placeholder="Search Item..."
@@ -274,8 +275,8 @@
                                                             </div>
                                                             <div class="form-group">
                                                                 <label>Quantity</label>
-                                                                <input type="text" name="quantity"
-                                                                    class="form-control" placeholder="Quantity">
+                                                                <input type="number" name="quantity" min="1"
+                                                                    class="form-control" placeholder="Quantity" required>
                                                             </div>
 
 
@@ -399,6 +400,17 @@
             if (!$(e.target).closest('.item-search').length) {
                 $('.dropdown-content').hide(); // hide all dropdowns
             }
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('quickForm');
+            form.addEventListener('submit', function(e) {
+                const btn = form.querySelector('button[type="submit"]');
+                btn.disabled = true;
+                btn.innerHTML = "Processing...";
+            });
         });
     </script>
 

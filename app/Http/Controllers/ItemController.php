@@ -16,6 +16,7 @@ use App\Models\Shelf;
 use App\Models\SalesOrderDetail;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class ItemController extends Controller
 {
@@ -46,6 +47,21 @@ class ItemController extends Controller
     public function addItem(Request $request)
     {
 
+        // 1️⃣ Reject reused tokens
+        $exists = DB::table('request_tokens')
+            ->where('token', $request->request_token)
+            ->exists();
+
+        if ($exists) {
+            return back()->with('error', 'Duplicate submission blocked.');
+        }
+
+        // 2️⃣ Store token immediately so duplicates are blocked
+        DB::table('request_tokens')->insert([
+            'token' => $request->request_token,
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
         $request->validate([
             'item_code'    => 'required|string|max:255|unique:items,item_code',
             'part_number'  => 'nullable|string|max:255|unique:items,part_number',

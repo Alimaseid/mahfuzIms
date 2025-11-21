@@ -43,8 +43,9 @@
                                     <th>ItemName </th>
                                     <th>Image1</th>
                                     <th>Image2</th>
-                                    <th style="background-color: rgb(2, 2, 39)">Part Number1</th>
-                                    <th style="background-color: rgb(2, 2, 39)">Part Number2</th>
+                                    <th>Part Number1</th>
+                                    <th>Part Number2</th>
+                                    <th>Item Code</th>
                                     <th>Category</th>
                                     <th>Reorder</th>
                                     <th>Price1</th>
@@ -84,15 +85,9 @@
                                                     data-toggle="modal" data-target="#imageModal"
                                                     onclick="setModalImage('{{ asset($imagePath2) }}')">
                                             </td>
-                                            <td style="background-color: rgb(2, 2, 39)"><a type="button"
-                                                    style="color: gold" href="#"data-toggle="modal"
-                                                    data-target="#modal-lg-O-{{ $item->id }}">{{ $item->product_code }}</a>
-                                            </td>
-                                            <td style="background-color: rgb(2, 2, 39)"><a type="button"
-                                                    style="color: gold" href="#"data-toggle="modal"
-                                                    data-target="#modal-lg-O-{{ $item->id }}">{{ $item->part_number }}</a>
-                                            </td>
-
+                                            <td>{{ $item->product_code }}</td>
+                                            <td>{{ $item->part_number }}</td>
+                                            <td>{{ $item->item_code }}</td>
                                             <!-- Image Modal (works with Bootstrap 4) -->
                                             <div class="modal fade" id="imageModal" tabindex="-1" role="dialog">
                                                 <div class="modal-dialog modal-lg" role="document">
@@ -104,17 +99,8 @@
                                                 </div>
                                             </div>
                                             <td>{{ $item->category }}</td>
-                                            @if ($item->quantity < $item->reorder)
-                                                <td style="background-color: rgb(2, 2, 39)"> <a type="button"
-                                                        style="color: rgb(248, 75, 6)" href="#"data-toggle="modal"
-                                                        data-target="#modal-lg-O-{{ $item->id }}">{{ $item->reorder }}</a>
-                                                </td>
-                                            @else
-                                                <td style="background-color: rgb(2, 2, 39)"> <a type="button"
-                                                        style="color: rgb(207, 199, 196)" href="#"data-toggle="modal"
-                                                        data-target="#modal-lg-O-{{ $item->id }}">{{ $item->reorder }}</a>
-                                                </td>
-                                            @endif
+                                            <td>{{ $item->reorder }}</td>
+
                                             <td>{{ $item->selling_price1 }}</td>
                                             <td>{{ $item->selling_price2 }}</td>
                                             <td>
@@ -484,7 +470,6 @@
                 </div>
 
                 <!-- /.card -->
-
                 <div class="modal fade" id="modal-lg">
                     <div class="modal-dialog modal-lg">
                         <div class="modal-content">
@@ -496,12 +481,10 @@
                             </div>
                             <div class="modal-body">
                                 <div class="container-fluid">
-
                                     <div class="card card-primary">
                                         <div class="card-header">
                                             <h3 class="card-title">item <small>Information</small></h3>
                                         </div>
-                                        <!-- /.card-header -->
                                         <!-- form start -->
                                         <form action="/add-item" method="POST" id="quickForm"
                                             enctype="multipart/form-data">
@@ -515,7 +498,8 @@
                                                                 placeholder="Item Name" required>
                                                         </div>
                                                     </div>
-
+                                                    <input type="hidden" name="request_token"
+                                                        value="{{ Str::uuid() }}">
                                                     <div class="col-4">
                                                         <div class="form-group">
                                                             <label>p-No 1</label>
@@ -555,20 +539,6 @@
                                                             </select>
                                                         </div>
                                                     </div>
-                                                    {{-- <div class="col-4">
-                                                        <div class="form-group">
-                                                            <label>Shelf</label>
-                                                            <select name="shelf" class="form-control" id=""
-                                                                required>
-                                                                <option value="">Select</option>
-                                                                @forelse ($shelfs as $shelf)
-                                                                    <option value="{{ $shelf->shelf_name }}">
-                                                                        {{ $shelf->shelf_name }}</option>
-                                                                @empty
-                                                                @endforelse
-                                                            </select>
-                                                        </div>
-                                                    </div> --}}
                                                 </div>
                                                 <div class="row">
                                                     <div class="col-4">
@@ -599,10 +569,8 @@
                                                                 placeholder="Brand">
                                                         </div>
                                                     </div>
-
                                                 </div>
                                                 <div class="row">
-
                                                     <div class="col-4">
                                                         <div class="form-group">
                                                             <label>Price 1</label>
@@ -676,7 +644,6 @@
                     <!-- /.modal-dialog -->
                 </div>
 
-
                 <!-- /.modal -->
             </div>
         </div>
@@ -686,5 +653,15 @@
         function setModalImage(src) {
             document.getElementById('modalImage').src = src;
         }
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('quickForm');
+            form.addEventListener('submit', function(e) {
+                const btn = form.querySelector('button[type="submit"]');
+                btn.disabled = true;
+                btn.innerHTML = "Processing...";
+            });
+        });
     </script>
 @endsection

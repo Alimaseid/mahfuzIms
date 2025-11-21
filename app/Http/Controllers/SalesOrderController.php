@@ -21,6 +21,7 @@ use App\Models\Inventory;
 use App\Models\Role;
 use App\Models\SalesOrderDetail;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Psy\CodeCleaner\ReturnTypePass;
 
 // use App\Http\Controllers\TelegramController;
@@ -36,9 +37,8 @@ class SalesOrderController extends Controller
     {
         $salesOrders = SalesOrder::orderBy('id', 'desc')->take(100)->get();
         $salesOrders = SalesOrder::with(['details.item'])->orderBy('id', 'desc')->take(100)->get();
-
         $businessLocations = BusinessLocation::all();
-        $salesOrderDetails = SalesOrderDetail::all();
+        $salesOrderDetails = SalesOrderDetail::orderBy('id', 'desc')->take(2000)->get();
         $customers = Customer::all();
         $categories = Category::select('id', 'name')->get();
         $permission = Role::where('id', Auth::user()->role)->first();
@@ -52,8 +52,52 @@ class SalesOrderController extends Controller
             ->with('salesOrders', $salesOrders);
     }
 
+    public function create()
+    {
+        $businessLocations = BusinessLocation::all();
+        $customers = Customer::all();
+        $categories = Category::select('id', 'name')->get();
+
+        return view('pages.sales.addsales')
+            ->with('customers', $customers)
+            ->with('businessLocations', $businessLocations)
+            ->with('categories', $categories);
+    }
+
+    public function edit($id)
+    {
+        $salesOrder = SalesOrder::find($id);
+        $salesOrders = SalesOrder::with(['details.item'])->orderBy('id', 'desc')->take(100)->get();
+        $salesOrderDetails = SalesOrderDetail::where('sales_order_id', $salesOrder->id)->get();
+        $businessLocations = BusinessLocation::all();
+        $customers = Customer::all();
+        $categories = Category::select('id', 'name')->get();
+
+        return view('pages.sales.editsales')
+            ->with('customers', $customers)
+            ->with('businessLocations', $businessLocations)
+            ->with('categories', $categories)
+            ->with('salesOrder', $salesOrder)
+            ->with('salesOrders', $salesOrders)
+            ->with('salesOrderDetails', $salesOrderDetails);
+    }
     public function addSalesOrder(Request $request)
     {
+        // 1️⃣ Reject reused tokens
+        $exists = DB::table('request_tokens')
+            ->where('token', $request->request_token)
+            ->exists();
+
+        if ($exists) {
+            return back()->with('error', 'Duplicate submission blocked.');
+        }
+
+        // 2️⃣ Store token immediately so duplicates are blocked
+        DB::table('request_tokens')->insert([
+            'token' => $request->request_token,
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
         // basic validation
         $request->validate([
             'customer' => 'required|exists:customers,id',
@@ -188,7 +232,7 @@ class SalesOrderController extends Controller
             ->withProperties(['grand_total' => $grandTotal])
             ->log('Created Sales Order');
 
-        return back()->with('success', 'Registered Order Successfully.');
+        return redirect('/sales-order')->with('success', 'Registered Order Successfully.');
     }
 
 
@@ -197,17 +241,19 @@ class SalesOrderController extends Controller
 
     public function editSalesOrder(Request $request, $id)
     {
+
+
         // ✅ Validation (same as addSalesOrder, just reference_no fixed)
-        $request->validate([
-            'customer' => 'required|exists:customers,id',
-            'business_location' => 'required|exists:business_locations,id',
-            'reference_no' => 'required|string',
-            'sales_type' => 'required|string',
-            'addmore' => 'required|array|min:1',
-            'addmore.*.item_id' => 'required|integer|exists:items,id',
-            'addmore.*.quantity' => 'required|numeric|min:1',
-            'addmore.*.u_price' => 'required|numeric|min:0',
-        ]);
+        // $request->validate([
+        //     'customer' => 'required|exists:customers,id',
+        //     'business_location' => 'required|exists:business_locations,id',
+        //     'reference_no' => 'required|string',
+        //     'sales_type' => 'required|string',
+        //     'addmore' => 'required|array|min:1',
+        //     'addmore.*.item_id' => 'required|integer|exists:items,id',
+        //     'addmore.*.quantity' => 'required|numeric|min:1',
+        //     'addmore.*.u_price' => 'required|numeric|min:0',
+        // ]);
 
         $salesOrder = SalesOrder::findOrFail($id);
 
@@ -361,7 +407,7 @@ class SalesOrderController extends Controller
             ->withProperties(['grand_total' => $grandTotal])
             ->log('Edited Sales Order');
 
-        return back()->with('success', 'Edit Order Successfully.');
+        return redirect('/sales-order')->with('success', 'Edit Order Successfully.');
     }
 
 
@@ -594,6 +640,46 @@ class SalesOrderController extends Controller
                 'image2'         => $item->image2 ? asset(str_replace('\\', '/', $item->image2)) : null,
                 'quantity'       => $inventory->quantity,
                 'category'       => $item->category,
+            ];
+        })->filter();
+
+        return response()->json($items->values());
+    }
+    public function e_getItemForSale(Request $request)
+    {
+        $locationId = $request->input('location_id');
+        $category   = $request->input('category');   // category NAME from edit-sales
+
+        $query = Inventory::with(['item', 'batch'])
+            ->where('quantity', '>', 0);
+
+        if ($locationId) {
+            $query->where('location_id', $locationId);
+        }
+
+        $inventories = $query->get();
+
+        $items = $inventories->map(function ($inventory) use ($category) {
+
+            $item = $inventory->item;
+            if (!$item) return null;
+
+            // ✔ FIX: Category filtering using STRING (name)
+            if ($category && $item->category !== $category) {
+                return null;
+            }
+
+            return [
+                'id'           => $item->id,
+                'item_name'    => $item->item_name,
+                'product_code' => $item->product_code,
+                'quantity'     => $inventory->quantity,
+                'batch_id'     => $inventory->batch_id,
+                'batch_number' => $inventory->batch?->batch_number,
+                'selling_price1' => $item->selling_price1,
+                'selling_price2' => $item->selling_price2,
+                'selling_price3' => $item->selling_price3,
+                'image'        => $item->image ? asset($item->image) : null,
             ];
         })->filter();
 

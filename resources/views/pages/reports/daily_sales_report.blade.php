@@ -69,6 +69,11 @@
                                 <th>Total Sales</th>
                                 <td>ETB {{ number_format($g_total, 2) }}</td>
                             </tr>
+                            <tr class="text-warning">
+
+                                <th>Net Amount</th>
+                                <td>ETB {{ number_format($g_total - $g_vat, 2) }} </td>
+                            </tr>
                         </tfoot>
                     </table>
                 </div>

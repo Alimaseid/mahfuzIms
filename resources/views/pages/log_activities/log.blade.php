@@ -1,6 +1,4 @@
 @extends('inc.frame')
-
-
 @section('content')
     <div class="container">
         <h2 class="mb-4">System Activity Logs</h2>
@@ -15,7 +13,6 @@
                                 <th>User</th>
                                 <th>Action</th>
                                 <th>Model</th>
-                                {{-- <th>Properties</th> --}}
                                 <th>Date</th>
                             </tr>
                         </thead>
@@ -28,10 +25,8 @@
                                     </td>
                                     <td>{{ $activity->description }}</td>
                                     <td>{{ class_basename($activity->subject_type) }}</td>
-                                    {{-- <td>
-                                        <pre class="small mb-0">{{ json_encode($activity->properties, JSON_PRETTY_PRINT) }}</pre>
-                                    </td> --}}
-                                    <td>{{ $activity->created_at->format('Y-m-d H:i:s') }}</td>
+                                    <td>{{ $activity->created_at->timezone('Africa/Mogadishu')->format('Y-m-d h:i:s A') }}
+                                    </td>
                                 </tr>
                             @empty
                                 <tr>
@@ -40,11 +35,6 @@
                             @endforelse
                         </tbody>
                     </table>
-
-                    {{-- Pagination --}}
-                    {{-- <div class="d-flex justify-content-center">
-                        {{ $activities->links() }}
-                    </div> --}}
                 </div>
             </div>
         </section>

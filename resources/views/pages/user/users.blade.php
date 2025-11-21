@@ -18,7 +18,6 @@
 
                         </div>
                     </div>
-
                     <div class="card">
                         <div class="card-body">
                             <table id="example1" class="table table-bordered table-striped"
@@ -70,9 +69,7 @@
                                                         </button>
                                                     @endif
                                                     @if (auth()->user()->role == 1)
-                                                        {{-- Logged in as Super Admin --}}
                                                         @if ($user->role != 1)
-                                                            {{-- Show delete button only if the user is NOT Super Admin --}}
                                                             <a type="button" class="btn btn-danger btn-sm"
                                                                 href="delete-user-{{ $user->id }}"
                                                                 onclick="return confirm('Are you sure you want to delete this user?');">
@@ -80,7 +77,6 @@
                                                             </a>
                                                         @endif
                                                     @else
-                                                        {{-- Other roles need permission to delete users --}}
                                                         @if ($permission->manage_delete_user == 'on' && $user->role != 1)
                                                             <a type="button" class="btn btn-danger btn-sm"
                                                                 href="delete-user-{{ $user->id }}"
@@ -89,11 +85,8 @@
                                                             </a>
                                                         @endif
                                                     @endif
-
-
                                                 </td>
                                             </tr>
-
                                             <div class="modal fade" id="modal-lg-{{ $user->id }}">
                                                 <div class="modal-dialog modal-lg-{{ $user->id }}">
                                                     <div class="modal-content">
@@ -107,16 +100,13 @@
                                                         <div class="modal-body">
                                                             <div class="container-fluid">
                                                                 <div class="row">
-                                                                    <!-- left column -->
                                                                     <div class="col-md-12">
-                                                                        <!-- jquery validation -->
                                                                         <div class="card card-primary">
                                                                             <div class="card-header">
                                                                                 <h3 class="card-title">user
                                                                                     <small>Information</small>
                                                                                 </h3>
                                                                             </div>
-                                                                            <!-- /.card-header -->
                                                                             <!-- form start -->
                                                                             <form action="/editUser-{{ $user->id }}"
                                                                                 method="POST" id="quickForm">
@@ -160,12 +150,9 @@
                                                                         </div>
                                                                         <!-- /.card -->
                                                                     </div>
-
-                                                                    <!--/.col (right) -->
                                                                 </div>
                                                                 <!-- /.row -->
-                                                            </div><!-- /.container-fluid -->
-
+                                                            </div>
                                                         </div>
                                                     </div>
                                                     <!-- /.modal-content -->
@@ -194,9 +181,7 @@
                                                         <div class="modal-body">
                                                             <div class="container-fluid">
                                                                 <div class="row">
-                                                                    <!-- left column -->
                                                                     <div class="col-md-12">
-                                                                        <!-- jquery validation -->
                                                                         <div class="card card-primary">
                                                                             <div class="card-header">
                                                                                 <h3 class="card-title"><small>set role to -
@@ -301,6 +286,8 @@
                                                                 <input type="text" name="full_name"
                                                                     class="form-control" placeholder="Full Name" required>
                                                             </div>
+                                                            <input type="hidden" name="request_token"
+                                                                value="{{ Str::uuid() }}">
                                                             <div class="form-group">
                                                                 <label>Email</label>
                                                                 <input type="email" name="email" class="form-control"
@@ -370,7 +357,8 @@
 
                                                             <h5>Select Permissions</h5>
                                                             <hr>
-
+                                                            <input type="hidden" name="request_token"
+                                                                value="{{ Str::uuid() }}">
                                                             <div class="row">
                                                                 <div class="col-sm-3">
                                                                     <div class="icheck-success d-inline">
@@ -757,6 +745,14 @@
                                                                             for="manage_activity_log">M-ActivityLog</label>
                                                                     </div>
                                                                 </div>
+                                                                <div class="col-sm-3">
+                                                                    <div class="icheck-success d-inline">
+                                                                        <input type="checkbox" name="manage_notification"
+                                                                            id="manage_notification">
+                                                                        <label
+                                                                            for="manage_notification">M-Notification</label>
+                                                                    </div>
+                                                                </div>
 
                                                             </div>
                                                             <div class="row mt">
@@ -818,17 +814,6 @@
                                         <div class="row p-2">
                                             <div class="table-responsive">
                                                 <table class="table align-middle table-bordered">
-                                                    {{-- <thead class="bg-success text-white">
-                                                        <tr>
-                                                            <th>Role Name</th>
-                                                            <th>User Management</th>
-                                                            <th>Location / Item / Unit</th>
-                                                            <th>Category / Shelf / Customer</th>
-                                                            <th>Good Receiving / Disposal / Sales</th>
-                                                            <th>Reports / Transfers</th>
-                                                            <th>Actions</th>
-                                                        </tr>
-                                                    </thead> --}}
                                                     <tbody class="text-info">
                                                         @forelse ($roles as $role)
                                                             @if ($role->SuperAdmin != 'on')
@@ -840,8 +825,6 @@
                                                                         <td class="text-success fw-bold">
                                                                             {{ $role->role_name }}
                                                                         </td>
-
-                                                                        <!-- Column 1: User Management -->
                                                                         <td>
                                                                             <div class="form-check">
                                                                                 <input type="hidden" name="manage_user"
@@ -880,7 +863,6 @@
                                                                                 <label class="form-check-label"
                                                                                     for="manage_delete_user{{ $role->id }}">Delete-User</label>
                                                                             </div>
-
                                                                             <div class="form-check">
                                                                                 <input type="hidden"
                                                                                     name="manage_item_unit"
@@ -922,7 +904,6 @@
                                                                             </div>
                                                                         </td>
 
-                                                                        <!-- Column 2: Location / Item / Unit -->
                                                                         <td>
                                                                             <div class="form-check">
                                                                                 <input type="hidden"
@@ -1024,6 +1005,19 @@
                                                                                     @checked($role->manage_customer_history == 'on')>
                                                                                 <label class="form-check-label"
                                                                                     for="manage_customer_history{{ $role->id }}">CustomerHistory</label>
+                                                                            </div>
+                                                                            <div class="form-check">
+                                                                                <input type="hidden"
+                                                                                    name="manage_notification"
+                                                                                    value="off">
+                                                                                <input class="form-check-input"
+                                                                                    type="checkbox"
+                                                                                    name="manage_notification"
+                                                                                    id="manage_notification{{ $role->id }}"
+                                                                                    value="on"
+                                                                                    @checked($role->manage_notification == 'on')>
+                                                                                <label class="form-check-label"
+                                                                                    for="manage_notification{{ $role->id }}">M-Notification</label>
                                                                             </div>
                                                                         </td>
 
@@ -1397,4 +1391,14 @@
             </div>
         </div>
     </section>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('quickForm');
+            form.addEventListener('submit', function(e) {
+                const btn = form.querySelector('button[type="submit"]');
+                btn.disabled = true;
+                btn.innerHTML = "Processing...";
+            });
+        });
+    </script>
 @endsection
