@@ -42,6 +42,7 @@
                                     <th>Image2</th>
                                     <th>Part Number1</th>
                                     <th>Part Number2</th>
+                                    <th>Item Code</th>
                                     <th>Category</th>
                                     <th>Reorder</th>
                                     <th>Price1</th>
@@ -83,6 +84,7 @@
                                             </td>
                                             <td><?php echo e($item->product_code); ?></td>
                                             <td><?php echo e($item->part_number); ?></td>
+                                            <td><?php echo e($item->item_code); ?></td>
                                             <!-- Image Modal (works with Bootstrap 4) -->
                                             <div class="modal fade" id="imageModal" tabindex="-1" role="dialog">
                                                 <div class="modal-dialog modal-lg" role="document">
@@ -477,6 +479,8 @@
                                                                 placeholder="Item Name" required>
                                                         </div>
                                                     </div>
+                                                    <input type="hidden" name="request_token"
+                                                        value="<?php echo e(Str::uuid()); ?>">
                                                     <div class="col-4">
                                                         <div class="form-group">
                                                             <label>p-No 1</label>
@@ -630,6 +634,16 @@
         function setModalImage(src) {
             document.getElementById('modalImage').src = src;
         }
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('quickForm');
+            form.addEventListener('submit', function(e) {
+                const btn = form.querySelector('button[type="submit"]');
+                btn.disabled = true;
+                btn.innerHTML = "Processing...";
+            });
+        });
     </script>
 <?php $__env->stopSection(); ?>
 

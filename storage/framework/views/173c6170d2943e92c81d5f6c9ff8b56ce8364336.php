@@ -385,7 +385,6 @@
                                     </a>
                                 </li>
                             <?php endif; ?>
-
                             <!-- SALES MANAGEMENT -->
                             <?php if($permission->manage_sales == 'on'): ?>
                                 <li
