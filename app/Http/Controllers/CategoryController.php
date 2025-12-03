@@ -19,7 +19,7 @@ class CategoryController extends Controller
     public function index()
     {
 
-        $categorys =  Category::orderBy('id', 'desc')->paginate(200);
+        $categorys =  Category::orderBy('id', 'desc')->get();
         $permission = Role::where('id', Auth::user()->role)->first();
 
         return view('pages.items.category', compact('categorys', 'permission'));

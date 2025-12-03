@@ -67,7 +67,7 @@ class SalesOrderController extends Controller
     public function edit($id)
     {
         $salesOrder = SalesOrder::find($id);
-        $salesOrders = SalesOrder::with(['details.item'])->orderBy('id', 'desc')->take(100)->get();
+        $salesOrders = SalesOrder::with(['details.item'])->orderBy('id', 'desc')->take(400)->get();
         $salesOrderDetails = SalesOrderDetail::where('sales_order_id', $salesOrder->id)->get();
         $businessLocations = BusinessLocation::all();
         $customers = Customer::all();

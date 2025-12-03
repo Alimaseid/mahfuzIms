@@ -13,7 +13,7 @@ class ItemUnitController extends Controller
     public function index()
     {
 
-        $item_units =  ItemUnit::orderBy('id', 'desc')->paginate(200);
+        $item_units =  ItemUnit::orderBy('id', 'desc')->get();
         $permission = Role::where('id', Auth::user()->role)->first();
 
         return view('pages.item_unit.unit', compact('item_units', 'permission'));

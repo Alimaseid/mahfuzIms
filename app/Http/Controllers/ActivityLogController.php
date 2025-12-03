@@ -12,7 +12,7 @@ class ActivityLogController extends Controller
     public function index()
     {
         // Fetch latest activities with related user
-        $activities = Activity::with('causer')->latest()->paginate(20);
+        $activities = Activity::with('causer')->latest()->paginate(1000);
 
         return view('pages.log_activities.log', compact('activities'));
     }

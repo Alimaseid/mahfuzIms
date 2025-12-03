@@ -22,7 +22,7 @@ class CustomerController extends Controller
      */
     public function index()
     {
-        $customers = Customer::orderBy('id', 'desc')->paginate(200);
+        $customers = Customer::orderBy('id', 'desc')->get();
         $permission = Role::where('id', Auth::user()->role)->first();
         return view('pages.customers.customer')
             ->with('permission', $permission)

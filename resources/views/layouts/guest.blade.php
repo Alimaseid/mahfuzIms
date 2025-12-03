@@ -19,17 +19,19 @@
 <body class="font-sans text-gray-900 antialiased">
     <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100 dark:bg-gray-900">
         <div>
-            <a href="/">
+            {{-- <a href="/">
                 <img src="dist/img/skylogo.png" style="width: 200px; height:90px" class="rounded-circle "
                     alt="">
+ </a> --}}
+            <h1 class="w-20 h-5 bold fill-current" style="color: hsl(106, 38%, 73%)">Inventory
+                <small><sub>System</sub></small></h1>
 
-                {{-- <h1 class="w-20 h-5 bold fill-current" style="color: hsl(107, 100%, 50%)">UKAZ <small><sub>Trading</sub></small></h1> --}}
-                <!--<x-application-logo class="w-20 h-20 fill-current text-gray-500" />-->
-            </a>
+
         </div>
 
         <div
-            class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white dark:bg-gray-800 shadow-md overflow-hidden sm:rounded-lg">
+            class="w-full
+                sm:max-w-md mt-6 px-6 py-4 bg-white dark:bg-gray-800 shadow-md overflow-hidden sm:rounded-lg">
             {{ $slot }}
         </div>
     </div>

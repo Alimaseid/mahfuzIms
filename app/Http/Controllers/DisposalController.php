@@ -17,7 +17,7 @@ class DisposalController extends Controller
     public function index()
     {
         $items = Inventory::all();
-        $disposals = Disposal::orderBy('id', 'desc')->paginate(200);
+        $disposals = Disposal::orderBy('id', 'desc')->get();
         $businessLocations = BusinessLocation::all();
         $permission = Role::where('id', Auth::user()->role)->first();
         return view('pages.disposal.disposal', compact('items', 'disposals', 'businessLocations', 'permission'));

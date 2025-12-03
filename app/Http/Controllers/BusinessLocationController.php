@@ -21,7 +21,7 @@ class BusinessLocationController extends Controller
     public function index()
     {
 
-        $locations =  BusinessLocation::orderBy('id', 'desc')->paginate(200);
+        $locations =  BusinessLocation::orderBy('id', 'desc')->get();
         $location =  BusinessLocation::all();
         $permission = Role::where('id', Auth::user()->role)->first();
         return view('pages.business_location.location')

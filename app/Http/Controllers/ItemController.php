@@ -27,7 +27,7 @@ class ItemController extends Controller
      */
     public function index()
     {
-        $items = Item::orderBy('id', 'desc')->paginate(500);
+        $items = Item::orderBy('id', 'desc')->get();
         $categories = Category::all();
         $shelfs = Shelf::all();
         $item_units = ItemUnit::all();

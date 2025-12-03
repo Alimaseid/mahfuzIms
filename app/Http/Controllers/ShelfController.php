@@ -14,7 +14,7 @@ class ShelfController extends Controller
     public function index()
     {
         $locations = BusinessLocation::all();
-        $shelfs = Shelf::orderBy('id', 'desc')->paginate(200);
+        $shelfs = Shelf::orderBy('id', 'desc')->get();
         $permission = Role::where('id', Auth::user()->role)->first();
         return view('pages.shelfs.shelf', compact('locations', 'shelfs', 'permission'));
     }

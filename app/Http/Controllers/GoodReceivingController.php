@@ -72,7 +72,7 @@ class GoodReceivingController extends Controller
 
     public function index()
     {
-        $good_receivings = GoodReceiving::orderBy('id', 'desc')->paginate(200);
+        $good_receivings = GoodReceiving::orderBy('id', 'desc')->paginate(500);
         $categories = Category::all();
         $shelfs = Shelf::all();
         $item_units = ItemUnit::all();
