@@ -12,7 +12,6 @@
                                 <th>User</th>
                                 <th>Action</th>
                                 <th>Model</th>
-                                
                                 <th>Date</th>
                             </tr>
                         </thead>
@@ -26,12 +25,9 @@
                                     </td>
                                     <td><?php echo e($activity->description); ?></td>
                                     <td><?php echo e(class_basename($activity->subject_type)); ?></td>
-                                    
                                     <td><?php echo e($activity->created_at->timezone('Africa/Mogadishu')->format('Y-m-d h:i:s A')); ?>
 
                                     </td>
-
-
                                 </tr>
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                                 <tr>
@@ -40,9 +36,6 @@
                             <?php endif; ?>
                         </tbody>
                     </table>
-
-                    
-                    
                 </div>
             </div>
         </section>

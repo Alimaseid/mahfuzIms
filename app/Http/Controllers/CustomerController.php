@@ -58,7 +58,7 @@ class CustomerController extends Controller
 
         $validated = $request->validate([
             'phone' => 'required|unique:customers,phone',
-            'tin' => 'nullable|unique',
+            'tin' => 'nullable',
         ], [
             'phone.unique' => 'This phone already exists. Please choose another Phone.',
             'phone.required' => 'phone is required.',
