@@ -148,9 +148,15 @@
                                             <thead>
                                                 <tr>
                                                     <th>Item</th>
-                                                    <th>p-No1</th>
-                                                    <th>p-No2</th>
-                                                    <th>Image</th>
+                                                    @if ($permission->manage_partNumber == 'on')
+                                                        <th>P-No1</th>
+                                                    @endif
+                                                    @if ($permission->manage_partNumber == 'on')
+                                                        <th>P-No2</th>
+                                                    @endif
+                                                    @if ($permission->manage_image == 'on')
+                                                        <th>Image1</th>
+                                                    @endif
                                                     <th>Qty</th>
                                                     <th>Price</th>
                                                     <th>Vat</th>
@@ -169,17 +175,20 @@
                                                             $total += $detail->total;
                                                             $image1 = str_replace('\\', '/', $detail->item->image);
                                                         @endphp
-
                                                         <tr>
                                                             <td><b>{{ $detail->item->item_name }}</b></td>
-                                                            <td><b>{{ $detail->item->product_code }}</b></td>
-                                                            <td><b>{{ $detail->item->part_number }}</b></td>
-
-                                                            <td>
-                                                                <img src="{{ asset($image1) }}"
-                                                                    style="width:40px;height:40px;border-radius:5px;object-fit:cover;">
-                                                            </td>
-
+                                                            @if ($permission->manage_partNumber == 'on')
+                                                                <td><b>{{ $detail->item->product_code }}</b></td>
+                                                            @endif
+                                                            @if ($permission->manage_partNumber == 'on')
+                                                                <td><b>{{ $detail->item->part_number }}</b></td>
+                                                            @endif
+                                                            @if ($permission->manage_image == 'on')
+                                                                <td>
+                                                                    <img src="{{ asset($image1) }}"
+                                                                        style="width:40px;height:40px;border-radius:5px;object-fit:cover;">
+                                                                </td>
+                                                            @endif
                                                             <td>{{ $detail->quantity }}</td>
                                                             <td>{{ $detail->amount }}</td>
                                                             <td>{{ $detail->tax }}</td>

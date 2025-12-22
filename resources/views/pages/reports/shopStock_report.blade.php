@@ -21,10 +21,19 @@
                             <tr style="background-color: rgb(3, 3, 32)">
                                 <th>No</th>
                                 <th>ItemName</th>
-                                <th>Itemimage1</th>
-                                <th>Itemimage2</th>
-                                <th style="background-color: rgb(2, 2, 39)">Part Number1</th>
-                                <th style="background-color: rgb(2, 2, 39)">Part Number2</th>
+
+                                @if ($permission->manage_image == 'on')
+                                    <th>Image1</th>
+                                @endif
+                                 @if ($permission->manage_image == 'on')
+                                    <th>Image2</th>
+                                @endif
+                                  @if ($permission->manage_partNumber == 'on')
+                                    <th>Part-No1</th>
+                                @endif
+                                   @if ($permission->manage_partNumber == 'on')
+                                    <th>Part-No2</th>
+                                @endif
                                 <th>Quantity</th>
                                 <th>Unit</th>
                                 <th>Category</th>
@@ -46,24 +55,32 @@
                                 @endphp
                                 <td>{{ $no }}</td>
                                 <td>{{ $stock->item->item_name }}</td>
-                                <td style="display: flex; align-items: center; gap: 10px;">
+                                  @if ($permission->manage_image == 'on')
+                                    <td style="display: flex; align-items: center; gap: 10px;">
                                     <img src="{{ asset($imagePath) }}" alt=""
                                         style="width: 30px; height: 30px; object-fit: cover; border-radius: 5px;"
                                         data-toggle="modal" data-target="#imageModal"
                                         onclick="setModalImage('{{ asset($imagePath) }}')">
 
                                 </td>
-                                <td style="display: flex; align-items: center; gap: 10px;">
+                                @endif
+                                 @if ($permission->manage_image == 'on')
+                                   <td style="display: flex; align-items: center; gap: 10px;">
                                     <img src="{{ asset($imagePath2) }}" alt=""
                                         style="width: 30px; height: 30px; object-fit: cover; border-radius: 5px;"
                                         data-toggle="modal" data-target="#imageModal"
                                         onclick="setModalImage('{{ asset($imagePath2) }}')">
 
                                 </td>
-                                <td>{{ $stock->item->product_code }}</a>
+                                @endif
+                                  @if ($permission->manage_partNumber == 'on')
+                                      <td>{{ $stock->item->product_code }}</a>
                                 </td>
-                                <td>{{ $stock->item->part_number }}</a>
+                                @endif
+                                   @if ($permission->manage_partNumber == 'on')
+                                  <td>{{ $stock->item->part_number }}</a>
                                 </td>
+                                @endif
 
                                 @if ($stock->item->reorder > $stock->quantity)
                                     <td style="background-color: rgb(2, 2, 39)"><a type="button"

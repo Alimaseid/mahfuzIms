@@ -72,6 +72,9 @@ class Role extends Model
         'approval',
         'manage_notification',
 
+        'manage_image',
+        'manage_partNumber',
+        'manage_price',
 
     ];
 }

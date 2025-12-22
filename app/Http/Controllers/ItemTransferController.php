@@ -18,6 +18,7 @@ use App\Models\Owner;
 use App\Models\Requisition;
 use App\Models\RequisitionDetail;
 use App\Models\Role;
+use App\Models\User;
 
 class ItemTransferController extends Controller
 {
@@ -84,7 +85,9 @@ class ItemTransferController extends Controller
         $requisitionDetails = RequisitionDetail::all();
         $shelfs = ItemShelf::all();
         $requisitions =  Requisition::orderBy('id', 'desc')->with('itemList')->where('status', 'Pending')->get();
-        return view('pages.store.approve_requisition')->with('requisitions', $requisitions)->with('shelfs', $shelfs)->with('requisitionDetails', $requisitionDetails);
+        $user = User::where('id', Auth::user()->id)->first();
+        $permission = Role::where('id', $user->role)->first();
+        return view('pages.store.approve_requisition')->with('requisitions', $requisitions)->with('permission', $permission)->with('shelfs', $shelfs)->with('requisitionDetails', $requisitionDetails);
     }
     public function approve($id, $user)
     {

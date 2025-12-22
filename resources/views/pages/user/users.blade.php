@@ -465,10 +465,18 @@
 
                                                             <div class="row ">
                                                                 <div class="col-sm-3">
-
+                                                                    <div class="icheck-success d-inline">
+                                                                        <input type="checkbox" name="manage_image"
+                                                                            id="manage_image">
+                                                                        <label for="manage_image">Manage-Image</label>
+                                                                    </div>
                                                                 </div>
                                                                 <div class="col-sm-3">
-
+                                                                    <div class="icheck-success d-inline">
+                                                                        <input type="checkbox" name="manage_price"
+                                                                            id="manage_price">
+                                                                        <label for="manage_price">Manage-Price</label>
+                                                                    </div>
                                                                 </div>
                                                                 <div class="col-sm-3">
                                                                     <div class="icheck-success d-inline">
@@ -478,7 +486,11 @@
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-sm-3">
-
+                                                                    <div class="icheck-success d-inline">
+                                                                        <input type="checkbox" name="manage_partNumber"
+                                                                            id="manage_partNumber">
+                                                                        <label for="manage_partNumber">Manage-P_No</label>
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                             <br>
@@ -902,6 +914,17 @@
                                                                                 <label class="form-check-label"
                                                                                     for="manage_delete_itemUnit{{ $role->id }}">Delete-Unit</label>
                                                                             </div>
+                                                                            <div class="form-check">
+                                                                                <input type="hidden" name="manage_image"
+                                                                                    value="off">
+                                                                                <input class="form-check-input"
+                                                                                    type="checkbox" name="manage_image"
+                                                                                    id="manage_image{{ $role->id }}"
+                                                                                    value="on"
+                                                                                    @checked($role->manage_image == 'on')>
+                                                                                <label class="form-check-label"
+                                                                                    for="manage_image{{ $role->id }}">Manage-Image</label>
+                                                                            </div>
                                                                         </td>
 
                                                                         <td>
@@ -1019,6 +1042,17 @@
                                                                                 <label class="form-check-label"
                                                                                     for="manage_notification{{ $role->id }}">M-Notification</label>
                                                                             </div>
+                                                                            <div class="form-check">
+                                                                                <input type="hidden" name="manage_price"
+                                                                                    value="off">
+                                                                                <input class="form-check-input"
+                                                                                    type="checkbox" name="manage_price"
+                                                                                    id="manage_price{{ $role->id }}"
+                                                                                    value="on"
+                                                                                    @checked($role->manage_price == 'on')>
+                                                                                <label class="form-check-label"
+                                                                                    for="manage_price{{ $role->id }}">manage_price</label>
+                                                                            </div>
                                                                         </td>
 
                                                                         <!-- Column 3: Category / Shelf / Customer -->
@@ -1135,6 +1169,19 @@
                                                                                     @checked($role->manage_shopTRansferReports == 'on')>
                                                                                 <label class="form-check-label"
                                                                                     for="manage_shopTRansferReports{{ $role->id }}">ShopTransferReport</label>
+                                                                            </div>
+                                                                            <div class="form-check">
+                                                                                <input type="hidden"
+                                                                                    name="manage_partNumber"
+                                                                                    value="off">
+                                                                                <input class="form-check-input"
+                                                                                    type="checkbox"
+                                                                                    name="manage_partNumber"
+                                                                                    id="manage_partNumber{{ $role->id }}"
+                                                                                    value="on"
+                                                                                    @checked($role->manage_partNumber == 'on')>
+                                                                                <label class="form-check-label"
+                                                                                    for="manage_partNumber{{ $role->id }}">Manage-p_No</label>
                                                                             </div>
                                                                         </td>
 
@@ -1367,7 +1414,8 @@
                                                             @endif
                                                         @empty
                                                             <tr>
-                                                                <td colspan="7" class="text-center text-muted">No roles
+                                                                <td colspan="7" class="text-center text-muted">No
+                                                                    roles
                                                                     found.</td>
                                                             </tr>
                                                         @endforelse

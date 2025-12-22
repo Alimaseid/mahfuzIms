@@ -85,9 +85,13 @@
                     <table id="example1" class="table table-bordered table-striped">
                         <thead>
                             <tr style="background-color: rgb(3, 3, 32)">
-                                <th>PartNumber</th>
+                                @if ($permission->manage_partNumber == 'on')
+                                    <th>Part-No</th>
+                                @endif
                                 <th>ItemName</th>
-                                <th>ItemImage</th>
+                                @if ($permission->manage_image == 'on')
+                                    <th>Image</th>
+                                @endif
                                 <th>Qyt</th>
                                 <th>Amount</th>
                                 <th>Discount</th>
@@ -102,13 +106,19 @@
                                     $imagePath = str_replace('\\', '/', $inventory['pr_image']); // Fix backslashes
                                 @endphp
                                 <tr>
-                                    <td>{{ $inventory['pr_code'] }}</td>
-                                    <td>{{ $inventory['pr_name'] }}</td>
-                                    <td style="display: flex; align-items: center; gap: 10px;">
-                                        <img src="{{ asset($imagePath) }}" alt=""
-                                            style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
 
-                                    </td>
+                                    @if ($permission->manage_partNumber == 'on')
+                                        <td>{{ $inventory['pr_code'] }}</td>
+                                    @endif
+                                    <td>{{ $inventory['pr_name'] }}</td>
+                                    @if ($permission->manage_image == 'on')
+                                        <td style="display: flex; align-items: center; gap: 10px;">
+                                            <img src="{{ asset($imagePath) }}" alt=""
+                                                style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
+
+                                        </td>
+                                    @endif
+
                                     <td>{{ $inventory['quantity'] }}</td>
                                     <td>{{ $inventory['quantity'] * $inventory['amount'] }}</td>
                                     <td>{{ number_format($inventory['discount'], 2) }}</td>

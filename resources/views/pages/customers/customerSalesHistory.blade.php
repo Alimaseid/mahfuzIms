@@ -70,11 +70,17 @@
                                                         <div class="col">
                                                             ItemName
                                                         </div>
+
+
                                                         <div class="col">
-                                                            P-no1
+                                                            @if ($permission->manage_partNumber == 'on')
+                                                                P-no1
+                                                            @endif
                                                         </div>
                                                         <div class="col">
-                                                            P-no2
+                                                            @if ($permission->manage_partNumber == 'on')
+                                                                P-no2
+                                                            @endif
                                                         </div>
                                                         <div class="col">
                                                             unit
@@ -107,12 +113,16 @@
                                                                         href=""><b>{{ $purchaseOrderDetail['item_name'] }}</b></a>
                                                                 </div>
                                                                 <div class="col">
-                                                                    <a
-                                                                        href=""><b>{{ $purchaseOrderDetail['item_code'] }}</b></a>
+                                                                    @if ($permission->manage_partNumber == 'on')
+                                                                        <a
+                                                                            href=""><b>{{ $purchaseOrderDetail['item_code'] }}</b></a>
+                                                                    @endif
                                                                 </div>
                                                                 <div class="col">
-                                                                    <a
-                                                                        href=""><b>{{ $purchaseOrderDetail['part_number'] }}</b></a>
+                                                                    @if ($permission->manage_partNumber == 'on')
+                                                                        <a
+                                                                            href=""><b>{{ $purchaseOrderDetail['part_number'] }}</b></a>
+                                                                    @endif
                                                                 </div>
                                                                 <div class="col">
                                                                     <a

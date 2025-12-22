@@ -26,9 +26,15 @@
                             <tr>
                                 <th>No</th>
                                 <th>ItemName </th>
-                                <th>P-No1</th>
-                                <th>P-No2</th>
-                                <th>Image1</th>
+                                @if ($permission->manage_partNumber == 'on')
+                                    <th>P-No1</th>
+                                @endif
+                                @if ($permission->manage_partNumber == 'on')
+                                    <th>P-No2</th>
+                                @endif
+                                @if ($permission->manage_image == 'on')
+                                    <th>Image1</th>
+                                @endif
                                 <th>Shelf</th>
                                 <th>Category</th>
                                 <th>Unit</th>
@@ -51,14 +57,20 @@
                                 <tr>
                                     <td>{{ $no }}</td>
                                     <td>{{ $plan->item->item_name }}</td>
-                                    <td>{{ $plan->item->product_code }}</td>
-                                    <td>{{ $plan->item->part_number }}</td>
-                                    <td style="display: flex; align-items: center; gap: 10px;">
-                                        <img src="{{ asset($imagePath1) }}" alt=""
-                                            style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px; cursor: pointer;"
-                                            data-toggle="modal" data-target="#imageModal"
-                                            onclick="setModalImage('{{ asset($imagePath1) }}')">
-                                    </td>
+                                    @if ($permission->manage_partNumber == 'on')
+                                        <td>{{ $plan->item->product_code }}</td>
+                                    @endif
+                                    @if ($permission->manage_partNumber == 'on')
+                                        <td>{{ $plan->item->part_number }}</td>
+                                    @endif
+                                    @if ($permission->manage_image == 'on')
+                                        <td style="display: flex; align-items: center; gap: 10px;">
+                                            <img src="{{ asset($imagePath1) }}" alt=""
+                                                style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px; cursor: pointer;"
+                                                data-toggle="modal" data-target="#imageModal"
+                                                onclick="setModalImage('{{ asset($imagePath1) }}')">
+                                        </td>
+                                    @endif
                                     <td>{{ $plan->item->shelf }}</td>
                                     <td>{{ $plan->item->category }}</td>
                                     <td>{{ $plan->item->unit }}</td>

@@ -15,7 +15,8 @@ use App\Models\SalesOrderDetail;
 use Illuminate\Support\Facades\DB;
 use App\Models\PurchaseOrderDetail;
 use App\Models\Requisition;
-
+use App\Models\Role;
+use Illuminate\Support\Facades\Auth;
 
 class ReportController extends Controller
 {
@@ -52,8 +53,10 @@ class ReportController extends Controller
                 $query->where('type', 'Warehouse');
             })
             ->get();
+        $user = User::where('id', Auth::user()->id)->first();
+        $permission = Role::where('id', $user->role)->first();
 
-        return view('pages.reports.stock_report', compact('data', 'shelfs'));
+        return view('pages.reports.stock_report', compact('data', 'shelfs', 'permission'));
     }
 
     public function shopStockReport()
@@ -64,9 +67,10 @@ class ReportController extends Controller
                 $query->where('type', 'Shop');
             })
             ->get();
+        $user = User::where('id', Auth::user()->id)->first();
+        $permission = Role::where('id', $user->role)->first();
 
-
-        return view('pages.reports.shopStock_report', compact('data', 'shelfs'));
+        return view('pages.reports.shopStock_report', compact('data', 'shelfs', 'permission'));
     }
     public function transferWarehouseReport(Request $request)
     {
@@ -85,12 +89,15 @@ class ReportController extends Controller
         }
 
         $data = $query->get();
+        $user = User::where('id', Auth::user()->id)->first();
+        $permission = Role::where('id', $user->role)->first();
 
         return view('pages.reports.transfer_warehouse_item', [
             'data' => $data,
             'shelfs' => $shelfs,
             'from_date' => $request->from_date,
             'to_date' => $request->to_date,
+            'permission' => $permission,
         ]);
     }
 
@@ -112,12 +119,15 @@ class ReportController extends Controller
         }
 
         $data = $query->get();
+        $user = User::where('id', Auth::user()->id)->first();
+        $permission = Role::where('id', $user->role)->first();
 
         return view('pages.reports.transfer_shop_item', [
             'data' => $data,
             'shelfs' => $shelfs,
             'from_date' => $request->from_date,
             'to_date' => $request->to_date,
+            'permission' => $permission,
         ]);
     }
     public function dailySalesReport(Request $request)
@@ -210,7 +220,8 @@ class ReportController extends Controller
             $g_vat += $vat;   // ✅ collect total vat
         }
 
-
+        $user = User::where('id', Auth::user()->id)->first();
+        $permission = Role::where('id', $user->role)->first();
 
         return view('pages.reports.daily_sales_report', [
             'g_amount' => $g_amount,
@@ -222,6 +233,7 @@ class ReportController extends Controller
             'salers' => $salers,
             'fromDate' => $fromDate,
             'toDate' => $toDate,
+            'permission' => $permission,
         ]);
     }
 
@@ -236,8 +248,10 @@ class ReportController extends Controller
         $goodReceivings = \App\Models\GoodReceiving::whereBetween('receiving_date', [$fromDate, $toDate])
             ->with(['item', 'batch', 'location'])
             ->get();
+        $user = User::where('id', Auth::user()->id)->first();
+        $permission = Role::where('id', $user->role)->first();
 
-        return view('pages.goodreceiving.goodReceiving_report', compact('fromDate', 'toDate', 'goodReceivings'));
+        return view('pages.goodreceiving.goodReceiving_report', compact('fromDate', 'toDate', 'goodReceivings', 'permission'));
     }
 
 
@@ -323,12 +337,15 @@ class ReportController extends Controller
         }
 
         // dd($final_data);
+        $user = User::where('id', Auth::user()->id)->first();
+        $permission = Role::where('id', $user->role)->first();
         return view('pages.reports.daily_sales_report')
             ->with('g_amount', $g_amount)
             ->with('g_tax', $g_tax)
             ->with('g_total', $g_total)
             ->with('data', $final_data)
             ->with('salesPerson', $salesPerson)
+            ->with('permission', $permission)
             ->with('salers', array_unique($salers));
     }
 
