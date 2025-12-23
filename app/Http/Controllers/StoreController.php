@@ -9,7 +9,10 @@ use App\Models\Customer;
 use App\Models\SalesOrder;
 use Illuminate\Http\Request;
 use App\Models\BusinessLocation;
+use App\Models\Role;
 use App\Models\SalesOrderDetail;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class StoreController extends Controller
 {
@@ -21,12 +24,15 @@ class StoreController extends Controller
         $items = Item::all();
         $salesOrderDetails = SalesOrderDetail::all();
         $customers = Customer::all();
+        $user = User::where('id', Auth::user()->id)->first();
+        $permission = Role::where('id', $user->role)->first();
         return view('pages.store.orderlist')
             ->with('customers', $customers)
             ->with('businessLocations', $businessLocations)
             ->with('items', $items)
             ->with('salesOrder', $salesOrder)
             ->with('salesOrderDetails', $salesOrderDetails)
+            ->with('permission', $permission)
             ->with('salesOrders', $salesOrders);
     }
 

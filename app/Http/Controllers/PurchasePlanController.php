@@ -6,6 +6,7 @@ use App\Models\Inventory;
 use App\Models\Item;
 use App\Models\PurchasePlan;
 use App\Models\Role;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -18,7 +19,9 @@ class PurchasePlanController extends Controller
             ->whereColumn('inventories.quantity', '<', 'items.reorder')
             ->with('item')
             ->orderBy('id', 'desc')->paginate(200);
-        return view('pages.goodreceiving.purchase_plan', compact('plans'));
+        $user = User::where('id', Auth::user()->id)->first();
+        $permission = Role::where('id', $user->role)->first();
+        return view('pages.goodreceiving.purchase_plan', compact('plans', 'permission'));
     }
     public function plannedItem()
     {

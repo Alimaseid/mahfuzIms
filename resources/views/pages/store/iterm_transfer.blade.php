@@ -101,10 +101,18 @@
                                         <thead>
                                             <tr>
                                                 <th>Item</th>
-                                                <th>Part No1</th>
-                                                <th>Part No2</th>
-                                                <th>Image1</th>
-                                                <th>Image2</th>
+                                                @if ($permission->manage_partNumber == 'on')
+                                                    <th>PartNumber1</th>
+                                                @endif
+                                                @if ($permission->manage_partNumber == 'on')
+                                                    <th>PartNumber2</th>
+                                                @endif
+                                                @if ($permission->manage_image == 'on')
+                                                    <th>Image1</th>
+                                                @endif
+                                                @if ($permission->manage_image == 'on')
+                                                    <th>Image2</th>
+                                                @endif
                                                 <th>Unit</th>
                                                 <th>Category</th>
                                                 <th>Shelf</th>
@@ -116,24 +124,40 @@
                                             @forelse($requisitionDetails->where('requisition_id', $requisition->id) as $detail)
                                                 <tr>
                                                     <td>{{ $detail->item->item_name }}</td>
-                                                    <td>{{ $detail->item->product_code }}</td>
-                                                    <td>{{ $detail->item->part_number }}</td>
-                                                    <td>
-                                                        @php
-                                                            $imagePath1 = str_replace('\\', '/', $detail->item->image);
-                                                            $imagePath2 = str_replace('\\', '/', $detail->item->image2);
-                                                        @endphp
-                                                        <img src="{{ asset($imagePath1) }}" alt=""
-                                                            style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px; cursor: pointer;"
-                                                            data-toggle="modal" data-target="#imageModal"
-                                                            onclick="setModalImage('{{ asset($imagePath1) }}')">
-                                                    </td>
-                                                    <td>
-                                                        <img src="{{ asset($imagePath2) }}" alt=""
-                                                            style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px; cursor: pointer;"
-                                                            data-toggle="modal" data-target="#imageModal"
-                                                            onclick="setModalImage('{{ asset($imagePath2) }}')">
-                                                    </td>
+                                                    @if ($permission->manage_partNumber == 'on')
+                                                        <td>{{ $detail->item->product_code }}</td>
+                                                    @endif
+                                                    @if ($permission->manage_partNumber == 'on')
+                                                        <td>{{ $detail->item->part_number }}</td>
+                                                    @endif
+                                                    @if ($permission->manage_image == 'on')
+                                                        <td>
+                                                            @php
+                                                                $imagePath1 = str_replace(
+                                                                    '\\',
+                                                                    '/',
+                                                                    $detail->item->image,
+                                                                );
+                                                                $imagePath2 = str_replace(
+                                                                    '\\',
+                                                                    '/',
+                                                                    $detail->item->image2,
+                                                                );
+                                                            @endphp
+                                                            <img src="{{ asset($imagePath1) }}" alt=""
+                                                                style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px; cursor: pointer;"
+                                                                data-toggle="modal" data-target="#imageModal"
+                                                                onclick="setModalImage('{{ asset($imagePath1) }}')">
+                                                        </td>
+                                                    @endif
+                                                    @if ($permission->manage_image == 'on')
+                                                        <td>
+                                                            <img src="{{ asset($imagePath2) }}" alt=""
+                                                                style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px; cursor: pointer;"
+                                                                data-toggle="modal" data-target="#imageModal"
+                                                                onclick="setModalImage('{{ asset($imagePath2) }}')">
+                                                        </td>
+                                                    @endif
                                                     <td>{{ $detail->item->unit }}</td>
                                                     <td>{{ $detail->item->category }}</td>
                                                     <td>{{ $shelfs->firstWhere('item_id', $detail->item_id)?->shelf->shelf_name ?? '-' }}

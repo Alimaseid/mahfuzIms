@@ -176,6 +176,8 @@
                                                     <!-- form start -->
                                                     <form action="/add-item_unit" method="POST" id="quickForm">
                                                         @csrf
+                                                        <input type="hidden" name="request_token"
+                                                            value="{{ Str::uuid() }}">
                                                         <div class="card-body">
                                                             <div class="form-group">
                                                                 <label>Unit</label>

@@ -84,7 +84,11 @@ class RoleController extends Controller
 
             'manage_stock_reports' => $request->manage_stock_reports,
             'manage_notification' => $request->manage_notification,
-            'manage_storeTRansferReports' => $request->manage_storeTRansferReports
+            'manage_storeTRansferReports' => $request->manage_storeTRansferReports,
+
+            'manage_image' => $request->manage_image,
+            'manage_partNumber' => $request->manage_partNumber,
+            'manage_price' => $request->manage_price
         ]);
 
         // ✅ Log activity

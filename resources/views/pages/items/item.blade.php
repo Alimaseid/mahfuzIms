@@ -40,11 +40,20 @@
                                 <tr>
                                     <th>No</th>
                                     {{-- <th>Image</th> --}}
+
                                     <th>ItemName </th>
-                                    <th>Image1</th>
-                                    <th>Image2</th>
-                                    <th>Part Number1</th>
-                                    <th>Part Number2</th>
+                                    @if ($permission->manage_image == 'on')
+                                        <th>Image1</th>
+                                    @endif
+                                    @if ($permission->manage_image == 'on')
+                                        <th>Image2</th>
+                                    @endif
+                                    @if ($permission->manage_partNumber == 'on')
+                                        <th>Part Number1</th>
+                                    @endif
+                                    @if ($permission->manage_partNumber == 'on')
+                                        <th>Part Number2</th>
+                                    @endif
                                     <th>Item Code</th>
                                     <th>Category</th>
                                     <th>Reorder</th>
@@ -73,20 +82,28 @@
                                                 $imagePath2 = str_replace('\\', '/', $item->image2);
                                             @endphp
                                             <td>{{ $item->item_name }}</td>
-                                            <td style="display: flex; align-items: center; gap: 10px;">
-                                                <img src="{{ asset($imagePath1) }}" alt=""
-                                                    style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px; cursor: pointer;"
-                                                    data-toggle="modal" data-target="#imageModal"
-                                                    onclick="setModalImage('{{ asset($imagePath1) }}')">
-                                            </td>
-                                            <td>
-                                                <img src="{{ asset($imagePath2) }}" alt=""
-                                                    style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px; cursor: pointer;"
-                                                    data-toggle="modal" data-target="#imageModal"
-                                                    onclick="setModalImage('{{ asset($imagePath2) }}')">
-                                            </td>
-                                            <td>{{ $item->product_code }}</td>
-                                            <td>{{ $item->part_number }}</td>
+                                            @if ($permission->manage_image == 'on')
+                                                <td style="display: flex; align-items: center; gap: 10px;">
+                                                    <img src="{{ asset($imagePath1) }}" alt=""
+                                                        style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px; cursor: pointer;"
+                                                        data-toggle="modal" data-target="#imageModal"
+                                                        onclick="setModalImage('{{ asset($imagePath1) }}')">
+                                                </td>
+                                            @endif
+                                            @if ($permission->manage_image == 'on')
+                                                <td>
+                                                    <img src="{{ asset($imagePath2) }}" alt=""
+                                                        style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px; cursor: pointer;"
+                                                        data-toggle="modal" data-target="#imageModal"
+                                                        onclick="setModalImage('{{ asset($imagePath2) }}')">
+                                                </td>
+                                            @endif
+                                            @if ($permission->manage_partNumber == 'on')
+                                                <td>{{ $item->product_code }}</td>
+                                            @endif
+                                            @if ($permission->manage_partNumber == 'on')
+                                                <td>{{ $item->part_number }}</td>
+                                            @endif
                                             <td>{{ $item->item_code }}</td>
                                             <!-- Image Modal (works with Bootstrap 4) -->
                                             <div class="modal fade" id="imageModal" tabindex="-1" role="dialog">

@@ -1,0 +1,35 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::table('roles', function (Blueprint $table) {
+            $table->string('manage_image')->nullable();
+            $table->string('manage_partNumber')->nullable();
+            $table->string('manage_price')->nullable();
+
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::table('roles', function (Blueprint $table) {
+            //
+        });
+    }
+};

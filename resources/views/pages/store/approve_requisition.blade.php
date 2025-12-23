@@ -70,10 +70,19 @@
                                                 <thead>
                                                     <tr>
                                                         <th>Item</th>
-                                                        <th>Part no1</th>
-                                                        <th>Part no2</th>
-                                                        <th>Image1</th>
-                                                        <th>Image2</th>
+
+                                                        @if ($permission->manage_partNumber == 'on')
+                                                            <th>PartNumber1</th>
+                                                        @endif
+                                                        @if ($permission->manage_partNumber == 'on')
+                                                            <th>PartNumber2</th>
+                                                        @endif
+                                                        @if ($permission->manage_image == 'on')
+                                                            <th>Image1</th>
+                                                        @endif
+                                                        @if ($permission->manage_image == 'on')
+                                                            <th>Image2</th>
+                                                        @endif
                                                         <th>Unit</th>
                                                         <th>Category</th>
                                                         <th>Shelf</th>
@@ -90,14 +99,23 @@
                                                             @endphp
                                                             <tr>
                                                                 <td>{{ $detail->item->item_name }}</td>
-                                                                <td>{{ $detail->item->product_code }}</td>
-                                                                <td>{{ $detail->item->part_number }}</td>
-                                                                <td><img src="{{ asset($img1) }}"
-                                                                        style="width:60px;height:60px;border-radius:5px;object-fit:cover;">
-                                                                </td>
-                                                                <td><img src="{{ asset($img2) }}"
-                                                                        style="width:60px;height:60px;border-radius:5px;object-fit:cover;">
-                                                                </td>
+
+                                                                @if ($permission->manage_partNumber == 'on')
+                                                                    <td>{{ $detail->item->product_code }}</td>
+                                                                @endif
+                                                                @if ($permission->manage_partNumber == 'on')
+                                                                    <td>{{ $detail->item->part_number }}</td>
+                                                                @endif
+                                                                @if ($permission->manage_image == 'on')
+                                                                    <td><img src="{{ asset($img1) }}"
+                                                                            style="width:60px;height:60px;border-radius:5px;object-fit:cover;">
+                                                                    </td>
+                                                                @endif
+                                                                @if ($permission->manage_image == 'on')
+                                                                    <td><img src="{{ asset($img2) }}"
+                                                                            style="width:60px;height:60px;border-radius:5px;object-fit:cover;">
+                                                                    </td>
+                                                                @endif
                                                                 <td>{{ $detail->item->unit }}</td>
                                                                 <td>{{ $detail->item->category }}</td>
                                                                 <td>

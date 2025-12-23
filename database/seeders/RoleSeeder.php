@@ -79,6 +79,10 @@ class RoleSeeder extends Seeder
             'manage_storeTRansferReports' => 'on',
             'manage_notification' => 'on',
 
+            'manage_image' => 'on',
+            'manage_partNumber' => 'on',
+            'manage_price' => 'on',
+
             'created_at' => now(),
             'updated_at' => now(),
         ]);

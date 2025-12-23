@@ -32,10 +32,18 @@
                             <tr style="background-color: rgb(3, 3, 32)">
                                 <th>No</th>
                                 <th>ItemName</th>
-                                <th>Itemimage1</th>
-                                <th>Itemimage2</th>
-                                <th style="background-color: rgb(2, 2, 39)">Part Number1</th>
-                                <th style="background-color: rgb(2, 2, 39)">Part Number2</th>
+                                @if ($permission->manage_image == 'on')
+                                    <th>Image1</th>
+                                @endif
+                                @if ($permission->manage_image == 'on')
+                                    <th>Image2</th>
+                                @endif
+                                @if ($permission->manage_partNumber == 'on')
+                                    <th>Part-No1</th>
+                                @endif
+                                @if ($permission->manage_partNumber == 'on')
+                                    <th>Part-No2</th>
+                                @endif
                                 <th>Category</th>
                                 <th>Shelf </th>
                                 <th>Quantity</th>
@@ -54,26 +62,32 @@
                                     <tr>
                                         <td>{{ $no }}</td>
                                         <td>{{ $detail->item->item_name }}</td>
-                                        <td>
-                                            @if ($imagePath)
-                                                <img src="{{ asset($imagePath) }}"
-                                                    style="width:50px; height:50px; object-fit:cover;"
-                                                    onclick="setModalImage('{{ asset($imagePath) }}')" data-toggle="modal"
-                                                    data-target="#imageModal">
-                                            @endif
-                                        </td>
-                                        <td>
-                                            @if ($imagePath2)
-                                                <img src="{{ asset($imagePath2) }}"
-                                                    style="width:50px; height:50px; object-fit:cover;"
-                                                    onclick="setModalImage('{{ asset($imagePath2) }}')" data-toggle="modal"
-                                                    data-target="#imageModal">
-                                            @endif
-                                        </td>
-                                        <td style="background-color: rgb(2, 2, 39); color: gold;">
-                                            {{ $detail->item->product_code }}</td>
-                                        <td style="background-color: rgb(2, 2, 39); color: gold;">
-                                            {{ $detail->item->part_number }}</td>
+                                        @if ($permission->manage_image == 'on')
+                                            <td>
+                                                @if ($imagePath)
+                                                    <img src="{{ asset($imagePath) }}"
+                                                        style="width:50px; height:50px; object-fit:cover;"
+                                                        onclick="setModalImage('{{ asset($imagePath) }}')"
+                                                        data-toggle="modal" data-target="#imageModal">
+                                                @endif
+                                            </td>
+                                        @endif
+                                        @if ($permission->manage_image == 'on')
+                                            <td>
+                                                @if ($imagePath2)
+                                                    <img src="{{ asset($imagePath2) }}"
+                                                        style="width:50px; height:50px; object-fit:cover;"
+                                                        onclick="setModalImage('{{ asset($imagePath2) }}')"
+                                                        data-toggle="modal" data-target="#imageModal">
+                                                @endif
+                                            </td>
+                                        @endif
+                                        @if ($permission->manage_partNumber == 'on')
+                                            <td> {{ $detail->item->product_code }}</td>
+                                        @endif
+                                        @if ($permission->manage_partNumber == 'on')
+                                            <td>{{ $detail->item->part_number }}</td>
+                                        @endif
                                         <td>{{ $detail->item->category }}</td>
                                         <td>
                                             @foreach ($shelfs as $shelff)

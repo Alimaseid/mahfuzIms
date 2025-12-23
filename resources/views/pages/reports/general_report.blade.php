@@ -21,8 +21,12 @@
                         <thead>
                             <tr style="background-color: rgb(3, 3, 32)">
                                 <th>ItemName</th>
-                                <th>Itemimage</th>
-                                <th>PartNumber</th>
+                           @if ($permission->manage_partNumber == 'on')
+                                    <th>Part-No</th>
+                                @endif
+                                @if ($permission->manage_image == 'on')
+                                    <th>Image</th>
+                                @endif
                                 <th>CostPerItem</th>
                                 <th>StockQuantity</th>
                                 <th>InventoryValue</th>
@@ -40,13 +44,17 @@
                                     @else
                                     <tr style="background-color: rgb(228, 171, 14)">
                                 @endif
+
                                 <td>{{ $inventory['product_name'] }}</td>
-                                <td style="display: flex; align-items: center; gap: 10px;">
+                                 @if ($permission->manage_partNumber == 'on')
+                                    <td>{{ $inventory['product_code'] }}</td>
+                                @endif
+                                @if ($permission->manage_image == 'on')
+                                  <td style="display: flex; align-items: center; gap: 10px;">
                                     <img src="{{ asset($imagePath) }}" alt=""
                                         style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
-
                                 </td>
-                                <td>{{ $inventory['product_code'] }}</td>
+                                @endif
                                 <td>ETB {{ number_format($inventory['cost_per_item'], 2) }}</td>
                                 <td>{{ number_format($inventory['stock_qauntity']) }}</td>
                                 <td>ETB {{ number_format($inventory['inventory_value'], 2) }}</td>
