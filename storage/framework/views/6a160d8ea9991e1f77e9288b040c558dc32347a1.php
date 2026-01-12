@@ -487,7 +487,7 @@
                                                                     <div class="icheck-success d-inline">
                                                                         <input type="checkbox" name="manage_partNumber"
                                                                             id="manage_partNumber">
-                                                                        <label for="manage_partNumber">Manage-P_No</label>
+                                                                        <label for="manage_partNumber">Manage-P_No1</label>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -556,13 +556,13 @@
                                                                 </div>
                                                                 <div class="col-sm-3">
                                                                     <div class="icheck-success d-inline">
-                                                                        <input type="checkbox"
-                                                                            name="manage_edit_goodreceiving"
-                                                                            id="manage_edit_goodreceiving">
+                                                                        <input type="checkbox" name="manage_partNumber2"
+                                                                            id="manage_partNumber2">
                                                                         <label
-                                                                            for="manage_edit_goodreceiving">EditGoodReceiving</label>
+                                                                            for="manage_partNumber2">Manage-P_No2</label>
                                                                     </div>
                                                                 </div>
+
                                                             </div>
                                                             <div class="row mt">
                                                                 <div class="col-sm-3">
@@ -794,10 +794,16 @@
                                                                             for="manage_storeTRansferReports">StockItemTransfer</label>
                                                                     </div>
                                                                 </div>
-
                                                                 <div class="col-sm-3">
-
+                                                                    <div class="icheck-success d-inline">
+                                                                        <input type="checkbox"
+                                                                            name="manage_edit_goodreceiving"
+                                                                            id="manage_edit_goodreceiving">
+                                                                        <label
+                                                                            for="manage_edit_goodreceiving">EditGoodReceiving</label>
+                                                                    </div>
                                                                 </div>
+
 
                                                             </div>
                                                             <br>
@@ -1286,7 +1292,7 @@
                                                                                     value="on"
                                                                                     <?php if($role->manage_storeTRansferReports == 'on'): echo 'checked'; endif; ?>>
                                                                                 <label class="form-check-label"
-                                                                                    for="manage_storeTRansferReports<?php echo e($role->id); ?>">TStoreTransferReport</label>
+                                                                                    for="manage_storeTRansferReports<?php echo e($role->id); ?>">StoreTransferReport</label>
                                                                             </div>
                                                                         </td>
 
@@ -1389,6 +1395,19 @@
                                                                                     <?php if($role->manage_activity_log == 'on'): echo 'checked'; endif; ?>>
                                                                                 <label class="form-check-label"
                                                                                     for="manage_activity_log<?php echo e($role->id); ?>">ActivityLog</label>
+                                                                            </div>
+                                                                            <div class="form-check">
+                                                                                <input type="hidden"
+                                                                                    name="manage_partNumber2"
+                                                                                    value="off">
+                                                                                <input class="form-check-input"
+                                                                                    type="checkbox"
+                                                                                    name="manage_partNumber2"
+                                                                                    id="manage_partNumber2<?php echo e($role->id); ?>"
+                                                                                    value="on"
+                                                                                    <?php if($role->manage_partNumber2 == 'on'): echo 'checked'; endif; ?>>
+                                                                                <label class="form-check-label"
+                                                                                    for="manage_partNumber2<?php echo e($role->id); ?>">Manage-p_No2</label>
                                                                             </div>
                                                                         </td>
                                                                     </tr>

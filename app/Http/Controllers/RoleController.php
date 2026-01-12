@@ -88,6 +88,7 @@ class RoleController extends Controller
 
             'manage_image' => $request->manage_image,
             'manage_partNumber' => $request->manage_partNumber,
+            'manage_partNumber2' => $request->manage_partNumber2,
             'manage_price' => $request->manage_price
         ]);
 

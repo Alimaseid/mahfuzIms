@@ -74,6 +74,7 @@ class Role extends Model
 
         'manage_image',
         'manage_partNumber',
+        'manage_partNumber2',
         'manage_price',
 
     ];

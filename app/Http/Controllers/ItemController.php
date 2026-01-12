@@ -63,7 +63,6 @@ class ItemController extends Controller
             'updated_at' => now()
         ]);
         $request->validate([
-            'item_code'    => 'required|string|max:255|unique:items,item_code',
             'part_number'  => 'nullable|string|max:255|unique:items,part_number',
             'product_code' => 'nullable|string|max:255|unique:items,product_code',
         ]);

@@ -100,7 +100,7 @@
                                                         @if ($permission->manage_partNumber == 'on')
                                                             <th>Part-No1</th>
                                                         @endif
-                                                        @if ($permission->manage_partNumber == 'on')
+                                                        @if ($permission->manage_partNumber2 == 'on')
                                                             <th>Part-No2</th>
                                                         @endif
                                                         @if ($permission->manage_image == 'on')
@@ -129,7 +129,7 @@
                                                                 @if ($permission->manage_partNumber == 'on')
                                                                     <td>{{ $detail->item->product_code }}</td>
                                                                 @endif
-                                                                @if ($permission->manage_partNumber == 'on')
+                                                                @if ($permission->manage_partNumber2 == 'on')
                                                                     <td>{{ $detail->item->part_number }}</td>
                                                                 @endif
                                                                 @if ($permission->manage_image == 'on')
