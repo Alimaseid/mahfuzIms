@@ -31,7 +31,7 @@
                                   @if ($permission->manage_partNumber == 'on')
                                     <th>Part-No1</th>
                                 @endif
-                                   @if ($permission->manage_partNumber == 'on')
+                                   @if ($permission->manage_partNumber2 == 'on')
                                     <th>Part-No2</th>
                                 @endif
                                 <th>Quantity</th>
@@ -77,7 +77,7 @@
                                       <td>{{ $stock->item->product_code }}</a>
                                 </td>
                                 @endif
-                                   @if ($permission->manage_partNumber == 'on')
+                                   @if ($permission->manage_partNumber2 == 'on')
                                   <td>{{ $stock->item->part_number }}</a>
                                 </td>
                                 @endif

@@ -50,7 +50,7 @@
                                     @if ($permission->manage_partNumber == 'on')
                                         <th>Part Number1</th>
                                     @endif
-                                    @if ($permission->manage_partNumber == 'on')
+                                    @if ($permission->manage_partNumber2 == 'on')
                                         <th>Part Number2</th>
                                     @endif
                                     <th>Category</th>
@@ -97,7 +97,7 @@
                                             @if ($permission->manage_partNumber == 'on')
                                                 <td>{{ $receiving->item->product_code }}</td>
                                             @endif
-                                            @if ($permission->manage_partNumber == 'on')
+                                            @if ($permission->manage_partNumber2 == 'on')
                                                 <td>{{ $receiving->item->part_number }}</td>
                                             @endif
                                             <!-- Image Modal (works with Bootstrap 4) -->

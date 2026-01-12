@@ -81,6 +81,7 @@ class RoleSeeder extends Seeder
 
             'manage_image' => 'on',
             'manage_partNumber' => 'on',
+            'manage_partNumber2' => 'on',
             'manage_price' => 'on',
 
             'created_at' => now(),

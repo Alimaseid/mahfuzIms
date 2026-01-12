@@ -78,7 +78,7 @@
                                                             @endif
                                                         </div>
                                                         <div class="col">
-                                                            @if ($permission->manage_partNumber == 'on')
+                                                            @if ($permission->manage_partNumber2 == 'on')
                                                                 P-no2
                                                             @endif
                                                         </div>
@@ -119,7 +119,7 @@
                                                                     @endif
                                                                 </div>
                                                                 <div class="col">
-                                                                    @if ($permission->manage_partNumber == 'on')
+                                                                    @if ($permission->manage_partNumber2 == 'on')
                                                                         <a
                                                                             href=""><b>{{ $purchaseOrderDetail['part_number'] }}</b></a>
                                                                     @endif

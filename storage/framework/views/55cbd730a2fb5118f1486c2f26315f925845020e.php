@@ -28,7 +28,7 @@
                                 <?php if($permission->manage_partNumber == 'on'): ?>
                                     <th>P-No1</th>
                                 <?php endif; ?>
-                                <?php if($permission->manage_partNumber == 'on'): ?>
+                                <?php if($permission->manage_partNumber2 == 'on'): ?>
                                     <th>P-No2</th>
                                 <?php endif; ?>
                                 <?php if($permission->manage_image == 'on'): ?>
@@ -59,7 +59,7 @@
                                     <?php if($permission->manage_partNumber == 'on'): ?>
                                         <td><?php echo e($plan->item->product_code); ?></td>
                                     <?php endif; ?>
-                                    <?php if($permission->manage_partNumber == 'on'): ?>
+                                    <?php if($permission->manage_partNumber2 == 'on'): ?>
                                         <td><?php echo e($plan->item->part_number); ?></td>
                                     <?php endif; ?>
                                     <?php if($permission->manage_image == 'on'): ?>

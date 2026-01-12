@@ -47,7 +47,7 @@
                                     <?php if($permission->manage_partNumber == 'on'): ?>
                                         <th>Part Number1</th>
                                     <?php endif; ?>
-                                    <?php if($permission->manage_partNumber == 'on'): ?>
+                                    <?php if($permission->manage_partNumber2 == 'on'): ?>
                                         <th>Part Number2</th>
                                     <?php endif; ?>
                                     <th>Category</th>
@@ -94,7 +94,7 @@
                                             <?php if($permission->manage_partNumber == 'on'): ?>
                                                 <td><?php echo e($receiving->item->product_code); ?></td>
                                             <?php endif; ?>
-                                            <?php if($permission->manage_partNumber == 'on'): ?>
+                                            <?php if($permission->manage_partNumber2 == 'on'): ?>
                                                 <td><?php echo e($receiving->item->part_number); ?></td>
                                             <?php endif; ?>
                                             <!-- Image Modal (works with Bootstrap 4) -->

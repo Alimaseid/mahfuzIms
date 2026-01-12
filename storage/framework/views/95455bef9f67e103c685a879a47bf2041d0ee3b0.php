@@ -48,7 +48,7 @@
                                     <?php if($permission->manage_partNumber == 'on'): ?>
                                         <th>Part Number1</th>
                                     <?php endif; ?>
-                                    <?php if($permission->manage_partNumber == 'on'): ?>
+                                    <?php if($permission->manage_partNumber2 == 'on'): ?>
                                         <th>Part Number2</th>
                                     <?php endif; ?>
                                     <th>Item Code</th>
@@ -98,7 +98,7 @@
                                             <?php if($permission->manage_partNumber == 'on'): ?>
                                                 <td><?php echo e($item->product_code); ?></td>
                                             <?php endif; ?>
-                                            <?php if($permission->manage_partNumber == 'on'): ?>
+                                            <?php if($permission->manage_partNumber2 == 'on'): ?>
                                                 <td><?php echo e($item->part_number); ?></td>
                                             <?php endif; ?>
                                             <td><?php echo e($item->item_code); ?></td>
