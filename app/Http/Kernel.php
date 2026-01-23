@@ -65,6 +65,8 @@ class Kernel extends HttpKernel
         'store_issue' => \App\Http\Middleware\StoreIssueMiddleware::class,
         'manage_sales_order' => \App\Http\Middleware\SalesOrderMiddleware::class,
         'manage_vendor' => \App\Http\Middleware\VendorMiddleware::class,
+        'admin' => \App\Http\Middleware\AdminMiddleware::class,
+        'role' => \App\Http\Middleware\RoleMiddleware::class,
 
 
         'auth' => \App\Http\Middleware\Authenticate::class,

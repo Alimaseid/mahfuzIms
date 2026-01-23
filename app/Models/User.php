@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use App\Models\Role;
 
 class User extends Authenticatable
 {
@@ -41,4 +42,14 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+    // User model
+    public function roleRelation() // <- renamed to avoid conflict
+    {
+        return $this->belongsTo(Role::class, 'role'); // 'role' is FK column
+    }
+
+    public function hasRole(string $roleName): bool
+    {
+        return $this->roleRelation && $this->roleRelation->role_name === $roleName;
+    }
 }

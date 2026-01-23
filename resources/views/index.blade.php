@@ -1,0 +1,119 @@
+@extends('inc.frame')
+
+@section('content')
+    <section class="content">
+        <div class="container-fluid">
+
+            {{-- Page Header --}}
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card card-primary card-outline">
+                        <div class="card-header d-flex justify-content-between">
+                            <h3 class="card-title"><b>System Login Time Policy</b></h3>
+                            <button type="button" class="btn btn-primary btn-sm" data-toggle="modal"
+                                data-target="#policyModal">
+                                Update Policy
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Validation Errors --}}
+            @if ($errors->any())
+                <div class="alert alert-danger mt-2">
+                    <ul class="mb-0">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            {{-- Active Policy Display --}}
+            <div class="card mt-3">
+                <div class="card-body">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Start Time</th>
+                                <th>End Time</th>
+                                <th>Timezone</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if ($policy)
+                                <tr>
+                                    <td>{{ $policy->start_time }}</td>
+                                    <td>{{ $policy->end_time }}</td>
+                                    <td>{{ $policy->timezone }}</td>
+                                    <td>
+                                        <span class="badge badge-success">Active</span>
+                                    </td>
+                                </tr>
+                            @else
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted">
+                                        No active login time policy set
+                                    </td>
+                                </tr>
+                            @endif
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            {{-- Policy Modal --}}
+            <div class="modal fade" id="policyModal">
+                <div class="modal-dialog modal-md">
+                    <div class="modal-content">
+
+                        <div class="modal-header">
+                            <h4 class="modal-title">Set Login Time Policy</h4>
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        </div>
+
+                        <form method="POST" action="{{ route('admin.time-policy.store') }}">
+                            @csrf
+
+                            <div class="modal-body">
+
+                                <div class="form-group">
+                                    <label>Start Time</label>
+                                    <input type="time" name="start_time" class="form-control"
+                                        value="{{ old('start_time', $policy->start_time ?? '08:00') }}" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>End Time</label>
+                                    <input type="time" name="end_time" class="form-control"
+                                        value="{{ old('end_time', $policy->end_time ?? '17:00') }}" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Timezone</label>
+                                    <input type="text" name="timezone" class="form-control"
+                                        value="{{ old('timezone', $policy->timezone ?? 'Africa/Addis_Ababa') }}" required>
+                                </div>
+
+                                <small class="text-muted">
+                                    This policy applies to all <b>non-admin users</b>.
+                                </small>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-primary">
+                                    Save Policy
+                                </button>
+                            </div>
+
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+@endsection
