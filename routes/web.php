@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ActivityLogController;
+use App\Http\Controllers\LoginTimeExceptionController;
 use App\Http\Controllers\BatchController;
 use App\Http\Controllers\BusinessLocationController;
 use App\Http\Controllers\CategoryController;
@@ -27,6 +28,7 @@ use App\Http\Controllers\DisposalController;
 use App\Http\Controllers\GoodReceivingController;
 use App\Http\Controllers\ItemShelfController;
 use App\Http\Controllers\ItemUnitController;
+use App\Http\Controllers\LoginTimePolicyController;
 use App\Http\Controllers\OpeningBalanceController;
 use App\Http\Controllers\PurchasePlanController;
 use Database\Factories\CategoryFactory;
@@ -48,6 +50,37 @@ Route::controller(IndexController::class)
         Route::get('/', 'index')->name('dashboard');
         // Route::get('/', 'expired')->name('expired');
     });
+Route::middleware(['auth', 'role:Super Admin'])
+
+    ->name('admin.')
+    ->group(function () {
+
+        Route::get('/time-policy', [LoginTimePolicyController::class, 'index'])
+            ->name('time-policy.index');
+
+        Route::post('/time-policy', [LoginTimePolicyController::class, 'store'])
+            ->name('time-policy.store');
+    });
+
+
+Route::middleware(['auth', 'role:Super Admin'])
+    ->name('admin.')
+    ->group(function () {
+
+        Route::get('/login-exceptions', [LoginTimeExceptionController::class, 'index'])
+            ->name('login-exceptions.index');
+
+        Route::post('/login-exceptions', [LoginTimeExceptionController::class, 'store'])
+            ->name('login-exceptions.store');
+
+        Route::put('/login-exceptions/{exception}', [LoginTimeExceptionController::class, 'update'])
+            ->name('login-exceptions.update');
+
+        Route::patch('/login-exceptions/{exception}/toggle', [LoginTimeExceptionController::class, 'toggle'])
+            ->name('login-exceptions.toggle');
+    });
+
+
 
 Route::controller(BusinessLocationController::class)
     ->middleware(['auth', 'verified', 'isSetRole', 'manage_vendor'])->group(function () {

@@ -526,6 +526,20 @@
                                         <p>User Management</p>
                                     </a>
                                 </li>
+                                <li class="nav-item">
+                                    <a href="<?php echo e(route('admin.time-policy.index')); ?>"
+                                        class="nav-link <?php echo e(request()->routeIs('admin.time-policy.*') ? 'active' : ''); ?>">
+                                        <i class="nav-icon fas fa-clock"></i>
+                                        <p>Time Policy</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="<?php echo e(route('admin.login-exceptions.index')); ?>"
+                                        class="nav-link <?php echo e(request()->routeIs('admin.login-exceptions.*') ? 'active' : ''); ?>">
+                                        <i class="nav-icon fas fa-clock"></i>
+                                        <p>Login Exception</p>
+                                    </a>
+                                </li>
                             <?php endif; ?>
 
                         <?php endif; ?>
