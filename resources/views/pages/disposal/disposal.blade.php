@@ -394,7 +394,6 @@
                                 background:black;
                                 color:white;
                             ">
-
                             <div style="flex:1;">
                                 ${displayText}
                             </div>
