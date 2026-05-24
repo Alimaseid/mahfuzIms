@@ -40,7 +40,7 @@ class BatchController extends Controller
             ->withProperties(['data' => $batch])
             ->log('Set batch for item');
 
-        return redirect('/items')->with('success', 'Batch set successfully.');
+        return back()->with('success', 'Batch set successfully.');
     }
 
     public function deleteBatchs($id)

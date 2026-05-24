@@ -35,10 +35,13 @@
                                 @if ($permission->manage_image == 'on')
                                     <th>Image1</th>
                                 @endif
+                                <th>ItemCode</th>
                                 <th>Shelf</th>
                                 <th>Category</th>
-                                <th>Unit</th>
                                 <th>Quantity</th>
+                                <th>Unit</th>
+                                <th>otherUnit</th>
+                                <th>Brand</th>
                                 <th>Message</th>
                                 <th></th>
                             </tr>
@@ -71,10 +74,14 @@
                                                 onclick="setModalImage('{{ asset($imagePath1) }}')">
                                         </td>
                                     @endif
+                                    <td>{{ $plan->item->item_code }}</td>
                                     <td>{{ $plan->item->shelf }}</td>
                                     <td>{{ $plan->item->category }}</td>
-                                    <td>{{ $plan->item->unit }}</td>
                                     <td>{{ $plan->required_qty }}</td>
+                                    <td>{{ $plan->item->unit }}</td>
+                                    <td>{{ $plan->item->other_unit }}</td>
+                                    <td>{{ $plan->item->brand }}</td>
+
                                     <td>{{ $plan->message }}</td>
                                     <td>
                                         @if ($permission->manage_delete_purchasePlan == 'on')

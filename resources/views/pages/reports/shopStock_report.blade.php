@@ -25,20 +25,25 @@
                                 @if ($permission->manage_image == 'on')
                                     <th>Image1</th>
                                 @endif
-                                 @if ($permission->manage_image == 'on')
+                                @if ($permission->manage_image == 'on')
                                     <th>Image2</th>
                                 @endif
-                                  @if ($permission->manage_partNumber == 'on')
+                                @if ($permission->manage_partNumber == 'on')
                                     <th>Part-No1</th>
                                 @endif
-                                   @if ($permission->manage_partNumber2 == 'on')
+                                @if ($permission->manage_partNumber2 == 'on')
                                     <th>Part-No2</th>
                                 @endif
                                 <th>Quantity</th>
                                 <th>Unit</th>
+                                <th>OtherUnit</th>
                                 <th>Category</th>
-                                <th>Shelf </th>
+                                <th>ItemCode</th>
+                                <th>Brand</th>
+                                <th>Price1</th>
+                                <th>Price2</th>
                                 <th>BatchNumber</th>
+                                <th>Shelf </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -55,31 +60,31 @@
                                 @endphp
                                 <td>{{ $no }}</td>
                                 <td>{{ $stock->item->item_name }}</td>
-                                  @if ($permission->manage_image == 'on')
+                                @if ($permission->manage_image == 'on')
                                     <td style="display: flex; align-items: center; gap: 10px;">
-                                    <img src="{{ asset($imagePath) }}" alt=""
-                                        style="width: 30px; height: 30px; object-fit: cover; border-radius: 5px;"
-                                        data-toggle="modal" data-target="#imageModal"
-                                        onclick="setModalImage('{{ asset($imagePath) }}')">
+                                        <img src="{{ asset($imagePath) }}" alt=""
+                                            style="width: 30px; height: 30px; object-fit: cover; border-radius: 5px;"
+                                            data-toggle="modal" data-target="#imageModal"
+                                            onclick="setModalImage('{{ asset($imagePath) }}')">
 
-                                </td>
+                                    </td>
                                 @endif
-                                 @if ($permission->manage_image == 'on')
-                                   <td style="display: flex; align-items: center; gap: 10px;">
-                                    <img src="{{ asset($imagePath2) }}" alt=""
-                                        style="width: 30px; height: 30px; object-fit: cover; border-radius: 5px;"
-                                        data-toggle="modal" data-target="#imageModal"
-                                        onclick="setModalImage('{{ asset($imagePath2) }}')">
+                                @if ($permission->manage_image == 'on')
+                                    <td style="display: flex; align-items: center; gap: 10px;">
+                                        <img src="{{ asset($imagePath2) }}" alt=""
+                                            style="width: 30px; height: 30px; object-fit: cover; border-radius: 5px;"
+                                            data-toggle="modal" data-target="#imageModal"
+                                            onclick="setModalImage('{{ asset($imagePath2) }}')">
 
-                                </td>
+                                    </td>
                                 @endif
-                                  @if ($permission->manage_partNumber == 'on')
-                                      <td>{{ $stock->item->product_code }}</a>
-                                </td>
+                                @if ($permission->manage_partNumber == 'on')
+                                    <td>{{ $stock->item->product_code }}</a>
+                                    </td>
                                 @endif
-                                   @if ($permission->manage_partNumber2 == 'on')
-                                  <td>{{ $stock->item->part_number }}</a>
-                                </td>
+                                @if ($permission->manage_partNumber2 == 'on')
+                                    <td>{{ $stock->item->part_number }}</a>
+                                    </td>
                                 @endif
 
                                 @if ($stock->item->reorder > $stock->quantity)
@@ -90,8 +95,14 @@
                                     <td> {{ $stock->quantity }}</td>
                                 @endif
 
-                                <td>{{ $stock->item->unit }},{{ $stock->item->other_unit }}</td>
+                                <td>{{ $stock->item->unit }}</td>
+                                <td>{{ $stock->item->other_unit }}</td>
                                 <td>{{ $stock->item->category }}</td>
+                                <td>{{ $stock->item->item_code }}</td>
+                                <td>{{ $stock->item->brand }}</td>
+                                <td>{{ $stock->item->selling_price1 }}</td>
+                                <td>{{ $stock->item->selling_price2 }}</td>
+                                <td>{{ $stock->batch->batch_number }}</td>
                                 <td>
                                     @foreach ($shelfs as $shelff)
                                         @if ($shelff->shelf->business_locations_id == $stock->location_id && $stock->item_id == $shelff->item_id)
@@ -100,7 +111,6 @@
                                     @endforeach
 
                                 </td>
-                                <td>{{ $stock->batch->batch_number }}</td>
                                 </tr>
                             @empty
                             @endforelse

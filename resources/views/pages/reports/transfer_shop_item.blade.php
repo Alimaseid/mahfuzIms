@@ -47,6 +47,14 @@
                                 <th>Category</th>
                                 <th>Shelf </th>
                                 <th>Quantity</th>
+                                <th>Unit</th>
+                                <th>OtherUnit</th>
+                                <th>Category</th>
+                                <th>ItemCode</th>
+                                <th>Brand</th>
+                                <th>Price1</th>
+                                <th>Price2</th>
+                                <th>BatchNumber</th>
                                 <th>Created At</th>
                             </tr>
                         </thead>
@@ -97,6 +105,15 @@
                                             @endforeach
                                         </td>
                                         <td>{{ $detail->quantity }}</td>
+                                        <td>{{ $detail->item->unit }}</td>
+                                        <td>{{ $detail->item->other_unit }}</td>
+                                        <td>{{ $detail->item->category }}</td>
+                                        <td>{{ $detail->item->item_code }}</td>
+                                        <td>{{ $detail->item->brand }}</td>
+                                        <td>{{ $detail->item->selling_price1 }}</td>
+                                        <td>{{ $detail->item->selling_price2 }}</td>
+                                        <td>{{ $stock->batch->batch_number }}</td>
+
                                         <td>{{ $stock->created_at->format('Y-m-d') }}</td>
                                     </tr>
                                 @endforeach

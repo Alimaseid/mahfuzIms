@@ -17,8 +17,6 @@
                                 data-toggle="modal" data-target="#modal-lg">
                                 ADD New Shelf
                             </button>
-
-
                         </div>
                     </div>
                     @if ($errors->any())

@@ -14,6 +14,11 @@
                             </h3>
 
                         </div>
+                        <div class="mt-2 mt-md-0">
+                            <a href="sets-{{ $item->id }}" class="btn btn-outline-dark px-4 rounded-pill shadow-sm">
+                                <i class="fas fa-arrow-left mr-1"></i> Back
+                            </a>
+                        </div>
                     </div>
 
                     <div class="card">
@@ -77,8 +82,7 @@
                                                 </div>
                                             </div>
                                             <div class="modal-footer justify-content-between">
-                                                <button type="button" class="btn btn-default"
-                                                    data-dismiss="modal">Close</button>
+
                                                 <button type="submit"
                                                     class="btn btn-primary swalDefaultSuccess">Register</button>
                                             </div>

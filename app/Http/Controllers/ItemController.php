@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\StoreItemRequest;
 use App\Http\Requests\UpdateItemRequest;
 use App\Models\BusinessLocation;
+use App\Models\Inventory;
 use App\Models\ItemUnit;
 use App\Models\Role;
 use App\Models\Shelf;
@@ -27,7 +28,7 @@ class ItemController extends Controller
      */
     public function index()
     {
-        $items = Item::orderBy('id', 'desc')->get();
+        $items = Item::orderBy('id', 'desc')->paginate(300);
         $categories = Category::all();
         $shelfs = Shelf::all();
         $item_units = ItemUnit::all();
@@ -44,9 +45,38 @@ class ItemController extends Controller
             ->with('item_units', $item_units);
     }
 
+    public function reorderShop()
+    {
+        $user = User::where('id', Auth::user()->id)->first();
+        $permission = Role::where('id', $user->role)->first();
+        $items = Inventory::with(['item', 'location'])
+            ->whereHas('location', function ($query) {
+                $query->where('type', 'Shop');
+            })
+            ->orderBy('id', 'desc')->paginate(300);
+
+        return view('pages.items.reordershop')
+            ->with('items', $items)
+            ->with('permission', $permission);
+    }
+
+    public function reorderStore()
+    {
+        $user = User::where('id', Auth::user()->id)->first();
+        $permission = Role::where('id', $user->role)->first();
+        $items = Inventory::with(['item', 'location'])
+            ->whereHas('location', function ($query) {
+                $query->where('type', 'Warehouse');
+            })
+            ->orderBy('id', 'desc')->paginate(300);
+
+        return view('pages.items.reorderStore')
+            ->with('items', $items)
+            ->with('permission', $permission);
+    }
+
     public function addItem(Request $request)
     {
-
         // 1️⃣ Reject reused tokens
         $exists = DB::table('request_tokens')
             ->where('token', $request->request_token)
@@ -55,7 +85,6 @@ class ItemController extends Controller
         if ($exists) {
             return back()->with('error', 'Duplicate submission blocked.');
         }
-
         // 2️⃣ Store token immediately so duplicates are blocked
         DB::table('request_tokens')->insert([
             'token' => $request->request_token,
@@ -63,8 +92,8 @@ class ItemController extends Controller
             'updated_at' => now()
         ]);
         $request->validate([
-            'part_number'  => 'nullable|string|max:255|unique:items,part_number',
-            'product_code' => 'nullable|string|max:255|unique:items,product_code',
+            'part_number'  => 'nullable|string|max:255',
+            'item_code' => 'nullable|string|max:255|unique:items,item_code',
         ]);
         $photo = $request->file('image');
         $doc_path = '';
@@ -183,5 +212,11 @@ class ItemController extends Controller
             ->withProperties(['data' => $item])
             ->log('Deleted new item');
         return back()->with('success', ' Item Deleted Successfully.');
+    }
+
+    public function sets($id)
+    {
+        $item = Item::where('id', $id)->first();
+        return view('pages.items.sets', compact('item'));
     }
 }

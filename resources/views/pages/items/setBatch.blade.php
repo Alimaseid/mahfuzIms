@@ -14,6 +14,11 @@
                             </h3>
 
                         </div>
+                        <div class="mt-2 mt-md-0">
+                            <a href="sets-{{ $item->id }}" class="btn btn-outline-dark px-4 rounded-pill shadow-sm">
+                                <i class="fas fa-arrow-left mr-1"></i> Back
+                            </a>
+                        </div>
                     </div>
 
                     <div class="card">
@@ -73,7 +78,7 @@
                                                     <div class="col-6">
                                                         <div class="form-group">
                                                             <label>Batch Number</label>
-                                                            <input type="number" name="batch_number" class="form-control"
+                                                            <input type="text" name="batch_number" class="form-control"
                                                                 placeholder="Batch Number" required min="1">
                                                         </div>
                                                     </div>
@@ -92,23 +97,15 @@
                                         </div>
 
                                         <div class="modal-footer justify-content-between">
-                                            <button type="button" class="btn btn-default"
-                                                data-dismiss="modal">Close</button>
                                             <button type="submit" class="btn btn-primary">Register</button>
                                         </div>
                                     </form>
                                 </div>
                                 <!-- /.card-body -->
                             </div>
-
                         </div>
                     </div>
-
-
                     <!-- /.card -->
-
-
-
                 </div>
             </div>
         </div>

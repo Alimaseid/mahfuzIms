@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('batches', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('item_id');
-            $table->integer('batch_number');
+            $table->string('batch_number');
             $table->date('manufacture_date')->nullable();
             $table->foreign('item_id')->references('id')->on('items')->onDelete('cascade');
             $table->unique(['item_id', 'batch_number']);

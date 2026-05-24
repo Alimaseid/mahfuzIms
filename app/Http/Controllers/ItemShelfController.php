@@ -56,7 +56,7 @@ class ItemShelfController extends Controller
             ->withProperties(['data' => $shelfs])
             ->log('Set shelf for item');
 
-        return redirect('/items')->with('success', 'Shelf set successfully.');
+        return  back()->with('success', 'Shelf set successfully.');
     }
 
     public function deleteItemShelf($id)

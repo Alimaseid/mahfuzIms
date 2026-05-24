@@ -113,7 +113,7 @@
 
                             <div class="dropdown-divider"></div>
                             <?php $__empty_1 = true; $__currentLoopData = $lowShopItems; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $items): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
-                                <a href="#" class="dropdown-item">
+                                <a href="reordershopitems" class="dropdown-item">
                                     <i class="fas fa-box mr-2"></i>
                                     <?php echo e($items->item->item_name); ?> is low
                                     (<?php echo e($items->quantity); ?>)
@@ -142,7 +142,7 @@
 
                             <div class="dropdown-divider"></div>
                             <?php $__empty_1 = true; $__currentLoopData = $lowStockItems; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $items): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
-                                <a href="#" class="dropdown-item">
+                                <a href="reorderstoreitems" class="dropdown-item">
                                     <i class="fas fa-box mr-2"></i>
                                     <?php echo e($items->item->item_name); ?> is low (<?php echo e($items->quantity); ?>)
                                     <span class="float-right text-muted text-sm">Reorder Needed</span>

@@ -41,11 +41,16 @@
                                 @if ($permission->manage_image == 'on')
                                     <th>Image1</th>
                                 @endif
+                                <th>ItemCode</th>
                                 <th>Location</th>
                                 <th>Category</th>
-                                <th>Unit</th>
+
                                 <th>Batch</th>
                                 <th>Quantity</th>
+                                <th>Unit</th>
+                                <th>otherUnit</th>
+                                <th>Brand</th>
+
                                 <th></th>
                             </tr>
                         </thead>
@@ -78,12 +83,14 @@
                                                 onclick="setModalImage('{{ asset($imagePath1) }}')">
                                         </td>
                                     @endif
+                                    <td>{{ $plan->item->item_code }}</td>
                                     <td>{{ $plan->location->name ?? '' }}</td>
                                     <td>{{ $plan->item->category }}</td>
-                                    <td>{{ $plan->item->unit }}</td>
                                     <td>{{ $plan->batch->batch_number }}</td>
                                     <td>{{ $plan->quantity }}</td>
-
+                                    <td>{{ $plan->item->unit }}</td>
+                                    <td>{{ $plan->item->other_unit }}</td>
+                                    <td>{{ $plan->item->brand }}</td>
                                     <td>
                                         <button type="button" class="btn bg-info btn-sm" data-toggle="modal"
                                             data-target="#modal-lgplan-{{ $plan->item->id }}">

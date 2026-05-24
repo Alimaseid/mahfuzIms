@@ -21,8 +21,8 @@ return new class extends Migration
             $table->string('unit')->nullable();
             $table->string('other_unit')->nullable();
             $table->string('quantity')->nullable();
-            $table->string('product_code')->unique()->nullable();
-            $table->string('part_number')->unique()->nullable();
+            $table->string('product_code')->nullable();
+            $table->string('part_number')->nullable();
             $table->string('item_code')->unique()->nullable();
             $table->string('bar_code')->nullable();
             $table->string('brand')->nullable();

@@ -100,6 +100,26 @@
                                                                                         method="POST" id="quickForm">
                                                                                         @csrf
                                                                                         <div class="card-body">
+
+                                                                                            <div
+                                                                                                class="col-sm-12 invoice-col">
+                                                                                                <address>
+                                                                                                    Business Location
+                                                                                                    <select
+                                                                                                        name="location_id"
+                                                                                                        class="form-control"
+                                                                                                        required>
+                                                                                                        @foreach ($businessLocations as $businessLocation)
+                                                                                                            <option
+                                                                                                                value="{{ $businessLocation->id }}"
+                                                                                                                {{ $disposal->location_id == $businessLocation->id ? 'selected' : '' }}>
+                                                                                                                {{ $businessLocation->name }}
+                                                                                                            </option>
+                                                                                                        @endforeach
+                                                                                                    </select>
+
+                                                                                                </address>
+                                                                                            </div>
                                                                                             <div class="form-group">
                                                                                                 <label>Item</label>
                                                                                                 <div class="item-search w-100"
@@ -129,25 +149,6 @@
                                                                                                     id="batch_id_edit"
                                                                                                     name="batch_id"
                                                                                                     value="{{ $disposal->batch_id }}">
-                                                                                            </div>
-                                                                                            <div
-                                                                                                class="col-sm-12 invoice-col">
-                                                                                                <address>
-                                                                                                    Business Location
-                                                                                                    <select
-                                                                                                        name="location_id"
-                                                                                                        class="form-control"
-                                                                                                        required>
-                                                                                                        @foreach ($businessLocations as $businessLocation)
-                                                                                                            <option
-                                                                                                                value="{{ $businessLocation->id }}"
-                                                                                                                {{ $disposal->location_id == $businessLocation->id ? 'selected' : '' }}>
-                                                                                                                {{ $businessLocation->name }}
-                                                                                                            </option>
-                                                                                                        @endforeach
-                                                                                                    </select>
-
-                                                                                                </address>
                                                                                             </div>
                                                                                             <div class="form-group">
                                                                                                 <label>Quantity</label>
@@ -234,6 +235,21 @@
                                                     <form action="/add-disposal" method="POST" id="quickForm">
                                                         @csrf
                                                         <div class="card-body">
+
+
+                                                            <div class="col-sm-12 location-col">
+                                                                <address>
+                                                                    Business Location
+                                                                    <select name="location_id" class="form-control"
+                                                                        required>
+                                                                        @foreach ($businessLocations as $businessLocation)
+                                                                            <option value="{{ $businessLocation->id }}">
+                                                                                {{ $businessLocation->name }}
+                                                                            </option>
+                                                                        @endforeach
+                                                                    </select>
+                                                                </address>
+                                                            </div>
                                                             <div class="form-group">
                                                                 <label>Item</label>
                                                                 <!-- Item Search -->
@@ -258,20 +274,6 @@
                                                                 <input type="hidden" id="batch_id_0" name="batch_id"
                                                                     value="">
 
-                                                            </div>
-
-                                                            <div class="col-sm-12 location-col">
-                                                                <address>
-                                                                    Business Location
-                                                                    <select name="location_id" class="form-control"
-                                                                        required>
-                                                                        @foreach ($businessLocations as $businessLocation)
-                                                                            <option value="{{ $businessLocation->id }}">
-                                                                                {{ $businessLocation->name }}
-                                                                            </option>
-                                                                        @endforeach
-                                                                    </select>
-                                                                </address>
                                                             </div>
                                                             <div class="form-group">
                                                                 <label>Quantity</label>
@@ -320,62 +322,145 @@
         </div>
     </section>
     <script>
-        // ------------------- FETCH ITEMS (no filters) -------------------
+        // ========================= FETCH ITEMS =========================
         function fetchItems(no) {
+
+            // selected business location
+            let locationId = $('select[name="location_id"]').val();
+
             $.ajax({
                 type: "POST",
                 url: "{{ url('getItemForSale') }}",
-                dataType: 'json',
+                dataType: "json",
+
                 data: {
-                    _token: '{{ csrf_token() }}'
+                    _token: "{{ csrf_token() }}",
+                    location_id: locationId
                 },
+
                 success: function(result) {
+
                     let container = $('#item_list_' + no);
+
+                    // clear old items
                     container.html('');
 
+                    // no items
+                    if (result.length === 0) {
+
+                        container.append(`
+                        <div style="
+                            padding:10px;
+                            text-align:center;
+                            color:#999;
+                        ">
+                            No items found
+                        </div>
+                    `);
+
+                        $('#myDropdown_' + no).show();
+                        return;
+                    }
+
+                    // loop items
                     $.each(result, function(idx, item) {
-                        let imageUrl = item.image ? item.image : "{{ asset('images/no-image.png') }}";
-                        let displayText = `${item.item_name} | ${item.product_code}` +
-                            (item.batch_number ? ` | Batch: ${item.batch_number}` : '');
+
+                        let imageUrl = item.image ?
+                            item.image :
+                            "{{ asset('images/no-image.png') }}";
+
+                        let displayText =
+                            item.item_name +
+                            " | " +
+                            item.product_code;
+
+                        // batch
+                        if (item.batch_number) {
+                            displayText += " | Batch: " + item.batch_number;
+                        }
+
+                        // quantity
+                        displayText += " | Qty: " + item.quantity;
 
                         let option = $(`
-                    <div style="padding:8px; cursor:pointer; border-bottom:1px solid #eee; display:flex; align-items:center; justify-content:space-between;">
-                        <div style="flex:1;">${displayText}</div>
-                        <img src="${imageUrl}" width="40" height="40" style="object-fit:cover; margin-left:10px; border:1px solid #ccc; border-radius:4px;">
-                    </div>
-                `);
+                        <div class="item-option"
+                            style="
+                                padding:8px;
+                                cursor:pointer;
+                                border-bottom:1px solid #eee;
+                                display:flex;
+                                align-items:center;
+                                justify-content:space-between;
+                                background:black;
+                                color:white;
+                            ">
 
+                            <div style="flex:1;">
+                                ${displayText}
+                            </div>
+
+                            <img src="${imageUrl}"
+                                width="40"
+                                height="40"
+                                style="
+                                    object-fit:cover;
+                                    margin-left:10px;
+                                    border:1px solid #ccc;
+                                    border-radius:4px;
+                                ">
+                        </div>
+                    `);
+
+                        // select item
                         option.on('click', function(e) {
-                            e.stopPropagation(); // prevent closing before select
+
+                            e.stopPropagation();
+
                             selectedItem(item, no);
                         });
 
                         container.append(option);
                     });
 
+                    // show dropdown
                     $('#myDropdown_' + no).show();
                 },
+
                 error: function(err) {
+
                     console.error('❌ Could not fetch items', err);
                 }
             });
         }
 
-        // ------------------- SHOW DROPDOWN -------------------
+        // ========================= OPEN DROPDOWN =========================
         function myFunction(no) {
+
             fetchItems(no);
         }
 
-        // ------------------- FILTER -------------------
+        // ========================= FILTER ITEMS =========================
         function filterFunction(no) {
-            let input = $("#myInput_" + no).val().toUpperCase();
+
+            let input = $("#myInput_" + no)
+                .val()
+                .toUpperCase();
+
             let found = false;
 
             $("#item_list_" + no + " > div").each(function() {
-                let text = $(this).text().toUpperCase();
+
+                let text = $(this)
+                    .text()
+                    .toUpperCase();
+
                 let match = text.indexOf(input) > -1;
+
                 $(this).toggle(match);
-                if (match) found = true;
+
+                if (match) {
+                    found = true;
+                }
             });
 
             if (found) {
@@ -385,20 +470,49 @@
             }
         }
 
-        // ------------------- SELECT ITEM -------------------
+        // ========================= SELECT ITEM =========================
         function selectedItem(item, no) {
-            $("#myInput_" + no).val(item.item_name + " | " + item.product_code + (item.batch_number ? " | Batch: " + item
-                .batch_number : ""));
+
+            let text =
+                item.item_name +
+                " | " +
+                item.product_code;
+
+            if (item.batch_number) {
+                text += " | Batch: " + item.batch_number;
+            }
+
+            $("#myInput_" + no).val(text);
+
+            // hidden fields
             $("#item_id_" + no).val(item.id);
             $("#batch_id_" + no).val(item.batch_id);
 
+            // close dropdown
             $('#myDropdown_' + no).hide();
         }
 
-        // ------------------- CLOSE DROPDOWN ON OUTSIDE CLICK -------------------
+        // ========================= LOCATION CHANGE =========================
+        $('select[name="location_id"]').on('change', function() {
+
+            // clear selected item
+            $("#myInput_0").val('');
+            $("#item_id_0").val('');
+            $("#batch_id_0").val('');
+
+            // clear old list
+            $("#item_list_0").html('');
+
+            // reload items for location
+            fetchItems(0);
+        });
+
+        // ========================= CLOSE DROPDOWN =========================
         $(document).on('click', function(e) {
+
             if (!$(e.target).closest('.item-search').length) {
-                $('.dropdown-content').hide(); // hide all dropdowns
+
+                $('.dropdown-content').hide();
             }
         });
     </script>

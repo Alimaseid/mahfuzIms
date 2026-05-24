@@ -54,6 +54,7 @@
                                         <th>Part Number2</th>
                                     @endif
                                     <th>Category</th>
+                                    <th>ItemCode</th>
                                     <th>Location</th>
                                     <th>Quantity</th>
                                     <th>Unit</th>
@@ -110,7 +111,9 @@
                                                     </div>
                                                 </div>
                                             </div>
+
                                             <td>{{ $receiving->item->category }}</td>
+                                            <td>{{ $receiving->item->item_code }}</td>
                                             <td>{{ $receiving->location->name ?? '-' }}</td>
                                             <td>{{ $receiving->quantity }}</td>
                                             <td>{{ $receiving->item->unit }}</td>

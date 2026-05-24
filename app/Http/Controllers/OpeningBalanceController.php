@@ -65,6 +65,6 @@ class OpeningBalanceController extends Controller
             ->withProperties(['data' => $inventory])
             ->log('Set opening balance for item');
 
-        return redirect('/items')->with('success', 'Opening balance set successfully.');
+        return  back()->with('success', 'Opening balance set successfully.');
     }
 }

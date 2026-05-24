@@ -130,6 +130,9 @@ Route::controller(ItemController::class)
         Route::post('/edit-item-{id}', 'editItem');
         Route::get('delete-item-{id}', 'deleteItem');
         Route::post('search-item', 'searchItem');
+        Route::get('/sets-{id}', 'sets');
+        Route::get('/reordershopitems', 'reorderShop');
+        Route::get('/reorderstoreitems', 'reorderStore');
     });
 
 Route::controller(BatchController::class)

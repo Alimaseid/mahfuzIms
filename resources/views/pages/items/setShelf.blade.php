@@ -13,6 +13,11 @@
                                     </b></div>
                             </h3>
                         </div>
+                        <div class="mt-2 mt-md-0">
+                            <a href="sets-{{ $item->id }}" class="btn btn-outline-dark px-4 rounded-pill shadow-sm">
+                                <i class="fas fa-arrow-left mr-1"></i> Back
+                            </a>
+                        </div>
                     </div>
                     <div class="card">
                         <div class="row">
@@ -73,8 +78,8 @@
                                                     <div class="col-6">
                                                         <div class="form-group">
                                                             <label>Shelf</label>
-                                                            <select name="shelf_id" class="form-control" id="shelf_id"
-                                                                required>
+                                                            <select name="shelf_id" class="form-control select2bs4"
+                                                                id="shelf_id" required>
                                                                 <option value="">Select</option>
                                                                 @forelse ($shelfs as $shelf)
                                                                     <option value="{{ $shelf->id }}">
@@ -91,8 +96,7 @@
                                         </div>
 
                                         <div class="modal-footer justify-content-between">
-                                            <button type="button" class="btn btn-default"
-                                                data-dismiss="modal">Close</button>
+
                                             <button type="submit" class="btn btn-primary">Register</button>
                                         </div>
                                     </form>

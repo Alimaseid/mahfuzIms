@@ -40,7 +40,6 @@
                                 <tr>
                                     <th>No</th>
                                     {{-- <th>Image</th> --}}
-
                                     <th>ItemName </th>
                                     @if ($permission->manage_image == 'on')
                                         <th>Image1</th>
@@ -59,9 +58,6 @@
                                     <th>Reorder</th>
                                     <th>Price1</th>
                                     <th>Price2</th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
                                     <th></th>
                                     <th>SetAction</th>
                                 </tr>
@@ -120,32 +116,11 @@
 
                                             <td>{{ $item->selling_price1 }}</td>
                                             <td>{{ $item->selling_price2 }}</td>
-                                            <td>
-                                                <a type="button" class="btn btn-secondary btn-sm"
-                                                    href="batchs-{{ $item->id }}">
-                                                    <i class="fas fa-plus"></i> Set Batch
-                                                </a>
-                                            </td>
-                                            <td>
-                                                <a type="button" class="btn bg-primary btn-sm"
-                                                    href="itemShelf-{{ $item->id }}">
-                                                    <i class="fas fa-plus"></i> Set Shelf
-                                                </a>
-                                            </td>
-                                            <td>
-                                                <a type="button" class="btn btn-warning btn-xs"
-                                                    href="set_opening_balance-{{ $item->id }}">
-                                                    <i class="fas fa-view"> SetCurrentStock</i>
-                                                </a>
-                                            </td>
-                                            <td>
-                                                <button type="button" class="btn bg-info btn-sm" data-toggle="modal"
-                                                    data-target="#modal-lgplan-{{ $item->id }}">
-                                                    <i class="fas ">move</i>
-                                                </button>
 
-                                            </td>
-
+                                            <td> <a type="button" class="btn btn-info btn-sm"
+                                                    href="sets-{{ $item->id }}">
+                                                    </i> <strong> Set</strong>
+                                                </a> </td>
                                             <td>
                                                 @if ($permission->manage_edit_item == 'on')
                                                     <button type="button" class="btn btn-primary btn-sm"
@@ -538,8 +513,7 @@
                                                         <div class="form-group">
                                                             <label>Item Code</label>
                                                             <input type="text" name="item_code" class="form-control"
-                                                                value="{{ 'Item-C-' . random_int(0000001, 9999999) }} "
-                                                                placeholder="">
+                                                                placeholder="item code">
                                                         </div>
                                                     </div>
                                                     <div class="col-4">

@@ -113,7 +113,7 @@
 
                             <div class="dropdown-divider"></div>
                             @forelse($lowShopItems as $items)
-                                <a href="#" class="dropdown-item">
+                                <a href="reordershopitems" class="dropdown-item">
                                     <i class="fas fa-box mr-2"></i>
                                     {{ $items->item->item_name }} is low
                                     ({{ $items->quantity }})
@@ -142,7 +142,7 @@
 
                             <div class="dropdown-divider"></div>
                             @forelse($lowStockItems as $items)
-                                <a href="#" class="dropdown-item">
+                                <a href="reorderstoreitems" class="dropdown-item">
                                     <i class="fas fa-box mr-2"></i>
                                     {{ $items->item->item_name }} is low ({{ $items->quantity }})
                                     <span class="float-right text-muted text-sm">Reorder Needed</span>
