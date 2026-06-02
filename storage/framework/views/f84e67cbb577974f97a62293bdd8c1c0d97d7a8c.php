@@ -41,6 +41,7 @@
                                 <th>Price2</th>
                                 <th>BatchNumber</th>
                                 <th>Shelf </th>
+                                <th>Description</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -108,6 +109,10 @@
 
                                         <?php endif; ?>
                                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+
+                                </td>
+                                <td>
+                                    <?php echo e($stock->item->description ?? '-'); ?>
 
                                 </td>
 

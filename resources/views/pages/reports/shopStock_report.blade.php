@@ -44,6 +44,7 @@
                                 <th>Price2</th>
                                 <th>BatchNumber</th>
                                 <th>Shelf </th>
+                                <th>Description </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -110,6 +111,9 @@
                                         @endif
                                     @endforeach
 
+                                </td>
+                                <td>
+                                    {{ $stock->item->description ?? '-' }}
                                 </td>
                                 </tr>
                             @empty
