@@ -98,7 +98,7 @@
                     </div>
                 </li>
                 <!-- Notifications Dropdown Menu -->
-                <?php if($permission->manage_notification == 'on'): ?>
+                <?php if(!empty($permission) && $permission->manage_notification == 'on'): ?>
                     <li class="nav-item dropdown">
                         <a class="nav-link" data-toggle="dropdown" href="#">
                             <i class="far fa-bell">shop</i>
