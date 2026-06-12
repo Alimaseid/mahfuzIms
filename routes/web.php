@@ -142,6 +142,7 @@ Route::controller(BatchController::class)
         Route::post('/edit-batchs-{id}', 'editBatchs');
         Route::get('delete-batchs-{id}', 'deleteBatchs');
         Route::get('/get-batches/{item_id}', 'getBatches');
+        Route::post('/edit_batches-{id}', 'edit_Batches');
     });
 Route::get('/get-batches/{itemId}', [GoodReceivingController::class, 'getBatches']);
 

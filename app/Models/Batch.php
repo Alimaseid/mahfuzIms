@@ -17,4 +17,8 @@ class Batch extends Model
     {
         return $this->belongsTo(Item::class, 'item_id');
     }
+    public function inventories()
+    {
+        return $this->hasMany(Inventory::class);
+    }
 }

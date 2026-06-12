@@ -28,6 +28,7 @@
                                             <th>No</th>
                                             <th>BatchNumber </th>
                                             <th></th>
+                                            <th></th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -43,6 +44,12 @@
                                                 <td><?php echo e($no); ?></td>
                                                 <td><?php echo e($batch->batch_number); ?></td>
                                                 <td>
+                                                    <button type="button" class="btn btn-primary btn-sm"
+                                                        data-toggle="modal" data-target="#modal-lg-<?php echo e($batch->id); ?>">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                </td>
+                                                <td>
                                                     <a type="button" class="btn btn-danger btn-sm"
                                                         href="delete-batchs-<?php echo e($batch->id); ?>"
                                                         onclick="return confirm('Are you sure you ?');">
@@ -50,6 +57,60 @@
                                                     </a>
                                                 </td>
                                             </tr>
+                                            <div class="modal fade" id="modal-lg-<?php echo e($batch->id); ?>">
+                                                <div class="modal-dialog modal-lg">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h4 class="modal-title">Edit </h4>
+                                                            <button type="button" class="close" data-dismiss="modal"
+                                                                aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <form action="/edit_batches-<?php echo e($batch->id); ?>" method="POST"
+                                                                id="quickForm" enctype="multipart/form-data">
+                                                                <?php echo csrf_field(); ?>
+                                                                <div class="container-fluid">
+                                                                    <div class="row">
+
+                                                                        <input type="hidden" name="request_token"
+                                                                            value="<?php echo e(Str::uuid()); ?>">
+                                                                        <div class="col-6">
+                                                                            <div class="form-group">
+                                                                                <label>Batch Number</label>
+                                                                                <input type="text" name="batch_number"
+                                                                                    class="form-control"
+                                                                                    value="<?php echo e($batch->batch_number); ?>"
+                                                                                    required min="1">
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div class="row">
+                                                                        <div class="col-6">
+                                                                            <div class="form-group">
+                                                                                <label>Manufacture Date</label>
+                                                                                <input type="date"
+                                                                                    name="manufacture_date"
+                                                                                    class="form-control"
+                                                                                    value="<?php echo e($batch->manufacture_date); ?>">
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="modal-footer justify-content-between">
+                                                                        <button type="submit"
+                                                                            class="btn btn-primary">Update</button>
+                                                                    </div>
+
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                    <!-- /.modal-content -->
+                                                </div>
+                                                <!-- /.modal-dialog -->
+                                            </div>
                                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </tbody>
                                 </table>

@@ -96,14 +96,14 @@
                                     <td> {{ $stock->quantity }}</td>
                                 @endif
 
-                                <td>{{ $stock->item->unit }}</td>
-                                <td>{{ $stock->item->other_unit }}</td>
-                                <td>{{ $stock->item->category }}</td>
-                                <td>{{ $stock->item->item_code }}</td>
-                                <td>{{ $stock->item->brand }}</td>
-                                <td>{{ $stock->item->selling_price1 }}</td>
+                                <td>{{ $stock->item->unit ?? '-' }}</td>
+                                <td>{{ $stock->item->other_unit ?? '-' }}</td>
+                                <td>{{ $stock->item->category ?? '-' }}</td>
+                                <td>{{ $stock->item->item_code ?? '-' }}</td>
+                                <td>{{ $stock->item->brand ?? '-' }}</td>
+                                <td>{{ $stock->item->selling_price1 ?? '-' }}</td>
                                 <td>{{ $stock->item->selling_price2 }}</td>
-                                <td>{{ $stock->batch->batch_number }}</td>
+                                <td>{{ $stock->batch->batch_number ?? '-' }}</td>
                                 <td>
                                     @foreach ($shelfs as $shelff)
                                         @if ($shelff->shelf->business_locations_id == $stock->location_id && $stock->item_id == $shelff->item_id)

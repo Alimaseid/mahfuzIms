@@ -94,14 +94,15 @@
                                     <td> <?php echo e($stock->quantity); ?></td>
                                 <?php endif; ?>
 
-                                <td><?php echo e($stock->item->unit); ?></td>
-                                <td><?php echo e($stock->item->other_unit); ?></td>
-                                <td><?php echo e($stock->item->category); ?></td>
-                                <td><?php echo e($stock->item->item_code); ?></td>
-                                <td><?php echo e($stock->item->brand); ?></td>
-                                <td><?php echo e($stock->item->selling_price1); ?></td>
+                                <td><?php echo e($stock->item->unit ?? '-'); ?></td>
+                                <td><?php echo e($stock->item->other_unit ?? '-'); ?></td>
+                                <td><?php echo e($stock->item->category ?? '-'); ?></td>
+                                <td><?php echo e($stock->item->item_code ?? '-'); ?></td>
+                                <td><?php echo e($stock->item->brand ?? '-'); ?></td>
+                                <td><?php echo e($stock->item->selling_price1 ?? '-'); ?>
+
                                 <td><?php echo e($stock->item->selling_price2); ?></td>
-                                <td><?php echo e($stock->batch->batch_number); ?></td>
+                                <td><?php echo e($stock->batch->batch_number ?? '-'); ?></td>
                                 <td>
                                     <?php $__currentLoopData = $shelfs; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $shelff): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                         <?php if($shelff->shelf->business_locations_id == $stock->location_id && $stock->item_id == $shelff->item_id): ?>
