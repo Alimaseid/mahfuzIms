@@ -28,3 +28,9 @@ Homestead.json
 .env.production
 .phpactor.json
 auth.json
+
+/bootstrap/cache/*.php
+/storage/logs/*
+/storage/framework/views/*
+/storage/framework/cache/*
+/storage/framework/sessions/*

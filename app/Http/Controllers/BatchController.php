@@ -9,6 +9,7 @@ use App\Models\Item;
 use App\Models\ItemBatch;
 use Illuminate\Bus\Batch as BusBatch;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class BatchController extends Controller
 {
@@ -27,14 +28,17 @@ class BatchController extends Controller
     public function addBatch(Request $request)
     {
 
+
         $validated = $request->validate([
-            'item_id' => ['required'],
-            'batch_number' => 'required|unique:batches,batch_number',
+            'batch_number' => [
+                'required',
+                Rule::unique('batches')->where(function ($query) use ($request) {
+                    return $query->where('item_id', $request->item_id);
+                }),
+            ],
         ], [
-            'batch_number.unique' => 'This batch number already exists. Please choose another number.',
-
+            'batch_number.unique' => 'This batch number already exists for this item.',
         ]);
-
 
         $batch = Batch::create([
             'item_id' => $request->item_id,
