@@ -6,6 +6,7 @@ use App\Models\Batch;
 use App\Models\BusinessLocation;
 use App\Models\Inventory;
 use App\Models\Item;
+use App\Models\ItemBatch;
 use Illuminate\Bus\Batch as BusBatch;
 use Illuminate\Http\Request;
 
@@ -15,15 +16,23 @@ class BatchController extends Controller
     {
         $item = Item::where('id', $id)->first();
         $batchs = Batch::where('item_id', $id)->get();
+        $batches = ItemBatch::all();
         return view('pages.items.setBatch')
             ->with('batchs', $batchs)
-            ->with('item', $item);
+            ->with('item', $item)
+            ->with('batches', $batches);
     }
+
+
     public function addBatch(Request $request)
     {
+
         $validated = $request->validate([
             'item_id' => ['required'],
-            'batch_number' => ['required'],
+            'batch_number' => 'required|unique:batches,batch_number',
+        ], [
+            'batch_number.unique' => 'This batch number already exists. Please choose another number.',
+
         ]);
 
 

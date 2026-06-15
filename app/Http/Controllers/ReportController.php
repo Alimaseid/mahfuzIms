@@ -515,4 +515,16 @@ class ReportController extends Controller
             ->with('date', Carbon::now()->toDateString())
             ->with('dialyTotal', $dialyTotal);
     }
+
+    public function delete($id)
+    {
+        $inventory = Inventory::find($id);
+        $inventory->delete();
+        activity()
+            ->causedBy(auth()->user())
+            ->performedOn($inventory)
+            ->withProperties(['data' => $inventory])
+            ->log('Deleted  inventory');
+        return back()->with('success', ' Inventory Deleted Successfully.');
+    }
 }

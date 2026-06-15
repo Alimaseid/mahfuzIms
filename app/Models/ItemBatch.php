@@ -1,0 +1,13 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class ItemBatch extends Model
+{
+    use HasFactory;
+    protected $primaryKey = 'id'; // custom PK
+    protected $fillable = ['batch_number'];
+}

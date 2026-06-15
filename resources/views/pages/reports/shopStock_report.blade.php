@@ -45,6 +45,7 @@
                                 <th>BatchNumber</th>
                                 <th>Shelf </th>
                                 <th>Description </th>
+                                <th> </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -114,6 +115,12 @@
                                 </td>
                                 <td>
                                     {{ $stock->item->description ?? '-' }}
+                                </td>
+                                <td> <a type="button" class="btn btn-danger btn-sm"
+                                        href="deleteInventory-{{ $stock->id }}"
+                                        onclick="return confirm('Are you sure you ?');">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
                                 </td>
                                 </tr>
                             @empty

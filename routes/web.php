@@ -28,6 +28,7 @@ use App\Http\Controllers\DisposalController;
 use App\Http\Controllers\GoodReceivingController;
 use App\Http\Controllers\ItemShelfController;
 use App\Http\Controllers\ItemUnitController;
+use App\Http\Controllers\ItemBatchController;
 use App\Http\Controllers\LoginTimePolicyController;
 use App\Http\Controllers\OpeningBalanceController;
 use App\Http\Controllers\PurchasePlanController;
@@ -97,6 +98,7 @@ Route::controller(ShelfController::class)
         Route::post('/add-shelf', 'addShelf');
         Route::post('/edit-shelf-{id}', 'editShelf');
         Route::get('delete-shelf-{id}', 'deleteShelf');
+        Route::post('/edit_itemshelf-{id}', 'edit_ItemShelf');
     });
 
 Route::controller(ItemUnitController::class)
@@ -105,6 +107,15 @@ Route::controller(ItemUnitController::class)
         Route::post('/add-item_unit', 'addItemUnit');
         Route::post('/edit-item_unit-{id}', 'editItemUnit');
         Route::get('delete-item_unit-{id}', 'deleteItemUnit');
+    });
+
+
+Route::controller(ItemBatchController::class)
+    ->middleware(['auth', 'verified', 'isSetRole'])->group(function () {
+        Route::get('/item_batch', 'index');
+        Route::post('/add-item_batch', 'addItemBatch');
+        Route::post('/edit-item_batch-{id}', 'editItemBatch');
+        Route::get('delete-item_batch-{id}', 'deleteItemBatch');
     });
 
 
@@ -343,6 +354,8 @@ Route::controller(ReportController::class)
 
         Route::get('customerPerformance', 'customerPerformance');
         Route::post('customerPerformance', 'customerPerformanceByDate');
+
+        Route::get('deleteInventory-{id}', 'delete');
     });
 
 

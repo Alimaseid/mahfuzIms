@@ -242,6 +242,8 @@
                                                                     Business Location
                                                                     <select name="location_id" class="form-control"
                                                                         required>
+                                                                        <option value="">select </option>
+
                                                                         @foreach ($businessLocations as $businessLocation)
                                                                             <option value="{{ $businessLocation->id }}">
                                                                                 {{ $businessLocation->name }}

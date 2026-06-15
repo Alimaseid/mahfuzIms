@@ -747,6 +747,7 @@ class ComposerStaticInit2de28cde686cd084215eda02ba715838
         'App\\Models\\Issuing' => __DIR__ . '/../..' . '/app/Models/Issuing.php',
         'App\\Models\\IssuingDetail' => __DIR__ . '/../..' . '/app/Models/IssuingDetail.php',
         'App\\Models\\Item' => __DIR__ . '/../..' . '/app/Models/Item.php',
+        'App\\Models\\ItemBatch' => __DIR__ . '/../..' . '/app/Models/ItemBatch.php',
         'App\\Models\\ItemOnShop' => __DIR__ . '/../..' . '/app/Models/ItemOnShop.php',
         'App\\Models\\ItemOwner' => __DIR__ . '/../..' . '/app/Models/ItemOwner.php',
         'App\\Models\\ItemReturn' => __DIR__ . '/../..' . '/app/Models/ItemReturn.php',

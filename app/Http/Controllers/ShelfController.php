@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\BusinessLocation;
+use App\Models\ItemShelf;
 use App\Models\Role;
 use App\Models\Shelf;
 use Illuminate\Http\Request;
@@ -108,5 +109,15 @@ class ShelfController extends Controller
         $shelf->delete();
 
         return back()->with('success', 'Shelf Deleted Successfully.');
+    }
+
+    public function edit_ItemShelf(Request $request, $id)
+    {
+
+        $shelf = ItemShelf::find($id);
+        $shelf->update([
+            'shelf_id' => $request->shelf_id,
+        ]);
+        return back()->with('success', 'Shelf Updated Successfully.');
     }
 }

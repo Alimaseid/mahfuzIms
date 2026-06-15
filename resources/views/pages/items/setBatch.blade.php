@@ -82,10 +82,18 @@
                                                                         <div class="col-6">
                                                                             <div class="form-group">
                                                                                 <label>Batch Number</label>
-                                                                                <input type="text" name="batch_number"
-                                                                                    class="form-control"
-                                                                                    value="{{ $batch->batch_number }}"
-                                                                                    required min="1">
+                                                                                <select name="batch_number"
+                                                                                    class="form-control select2bs4"
+                                                                                    id="batch_number" required>
+                                                                                    <option value="">Select
+                                                                                    </option>
+                                                                                    @forelse ($batches as $batch)
+                                                                                        <option value="{{ $batch->id }}">
+                                                                                            {{ $batch->batch_number }}
+                                                                                        </option>
+                                                                                    @empty
+                                                                                    @endforelse
+                                                                                </select>
                                                                             </div>
                                                                         </div>
                                                                     </div>
@@ -139,8 +147,17 @@
                                                     <div class="col-6">
                                                         <div class="form-group">
                                                             <label>Batch Number</label>
-                                                            <input type="text" name="batch_number" class="form-control"
-                                                                placeholder="Batch Number" required min="1">
+                                                            <select name="batch_number" class="form-control select2bs4"
+                                                                id="batch_number" required>
+                                                                <option value="">Select
+                                                                </option>
+                                                                @forelse ($batches as $batch)
+                                                                    <option value="{{ $batch->batch_number }}">
+                                                                        {{ $batch->batch_number }}
+                                                                    </option>
+                                                                @empty
+                                                                @endforelse
+                                                            </select>
                                                         </div>
                                                     </div>
                                                 </div>

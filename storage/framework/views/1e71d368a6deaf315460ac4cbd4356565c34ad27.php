@@ -240,6 +240,8 @@
                                                                     Business Location
                                                                     <select name="location_id" class="form-control"
                                                                         required>
+                                                                        <option value="">select </option>
+
                                                                         <?php $__currentLoopData = $businessLocations; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $businessLocation): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                                                             <option value="<?php echo e($businessLocation->id); ?>">
                                                                                 <?php echo e($businessLocation->name); ?>

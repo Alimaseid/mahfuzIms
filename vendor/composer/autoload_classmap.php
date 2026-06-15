@@ -132,6 +132,7 @@ return array(
     'App\\Models\\Issuing' => $baseDir . '/app/Models/Issuing.php',
     'App\\Models\\IssuingDetail' => $baseDir . '/app/Models/IssuingDetail.php',
     'App\\Models\\Item' => $baseDir . '/app/Models/Item.php',
+    'App\\Models\\ItemBatch' => $baseDir . '/app/Models/ItemBatch.php',
     'App\\Models\\ItemOnShop' => $baseDir . '/app/Models/ItemOnShop.php',
     'App\\Models\\ItemOwner' => $baseDir . '/app/Models/ItemOwner.php',
     'App\\Models\\ItemReturn' => $baseDir . '/app/Models/ItemReturn.php',

@@ -249,6 +249,15 @@
                                         </li>
                                     <?php endif; ?>
 
+                                    <?php if($permission->manage_item_unit == 'on'): ?>
+                                        <li class="nav-item">
+                                            <a href="item_batch" class="nav-link <?php echo e(isActive('item_batch*')); ?>">
+                                                <i class="far fa-circle nav-icon"></i>
+                                                <p>Item Batch</p>
+                                            </a>
+                                        </li>
+                                    <?php endif; ?>
+
                                     <?php if($permission->manage_category == 'on'): ?>
                                         <li class="nav-item">
                                             <a href="category" class="nav-link <?php echo e(isActive('category*')); ?>">

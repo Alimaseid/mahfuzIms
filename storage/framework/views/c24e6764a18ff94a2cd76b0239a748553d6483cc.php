@@ -27,6 +27,7 @@
                                             <th>Shelf </th>
                                             <th>Location</th>
                                             <th></th>
+                                            <th></th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -43,12 +44,72 @@
                                                 <td><?php echo e($itemshelf->shelf->shelf_name); ?></td>
                                                 <td><?php echo e($itemshelf->shelf->location->name); ?></td>
                                                 <td>
+                                                    <button type="button" class="btn btn-primary btn-sm"
+                                                        data-toggle="modal" data-target="#modal-lg-<?php echo e($itemshelf->id); ?>">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                </td>
+                                                <td>
                                                     <a type="button" class="btn btn-danger btn-sm"
                                                         href="delete-itemShelf-<?php echo e($itemshelf->id); ?>"
                                                         onclick="return confirm('Are you sure you ?');">
                                                         <i class="fas fa-trash"></i>
                                                     </a>
                                                 </td>
+                                                <div class="modal fade" id="modal-lg-<?php echo e($itemshelf->id); ?>">
+                                                    <div class="modal-dialog modal-lg">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h4 class="modal-title">Edit </h4>
+                                                                <button type="button" class="close" data-dismiss="modal"
+                                                                    aria-label="Close">
+                                                                    <span aria-hidden="true">&times;</span>
+                                                                </button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <form action="/edit_itemshelf-<?php echo e($itemshelf->id); ?>"
+                                                                    method="POST" id="quickForm"
+                                                                    enctype="multipart/form-data">
+                                                                    <?php echo csrf_field(); ?>
+                                                                    <div class="container-fluid">
+                                                                        <div class="row">
+                                                                            <input type="hidden" name="request_token"
+                                                                                value="<?php echo e(Str::uuid()); ?>">
+                                                                            <div class="col-6">
+                                                                                <div class="form-group">
+                                                                                    <label>Shelf</label>
+                                                                                    <select name="shelf_id"
+                                                                                        class="form-control select2bs4"
+                                                                                        id="shelf_id" required>
+                                                                                        <option value="">Select
+                                                                                        </option>
+                                                                                        <?php $__empty_1 = true; $__currentLoopData = $shelfs; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $shelf): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                                                                                            <option
+                                                                                                value="<?php echo e($shelf->id); ?>">
+                                                                                                <?php echo e($shelf->shelf_name); ?>
+
+                                                                                            </option>
+                                                                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                                                                                        <?php endif; ?>
+                                                                                    </select>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+
+
+                                                                        <div class="modal-footer justify-content-between">
+                                                                            <button type="submit"
+                                                                                class="btn btn-primary">Update</button>
+                                                                        </div>
+
+                                                                    </div>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                        <!-- /.modal-content -->
+                                                    </div>
+                                                    <!-- /.modal-dialog -->
+                                                </div>
                                             </tr>
                                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </tbody>

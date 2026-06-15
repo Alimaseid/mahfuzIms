@@ -30,6 +30,7 @@
                                             <th>Shelf </th>
                                             <th>Location</th>
                                             <th></th>
+                                            <th></th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -46,12 +47,71 @@
                                                 <td>{{ $itemshelf->shelf->shelf_name }}</td>
                                                 <td>{{ $itemshelf->shelf->location->name }}</td>
                                                 <td>
+                                                    <button type="button" class="btn btn-primary btn-sm"
+                                                        data-toggle="modal" data-target="#modal-lg-{{ $itemshelf->id }}">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                </td>
+                                                <td>
                                                     <a type="button" class="btn btn-danger btn-sm"
                                                         href="delete-itemShelf-{{ $itemshelf->id }}"
                                                         onclick="return confirm('Are you sure you ?');">
                                                         <i class="fas fa-trash"></i>
                                                     </a>
                                                 </td>
+                                                <div class="modal fade" id="modal-lg-{{ $itemshelf->id }}">
+                                                    <div class="modal-dialog modal-lg">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h4 class="modal-title">Edit </h4>
+                                                                <button type="button" class="close" data-dismiss="modal"
+                                                                    aria-label="Close">
+                                                                    <span aria-hidden="true">&times;</span>
+                                                                </button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <form action="/edit_itemshelf-{{ $itemshelf->id }}"
+                                                                    method="POST" id="quickForm"
+                                                                    enctype="multipart/form-data">
+                                                                    @csrf
+                                                                    <div class="container-fluid">
+                                                                        <div class="row">
+                                                                            <input type="hidden" name="request_token"
+                                                                                value="{{ Str::uuid() }}">
+                                                                            <div class="col-6">
+                                                                                <div class="form-group">
+                                                                                    <label>Shelf</label>
+                                                                                    <select name="shelf_id"
+                                                                                        class="form-control select2bs4"
+                                                                                        id="shelf_id" required>
+                                                                                        <option value="">Select
+                                                                                        </option>
+                                                                                        @forelse ($shelfs as $shelf)
+                                                                                            <option
+                                                                                                value="{{ $shelf->id }}">
+                                                                                                {{ $shelf->shelf_name }}
+                                                                                            </option>
+                                                                                        @empty
+                                                                                        @endforelse
+                                                                                    </select>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+
+
+                                                                        <div class="modal-footer justify-content-between">
+                                                                            <button type="submit"
+                                                                                class="btn btn-primary">Update</button>
+                                                                        </div>
+
+                                                                    </div>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                        <!-- /.modal-content -->
+                                                    </div>
+                                                    <!-- /.modal-dialog -->
+                                                </div>
                                             </tr>
                                         @endforeach
                                     </tbody>

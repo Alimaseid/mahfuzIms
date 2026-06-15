@@ -79,10 +79,19 @@
                                                                         <div class="col-6">
                                                                             <div class="form-group">
                                                                                 <label>Batch Number</label>
-                                                                                <input type="text" name="batch_number"
-                                                                                    class="form-control"
-                                                                                    value="<?php echo e($batch->batch_number); ?>"
-                                                                                    required min="1">
+                                                                                <select name="batch_number"
+                                                                                    class="form-control select2bs4"
+                                                                                    id="batch_number" required>
+                                                                                    <option value="">Select
+                                                                                    </option>
+                                                                                    <?php $__empty_1 = true; $__currentLoopData = $batches; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $batch): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                                                                                        <option value="<?php echo e($batch->id); ?>">
+                                                                                            <?php echo e($batch->batch_number); ?>
+
+                                                                                        </option>
+                                                                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                                                                                    <?php endif; ?>
+                                                                                </select>
                                                                             </div>
                                                                         </div>
                                                                     </div>
@@ -136,8 +145,18 @@
                                                     <div class="col-6">
                                                         <div class="form-group">
                                                             <label>Batch Number</label>
-                                                            <input type="text" name="batch_number" class="form-control"
-                                                                placeholder="Batch Number" required min="1">
+                                                            <select name="batch_number" class="form-control select2bs4"
+                                                                id="batch_number" required>
+                                                                <option value="">Select
+                                                                </option>
+                                                                <?php $__empty_1 = true; $__currentLoopData = $batches; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $batch): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                                                                    <option value="<?php echo e($batch->batch_number); ?>">
+                                                                        <?php echo e($batch->batch_number); ?>
+
+                                                                    </option>
+                                                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                                                                <?php endif; ?>
+                                                            </select>
                                                         </div>
                                                     </div>
                                                 </div>
