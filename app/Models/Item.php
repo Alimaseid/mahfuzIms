@@ -29,7 +29,6 @@ class Item extends Model
         'reorder_for_shop',
         'shelf',
         'image2',
-
     ];
     public function shelf()
     {
