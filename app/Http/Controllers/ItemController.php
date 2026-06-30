@@ -28,7 +28,7 @@ class ItemController extends Controller
      */
     public function index()
     {
-        $items = Item::orderBy('id', 'desc')->paginate(300);
+        $items = Item::orderBy('id', 'desc')->get();
         $categories = Category::all();
         $shelfs = Shelf::all();
         $item_units = ItemUnit::all();
@@ -124,7 +124,7 @@ class ItemController extends Controller
             'image2' => $doc_paths,
             'bar_code' => $request->bar_code,
             'status' => 'Active',
-            'description' > $request->description,
+            'description' => $request->description,
             'reorder' => $request->reorder,
             'reorder_for_shop' => $request->reorder_for_shop,
             'quantity' => $request->quantity,

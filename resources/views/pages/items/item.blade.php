@@ -1,6 +1,4 @@
 @extends('inc.frame')
-
-
 @section('content')
     <section class="content">
         <div class="container-fluid">
